@@ -2,7 +2,7 @@ import React from 'react'
 import Zyrax_icon from '../assets/options-list.png'
 import user from '../assets/user.png'
 
-export default function Header() {
+function Header() {
     return (
         <>
             <div className='flex justify-between px-[20px] pt-[20px]' >
@@ -14,3 +14,5 @@ export default function Header() {
         </>
     )
 }
+
+export default Header

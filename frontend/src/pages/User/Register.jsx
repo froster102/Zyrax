@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
-import Socialbutton from './Socialbutton'
+import  { useState } from 'react'
+import Socialbutton from '../../components/Socialbutton'
 import { AiFillGoogleCircle, AiFillTwitterCircle } from 'react-icons/ai'
 import { FaFacebook, FaMobileAlt } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
-import Footer from './Footer'
 import { Flip, toast, ToastContainer } from 'react-toastify'
 
-function RegisterForm() {
+function Register() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -74,9 +73,8 @@ function RegisterForm() {
           <p className='text-sm font-semibold text-right mt-2'>Already have a account ? <span className='hover:underline'><Link to='/login' >Login</Link></span></p>
         </div>
       </form>
-      <Footer></Footer>
     </>
   )
 }
 
-export default RegisterForm
+export default Register

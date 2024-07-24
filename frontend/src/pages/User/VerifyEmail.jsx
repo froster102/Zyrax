@@ -1,19 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Flip, ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
+import { useEffect, useRef, useState } from 'react'
+import { Flip, ToastContainer } from 'react-toastify'
 
-const OTP = 1234
-
-function MobileSignInForm() {
-    const [number, setNumber] = useState('')
+function VerifyEmail() {
     const [otp, setOtp] = useState(new Array(4).fill(''))
     const otpBoxRef = useRef([])
-    const [otpAttempt, setOtpAttempt] = useState(0)
-    const [sec, setSec] = useState(0)
+    const [otpAttempt,setOtpAttempt] = useState(0)
+    const [sec,setSec] = useState(0)
 
-    useEffect(() => {
+    useEffect(()=>{
         startTimer(20)
-    }, [otpAttempt])
+    },[otpAttempt])
 
     function startTimer(sec) {
         function tick() {
@@ -27,10 +23,8 @@ function MobileSignInForm() {
         tick();
     }
 
-    function handleNumberChange(e) {
-        if (!isNaN((e.target.value)) && e.target.value.length < 11) {
-            setNumber(e.target.value)
-        }
+    function handleSubmit(e) {
+        e.preventDefault()
     }
 
     function handleOtpChange(value, index) {
@@ -38,35 +32,22 @@ function MobileSignInForm() {
             let newArr = [...otp]
             newArr[index] = value
             setOtp(newArr)
+            if (value && index < 3) {
+                otpBoxRef.current[index + 1].focus()
+            }
         }
-        if (value && index < 3) {
-            otpBoxRef.current[index + 1].focus()
-        }
+
     }
+
+    console.log(otp)
 
     function handleBackspaceAndEnter(e, index) {
         if (e.key === 'Backspace') {
             let newArr = [...otp]
             newArr[index] = ''
             setOtp(newArr)
-            console.log(otp)
             if (index > 0) {
                 otpBoxRef.current[index - 1].focus()
-            }
-        }
-    }
-
-    function handleSubmit(e) {
-        e.preventDefault()
-        if (number.length === 0 || otp.length === 0) {
-            toast('Field should not be empty')
-        } else if (number.length < 10) {
-            toast('Enter a valid mobile number')
-        } else {
-            if (Number(Number(otp.toString().split(',').join(''))) === OTP) {
-                toast('Sucess')
-            } else {
-                toast('Wrong otp')
             }
         }
     }
@@ -81,10 +62,8 @@ function MobileSignInForm() {
                 transition={Flip}
             ></ToastContainer>
             <form action="" onSubmit={handleSubmit}>
-                <div className='w-fit py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16 mb-[116px]'>
-                    <h1 className='text-4xl text-center font-medium'>Mobile Sign In</h1>
-                    <span className='block mt-4  text-xl font-normal' htmlFor="">Enter your mobile number</span>
-                    <input className='block mt-2 p-2 border-[1px] h-[43px] border-black rounded-md w-full' onChange={handleNumberChange} value={number} type="text" inputMode='numeric' />
+                <div className='w-fit py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-[126px] mb-[126px]'>
+                    <h1 className='text-4xl text-center font-medium'>Verify Your Email</h1>
                     <span className='block mt-4  text-xl font-normal' htmlFor="">Enter OTP</span>
                     <div className='flex'>
                         {otp.map((value, index) => (
@@ -93,11 +72,11 @@ function MobileSignInForm() {
                         <p className='self-end text-sm font-medium ml-1'>00:{sec}s</p>
                     </div>
                     <p className='text-right text-sm font-medium mt-1 hover:underline'>Resend OTP</p>
-                    <button className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >Sign in</button>
+                    <button className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >Continue</button>
                 </div>
             </form>
         </>
     )
 }
 
-export default MobileSignInForm
+export default VerifyEmail

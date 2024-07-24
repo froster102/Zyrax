@@ -1,25 +1,24 @@
-import React, { useState } from 'react'
-import Socialbutton from './Socialbutton'
+import { useState } from 'react'
+import Socialbutton from '../../components/Socialbutton'
 import { AiFillGoogleCircle } from "react-icons/ai";
 import { FaFacebook } from "react-icons/fa";
 import { FaMobileAlt } from "react-icons/fa";
 import { AiFillTwitterCircle } from "react-icons/ai";
 import { Link } from 'react-router-dom';
-import Footer from './Footer';
-import { ToastContainer, toast,Flip } from 'react-toastify';
+import { ToastContainer, toast, Flip } from 'react-toastify';
 
-function LoginForm() {
+function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
     function handleSubmit(e) {
         e.preventDefault()
-        const regex =  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         if (email.length === 0 || password.length === 0) {
             toast('Fields should not be empty')
-        }else if(!regex.test(email)){
+        } else if (!regex.test(email)) {
             toast('Enter a valid email')
-        }else {
+        } else {
             toast('Sucess')
         }
     }
@@ -51,9 +50,8 @@ function LoginForm() {
                     <p className='text-sm font-semibold text-right mt-2'>Don't have a account ? <span className='hover:underline'><Link to='/register'>Register</Link></span></p>
                 </div>
             </form>
-            <Footer></Footer>
         </>
     )
 }
 
-export default LoginForm
+export default Login
