@@ -11,7 +11,6 @@ passport.use(new GoogleStrategy.Strategy({
 },
     async (accessToken, refreshToken, profile, cb) => {
         try {
-            console.log(profile)
             const user = await User.findOne({googleId:profile.id})
             if(!user){
                 const user = await User.create({
@@ -20,7 +19,7 @@ passport.use(new GoogleStrategy.Strategy({
                     email : profile.emails[0].value  ,
                     googleId : profile.id,
                     authProvider : 'google',
-                    profilePic : profile.picture,
+                    profilePic : profile.photos[0].value,
                     status : 'active'
                 })
             }

@@ -2,16 +2,16 @@ import { Admin } from '../../model/admin.js'
 import bcrypt from 'bcryptjs'
 import { generateAccessToken, generateRefreshToken } from '../../utils/utils.js'
 
-const login = async (req, res) => {
+const signin = async (req, res) => {
     try {
         const { email, password } = req.body
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Bad credentials' })
-        }
-        const admin = await Admin.find({ email: email })
+        const admin = await Admin.findOne({ email: email })
         if (admin) {
             const match = await bcrypt.compare(password, admin.password)
             if (match) {
+                await Admin.findByIdAndUpdate(admin._id, {
+                    lastLogin: Date.now()
+                })
                 const acessToken = generateAccessToken(admin._id, 'admin')
                 const refreshToken = generateRefreshToken(admin._id, 'admin')
                 res.cookie('jwt', refreshToken, {
@@ -20,9 +20,9 @@ const login = async (req, res) => {
                     sameSite: 'None',
                     maxAge: 24 * 60 * 60 * 1000
                 })
-                return res.status(200).json({ acessToken: acessToken })
+                return res.status(200).json({ accessToken: acessToken })
             } else {
-                return res.status(400).json({ message: 'Bad credentials' })
+                return res.status(401).json({ message: 'Bad credentials' })
             }
         }
     } catch (err) {
@@ -34,7 +34,6 @@ const login = async (req, res) => {
 
 
 export {
-    login,
-    
-    
+    signin,
+
 }

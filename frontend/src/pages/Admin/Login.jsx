@@ -1,13 +1,21 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Flip, toast, ToastContainer } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { useAdminSigninMutation } from '../../features/adminApiSlice'
+import { setAdminCredentials } from '../../features/authSlice'
+
 
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const dispactch = useDispatch()
+  const navigate = useNavigate()
+  const [signin, { isLoading }] = useAdminSigninMutation()
+  const location = useLocation()
+  const redirect = location?.state?.from?.pathname || '/admin/dashboard'
 
-
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     if (email.length === 0 || password.length === 0) {
@@ -15,7 +23,14 @@ function Login() {
     } else if (!regex.test(email)) {
       toast('Enter a valid email')
     } else {
-      toast('Sucess')
+      try {
+        const res = await signin({ email, password }).unwrap()
+        const {accessToken} = res
+        dispactch(setAdminCredentials({ token: accessToken }))
+        navigate(redirect, { replace: true })
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 

@@ -1,17 +1,38 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Socialbutton from '../../components/Socialbutton'
 import { AiFillGoogleCircle } from "react-icons/ai";
 import { FaFacebook } from "react-icons/fa";
 import { FaMobileAlt } from "react-icons/fa";
 import { AiFillTwitterCircle } from "react-icons/ai";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ToastContainer, toast, Flip } from 'react-toastify';
+import { useSigninMutation } from '../../features/userApiSlice';
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom';
+import { setUserCredentials } from '../../features/authSlice';
 
 function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const dispatch = useDispatch()
+    const [signin, { isLoading }] = useSigninMutation()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const redirect = location?.state?.from?.pathname || '/'
 
-    function handleSubmit(e) {
+    useEffect(() => {
+        function handleAuthMsg(e) {
+            if (e.origin !== 'http://localhost:3000') return
+            handleAuth(e.data)
+        }
+        window.addEventListener('message', handleAuthMsg)
+
+        return () => {
+            window.removeEventListener('message', handleAuthMsg)
+        }
+    }, [])
+
+    async function handleSubmit(e) {
         e.preventDefault()
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         if (email.length === 0 || password.length === 0) {
@@ -19,13 +40,29 @@ function Login() {
         } else if (!regex.test(email)) {
             toast('Enter a valid email')
         } else {
-            toast('Sucess')
+            try {
+                const res = await signin({ email, password }).unwrap()
+                console.log(res)
+                dispatch(setUserCredentials({ token: res?.accessToken }))
+                navigate('/', { replace: true })
+            } catch (error) {
+                toast(error?.data?.message)
+            }
         }
+    }
+
+    function signInWithGoogle() {
+        window.open('http://localhost:3000/api/user/auth/google', '_blank', 'width=600,height=600')
+    }
+
+    function handleAuth({ accessToken }) {
+        dispatch(setUserCredentials({ token: accessToken }))
+        navigate(redirect, { replace: true })
     }
 
     return (
         <>
-            <ToastContainer className='mt-10 rounded-lg font-bold text-center'
+            <ToastContainer className='mt-10 rounded-lg font-semibold text-center'
                 position='top-center'
                 autoClose='1000'
                 theme='dark'
@@ -36,9 +73,9 @@ function Login() {
                 <div className='w-fit py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16'>
                     <h1 className='text-4xl text-center font-medium'>Login</h1>
                     <div className='flex gap-4 mt-4 items-center justify-center'>
-                        <Socialbutton icon={<AiFillGoogleCircle size={35}></AiFillGoogleCircle>}></Socialbutton>
-                        <Socialbutton icon={<FaFacebook size={35}></FaFacebook>}></Socialbutton>
-                        <Socialbutton icon={<AiFillTwitterCircle size={35}></AiFillTwitterCircle>}></Socialbutton>
+                        <div onClick={signInWithGoogle}><Socialbutton icon={<AiFillGoogleCircle size={35}></AiFillGoogleCircle>}></Socialbutton></div>
+                        <div><Socialbutton icon={<FaFacebook size={35}></FaFacebook>}></Socialbutton></div>
+                        <div><Socialbutton icon={<AiFillTwitterCircle size={35}></AiFillTwitterCircle>}></Socialbutton></div>
                         <Link to='/mobile-signin' ><Socialbutton icon={<FaMobileAlt size={35}></FaMobileAlt>}></Socialbutton></Link>
                     </div>
                     <span className='block mt-4  text-xl font-medium' htmlFor="">Email</span>

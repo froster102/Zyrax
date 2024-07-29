@@ -1,8 +1,7 @@
-import React from 'react'
 
 function Overview() {
   return (
-    <div>Overview</div>
+    <div className="pl-4">Overview</div>
   )
 }
 

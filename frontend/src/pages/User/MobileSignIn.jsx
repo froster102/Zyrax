@@ -10,9 +10,6 @@ function MobileSignIn() {
   const [otpAttempt, setOtpAttempt] = useState(0)
   const [sec, setSec] = useState(0)
 
-  useEffect(() => {
-    startTimer(20)
-  }, [otpAttempt])
 
   function startTimer(sec) {
     function tick() {
@@ -70,31 +67,49 @@ function MobileSignIn() {
     }
   }
 
+  function handleSendOtp() {
+    if (number.length !== 10) {
+      toast('Enter a valid mobile number')
+    } else if (sec === 0) {
+      toast('Otp sent sucessfully')
+      startTimer(20)
+    }
+  }
+
+  function handleResendOtp() {
+    if (sec === 0) {
+      handleSendOtp()
+    } else {
+      toast('Please wait before retry')
+    }
+  }
+
   return (
     <>
-      <ToastContainer className='mt-10 rounded-lg font-bold text-center'
+      <ToastContainer className='mt-10 rounded-lg font-semibold text-center'
         position='top-center'
         autoClose='1000'
         theme='dark'
         hideProgressBar={true}
         transition={Flip}
       ></ToastContainer>
-      <form action="" onSubmit={handleSubmit}>
-        <div className='w-fit py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16 mb-[116px]'>
-          <h1 className='text-4xl text-center font-medium'>Mobile Sign In</h1>
-          <span className='block mt-4  text-xl font-normal' htmlFor="">Enter your mobile number</span>
-          <input className='block mt-2 p-2 border-[1px] h-[43px] border-black rounded-md w-full' onChange={handleNumberChange} value={number} type="text" inputMode='numeric' />
-          <span className='block mt-4  text-xl font-normal' htmlFor="">Enter OTP</span>
-          <div className='flex'>
-            {otp.map((value, index) => (
-              <input key={index} ref={el => otpBoxRef.current[index] = el} value={value} onChange={(e) => { handleOtpChange(e.target.value, index) }} onKeyUp={(e) => { handleBackspaceAndEnter(e, index) }} className='border-[1px] border-black rounded-[8px] w-[47px] h-[43px] ml-2 text-center' type="text" />
-            ))}
-            <p className='self-end text-sm font-medium ml-1'>00:{sec}s</p>
-          </div>
-          <p className='text-right text-sm font-medium mt-1 hover:underline'>Resend OTP</p>
-          <button className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >Sign in</button>
+      <div className='w-fit py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16 mb-[116px]'>
+        <h1 className='text-4xl text-center font-medium'>Mobile Sign In</h1>
+        <span className='block mt-4  text-xl font-normal' htmlFor="">Enter your mobile number</span>
+        <div className='flex'>
+          <input className='mt-2 p-2 border-[1px] h-[43px] border-black rounded-md ' onChange={handleNumberChange} value={number} type="text" inputMode='numeric' />
+          <button onClick={() => { handleSendOtp() }} className='ml-2 bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >Send Otp</button>
         </div>
-      </form>
+        <span className='block mt-4  text-xl font-normal' htmlFor="">Enter OTP</span>
+        <div className='flex'>
+          {otp.map((value, index) => (
+            <input key={index} ref={el => otpBoxRef.current[index] = el} value={value} onChange={(e) => { handleOtpChange(e.target.value, index) }} onKeyUp={(e) => { handleBackspaceAndEnter(e, index) }} className='border-[1px] border-black rounded-[8px] w-[47px] h-[43px] ml-2 text-center' type="text" />
+          ))}
+          <p className='self-end text-sm font-medium ml-1'>00:{sec}s</p>
+        </div>
+        <p onClick={() => { handleResendOtp() }} className='text-right text-sm font-medium mt-1 hover:underline'>Resend OTP</p>
+        <button onClick={handleSubmit} className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >Verify</button>
+      </div>
     </>
   )
 }

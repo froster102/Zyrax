@@ -1,9 +1,12 @@
-import  { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Socialbutton from '../../components/Socialbutton'
 import { AiFillGoogleCircle, AiFillTwitterCircle } from 'react-icons/ai'
 import { FaFacebook, FaMobileAlt } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Flip, toast, ToastContainer } from 'react-toastify'
+import { useDispatch } from 'react-redux'
+import { useSignupMutation } from '../../features/userApiSlice'
+import { setUserCredentials } from '../../features/authSlice'
 
 function Register() {
   const [firstName, setFirstName] = useState('')
@@ -11,21 +14,57 @@ function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const dispatch = useDispatch()
+  const [signup, { isLoading }] = useSignupMutation()
+  const navigate = useNavigate()
 
-  function handleSubmit(e) {
+  useEffect(() => {
+    function handleAuthMsg(e) {
+      if (e.origin !== 'http://localhost:3000') return
+      handleAuth(e.data)
+    }
+    window.addEventListener('message', handleAuthMsg)
+
+    return () => {
+      window.removeEventListener('message', handleAuthMsg)
+    }
+  }, [])
+
+  function signInWithGoogle() {
+    window.open('http://localhost:3000/api/user/auth/google', '_blank', 'width=600,height=600')
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault()
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
       toast('All field should completed')
     } else if (!regex.test(email)) {
       toast('Enter a valid email')
-    } else if (password.length !== 6) {
+    } else if (!password.length > 6) {
       toast('Password must be at least 6 character long')
     } else if (password !== confirmPassword) {
       toast('Password do not match')
     } else {
-      toast('Sucess')
+      try {
+        const res = await signup({ firstName, lastName, email, password }).unwrap()
+        toast(res.message)
+        setFirstName('')
+        setLastName('')
+        setEmail('')
+        setPassword('')
+        setConfirmPassword('')
+      } catch (error) {
+        if(error?.status===409){
+          toast('User already exists')
+        }
+      }
     }
+  }
+
+  function handleAuth({ accessToken }) {
+    dispatch(setUserCredentials({ token: accessToken }))
+    navigate('/', { replace: true })
   }
 
   return (
@@ -41,7 +80,7 @@ function Register() {
         <div className='w-[348px] py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16'>
           <h1 className='text-4xl text-center font-medium'>Register</h1>
           <div className='flex gap-4 mt-4 items-center justify-center'>
-            <Socialbutton icon={<AiFillGoogleCircle size={35}></AiFillGoogleCircle>}></Socialbutton>
+            <div onClick={signInWithGoogle}><Socialbutton icon={<AiFillGoogleCircle size={35}></AiFillGoogleCircle>}></Socialbutton></div>
             <Socialbutton icon={<FaFacebook size={35}></FaFacebook>}></Socialbutton>
             <Socialbutton icon={<AiFillTwitterCircle size={35}></AiFillTwitterCircle>}></Socialbutton>
             <Link to='/mobile-signin' ><Socialbutton icon={<FaMobileAlt size={35}></FaMobileAlt>}></Socialbutton></Link>

@@ -10,14 +10,15 @@ const AddressSchema = new mongoose.Schema({
 const UserSchema = new mongoose.Schema({
     firstName: { type: String },
     lastName: { type: String },
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     phoneNumber: { type: String },
     googleId: { type: String },
     authProvider: { type: String },
     profilePic: { type: String },
     password: { type: String },
     status: { type: String, enum: ['active', 'blocked', 'deleted'] },
-    addresses: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Address' }]
+    addresses: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Address' }],
+    verification_status: { type: Boolean }
 })
 
 const User = mongoose.model('User', UserSchema)
