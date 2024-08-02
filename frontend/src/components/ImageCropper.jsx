@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Flip, toast, ToastContainer } from 'react-toastify';
@@ -83,8 +83,8 @@ function ImageCropper({ closeModal, addImage }) {
                             imgRef.current.height
                         )
                     )
-                    addImage((prev)=>{
-                        return [...prev,canvasRef.current.toDataURL()]
+                    addImage((prev) => {
+                        return [...prev, canvasRef.current.toDataURL()]
                     })
                     closeModal(false)
                 }}

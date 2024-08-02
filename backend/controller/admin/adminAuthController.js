@@ -14,13 +14,12 @@ const signin = async (req, res) => {
                 })
                 const acessToken = generateAccessToken(admin._id, 'admin')
                 const refreshToken = generateRefreshToken(admin._id, 'admin')
-                res.cookie('jwt', refreshToken, {
+                res.cookie('admin_jwt', refreshToken, {
                     httpOnly: true,
                     secure: false,
-                    sameSite: 'None',
-                    maxAge: 24 * 60 * 60 * 1000
+                    maxAge: 7 * 24 * 60 * 60 * 1000
                 })
-                return res.status(200).json({ accessToken: acessToken })
+                return res.status(200).json({ accessToken: acessToken, role: 'admin' })
             } else {
                 return res.status(401).json({ message: 'Bad credentials' })
             }
@@ -31,9 +30,14 @@ const signin = async (req, res) => {
     }
 }
 
+const logout = (req, res) => {
+    req.clearCookies('user_jwt', { httpOnly: true, secure: false })
+    return res.status(200).json({ message: 'User Logged out successfully' })
+}
+
 
 
 export {
     signin,
-
+    logout
 }

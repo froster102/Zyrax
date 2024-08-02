@@ -9,7 +9,7 @@ import { ToastContainer, toast, Flip } from 'react-toastify';
 import { useSigninMutation } from '../../features/userApiSlice';
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
-import { setUserCredentials } from '../../features/authSlice';
+import { selectUserToken, setUserCredentials } from '../../features/authSlice';
 
 function Login() {
     const [email, setEmail] = useState('')
@@ -19,6 +19,13 @@ function Login() {
     const navigate = useNavigate()
     const location = useLocation()
     const redirect = location?.state?.from?.pathname || '/'
+    const user = useSelector(selectUserToken)
+
+    useEffect(() => {
+        if (user) {
+            navigate(redirect, { replace: true })
+        }
+    }, [])
 
     useEffect(() => {
         function handleAuthMsg(e) {
@@ -32,6 +39,7 @@ function Login() {
         }
     }, [])
 
+
     async function handleSubmit(e) {
         e.preventDefault()
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -43,8 +51,8 @@ function Login() {
             try {
                 const res = await signin({ email, password }).unwrap()
                 console.log(res)
-                dispatch(setUserCredentials({ token: res?.accessToken }))
-                navigate('/', { replace: true })
+                dispatch(setUserCredentials({ token: res?.accessToken, role: res?.role }))
+                navigate(redirect, { replace: true })
             } catch (error) {
                 toast(error?.data?.message)
             }
@@ -55,8 +63,8 @@ function Login() {
         window.open('http://localhost:3000/api/user/auth/google', '_blank', 'width=600,height=600')
     }
 
-    function handleAuth({ accessToken }) {
-        dispatch(setUserCredentials({ token: accessToken }))
+    function handleAuth({ accessToken, role }) {
+        dispatch(setUserCredentials({ token: accessToken, role }))
         navigate(redirect, { replace: true })
     }
 

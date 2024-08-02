@@ -1,4 +1,4 @@
-import { apiSlice  } from './apiSlice'
+import { apiSlice } from './apiSlice'
 
 
 const adminApiSlice = apiSlice.injectEndpoints({
@@ -9,8 +9,34 @@ const adminApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: credentials
             })
-        })
+        }),
+        fetchUsers: builder.query({
+            query: () => ({
+                url: '/admin/get-users',
+                method: 'GET',
+            })
+        }),
+        fetchProducts: builder.query({
+            query: () => ({
+                url: '/admin/get-products',
+                method: 'GET'
+            })
+        }),
+        blockUser: builder.mutation({
+            query: (userId) => ({
+                url: '/admin/block-user',
+                method: 'POST',
+                body: { userId }
+            })
+        }),
+        unblockUser: builder.mutation({
+            query: (userId) => ({
+                url: '/admin/unblock-user',
+                method: 'POST',
+                body: { userId }
+            })
+        }),
     })
 })
 
-export const { useAdminSigninMutation } = adminApiSlice
+export const { useAdminSigninMutation, useFetchUsersQuery, useFetchProductsQuery, useBlockUserMutation, useUnblockUserMutation , useLogoutMutation } = adminApiSlice

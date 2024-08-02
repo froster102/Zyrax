@@ -26,11 +26,11 @@ const addProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
     try {
-        const products = Product.find()
+        const products = await Product.find({})
         if (!products) {
             return res.status(404).json({ message: 'No products found' })
         }
-        return res.status(200).json({ message: products })
+         return res.status(200).json({ message: products })
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: 'Failed to get products    ' })

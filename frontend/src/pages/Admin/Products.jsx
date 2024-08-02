@@ -1,11 +1,18 @@
 import { IoSearchOutline } from "react-icons/io5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ProductTable from "../../components/ProductTable";
+import { useFetchProductsQuery } from "../../features/adminApiSlice";
 
 
 function Products() {
   const [products, setProducts] = useState([])
+  const data = useFetchProductsQuery()
+
+  useEffect(() => {
+    setProducts(data?.products)
+  }, [])
+
   return (
     <>
       <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px]'>
@@ -18,7 +25,7 @@ function Products() {
           <Link to='/admin/dashboard/add-product' ><button className="bg-black text-white font-medium rounded-3xl w-fit h-fit px-8 py-4">Add Product</button></Link>
         </div>
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
-          <ProductTable products={products}></ProductTable>
+          {products && <ProductTable products={products}></ProductTable>}
         </div>
 
       </div>

@@ -6,8 +6,9 @@ const initialState = localStorage.getItem('auth') ? JSON.parse(localStorage.getI
             token: null,
         },
         admin: {
-            token: null
-        }
+            token: null,
+        },
+        role: null
     }
 
 const authSlice = createSlice({
@@ -15,23 +16,26 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setUserCredentials: (state, action) => {
-            const { token } = action.payload
+            const { token, role } = action.payload
             state.user.token = token
-            localStorage.setItem('auth', JSON.stringify({ ...initialState, user: { token } }))
+            state.role = role
+            localStorage.setItem('auth', JSON.stringify({ ...initialState, user: { token }, role }))
         },
         setAdminCredentials: (state, action) => {
-            const { token } = action.payload
-            console.log(token)
+            const { token, role } = action.payload
             state.admin.token = token
-            localStorage.setItem('auth', JSON.stringify({ ...initialState, admin: { token } }))
+            state.role = role
+            localStorage.setItem('auth', JSON.stringify({ ...initialState, admin: { token }, role }))
         },
         userLogout: (state, action) => {
             state.user.token = null
-            localStorage.setItem('auth', JSON.stringify({ ...initialState, user: null }))
+            state.role = null
+            localStorage.setItem('auth', JSON.stringify({ ...initialState, user: {token:null}, role: null }))
         },
         adminLogout: (state, action) => {
             state.admin.token = null
-            localStorage.setItem('auth', JSON.stringify({ ...initialState, admin: null }))
+            state.role = null
+            localStorage.setItem('auth', JSON.stringify({ ...initialState, admin: {token: null}, role: null }))
         }
     }
 })

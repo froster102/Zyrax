@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Flip, toast, ToastContainer } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAdminSigninMutation } from '../../features/adminApiSlice'
-import { setAdminCredentials } from '../../features/authSlice'
+import { setAdminCredentials, setUserCredentials } from '../../features/authSlice'
 
 
 function Login() {
@@ -25,10 +25,11 @@ function Login() {
     } else {
       try {
         const res = await signin({ email, password }).unwrap()
-        const {accessToken} = res
-        dispactch(setAdminCredentials({ token: accessToken }))
+        const { accessToken, role } = res
+        dispactch(setAdminCredentials({ token: accessToken, role: role }))
         navigate(redirect, { replace: true })
       } catch (err) {
+        toast(err?.data?.message)
         console.log(err)
       }
     }

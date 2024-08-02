@@ -1,6 +1,6 @@
 import { User } from "../../model/user.js"
 import bcrypt from 'bcryptjs'
-import { generateAccessToken, sendVerifyEmail } from '../../utils/utils.js'
+import { generateAccessToken, generateRefreshToken, sendVerifyEmail } from '../../utils/utils.js'
 import jwt from 'jsonwebtoken'
 
 const googleSigninCallback = async (req, res) => {
@@ -8,14 +8,14 @@ const googleSigninCallback = async (req, res) => {
     const token = generateAccessToken(user._id, 'user')
     res.send(`
         <script>
-                    window.onload = () => {
-                        const token = '${token}';
-                        if (window.opener) {
-                            window.opener.postMessage({ accessToken: token  }, 'http://localhost:5173');
-                        }
-                        window.close();
-                    };
-                </script>`)
+            window.onload = () => {
+            const token = '${token}';
+            if (window.opener) {
+                 window.opener.postMessage({ accessToken: token , role : 'user'  }, 'http://localhost:5173');
+                }
+            window.close();
+            };
+        </script>`)
 }
 
 const facebookSigninCallback = (req, res) => {
@@ -36,7 +36,13 @@ const signin = async (req, res) => {
                 return res.status(400).json({ message: 'Please verify your account by clicking the link send to your email' })
             }
             if (match && user.verification_status) {
-                const token = generateAccessToken(user._id, user)
+                const token = generateAccessToken(user._id, 'user')
+                const refreshToken = generateRefreshToken(user._id, 'user')
+                res.cookie('user_jwt', refreshToken, {
+                    httpOnly: true,
+                    secure: false,
+                    maxAge: 7 * 24 * 60 * 60 * 1000
+                })
                 return res.status(200).json({ accessToken: token, role: 'user' })
             }
             return res.status(401).json({ message: 'Bad credentials' })
@@ -64,6 +70,7 @@ const signUp = async (req, res) => {
                     firstName: firstName,
                     lastName: lastName,
                     password: passwordHash,
+                    status: 'active',
                     verification_status: false,
                 }, { new: true })
             if (user) {
@@ -106,11 +113,17 @@ const verifyEmail = async (req, res) => {
     })
 }
 
+const logout = (req, res) => {
+    req.clearCookies('admin_jwt', { httpOnly: true, secure: false })
+    return res.status(200).json({ message: 'User Logged out successfully' })
+}
+
 export {
     googleSigninCallback,
     facebookSigninCallback,
     xSigninCallback,
     signin,
     signUp,
-    verifyEmail
+    verifyEmail,
+    logout
 }

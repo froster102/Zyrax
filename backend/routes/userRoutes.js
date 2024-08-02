@@ -2,6 +2,8 @@ import express from 'express'
 import { passport } from '../middlewares/passport-config.js'
 import { signin, googleSigninCallback, facebookSigninCallback, xSigninCallback, signUp, verifyEmail } from '../controller/user/userAuthController.js'
 import { signUpValidationRules, validate } from '../middlewares/validationMiddleware.js'
+import { logout } from '../controller/logoutController.js'
+import { adminRefresh, userRefresh } from '../controller/refreshController.js'
 
 const router = express.Router() 
 
@@ -24,10 +26,8 @@ router.get('/auth/X',)
 router.get('/auth/X/callback', xSigninCallback)
 router.post('/auth/signin', signin)
 router.post('/auth/signup',signUpValidationRules(),validate, signUp)
-
-
-
-
+router.get('auth/user/refresh',userRefresh)
+router.get('/auth/logout',logout)
 
 
 export default router

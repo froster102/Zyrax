@@ -9,7 +9,7 @@ const ProductSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     discount: {
         name: { type: String },
-        percentage: { type, Number }
+        percentage: { type: Number }
     },
     stockQty: { type: Number, required: true },
     catergory: { type: String, required: true },

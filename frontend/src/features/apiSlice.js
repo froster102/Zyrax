@@ -5,11 +5,16 @@ import { setUserCredentials, setAdminCredentials, userLogout, adminLogout } from
 const baseQuery = fetchBaseQuery({
     baseUrl: 'http://localhost:3000/api',
     credentials: 'include',
-    prepareHeaders: (headers, { getState }) => {
-        const token = getState().auth.token
-        if (token) {
-            headers.set('authorization', `Bearer ${token}`)
+    prepareHeaders: (headers, { getState },) => {
+        const state = getState()
+        const { role } = getState().auth
+        let token = ''
+        if (role === 'user') {
+            token = state.auth.user?.token
+        } else if (role === 'admin') {
+            token = state.auth.admin?.token
         }
+        if (token) headers.set('authorization', `Bearer ${token}`)
         return headers
     }
 })
@@ -19,23 +24,26 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         let response = await baseQuery(args, api, extraOptions)
         if (response?.error?.status === 403) {
             console.log('sending refresh token')
-            const refreshResponce = await baseQuery('/auth/refresh', api, extraOptions)
-            if (refreshResponce?.data) {
-                const { role } = api.getState().auth
-                if (role === 'user') {
+            const { role } = api.getState().auth
+            if (role === 'user') {
+                const refreshResponce = await baseQuery('/user/auth/refresh', api, extraOptions)
+                if (refreshResponce?.data) {
+                    console.log('user')
                     api.dispatch(setUserCredentials(...refreshResponce?.data))
                 } else {
                     api.dispatch(userLogout())
                 }
-                if (role === 'admin') {
-                    api.dispatch(setAdminCredentials(...refreshResponce?.data))
+            } else if (role === 'admin') {
+                const refreshResponce = await baseQuery('/admin/auth/refresh', api, extraOptions)
+                if (refreshResponce?.data) {
+                    const { accessToken: token, role } = refreshResponce?.data
+                    console.log(refreshResponce)
+                    api.dispatch(setAdminCredentials({ token, role }))
                 } else {
                     api.dispatch(adminLogout())
                 }
-            }else {
-                api.dispatch(userLogout())
-                api.dispatch(adminLogout())
             }
+            response = await baseQuery(args, api, extraOptions)
         }
         return response
     } catch (e) {
@@ -45,15 +53,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
 export const apiSlice = createApi({
     baseQuery: baseQueryWithReauth,
-    endpoints: (builder) => ({
-        logout: builder.mutation({
-            query: () => ({
-                url: '/auth/logout',
-                method: 'GET'
-            })
-        })
-    })
+    endpoints: (builder) => ({})
 })
 
 
-export const { useLogoutMutation } = apiSlice

@@ -1,8 +1,13 @@
 import { MdDelete } from "react-icons/md";
 import { GrView } from "react-icons/gr";
-import { FaEdit } from "react-icons/fa";
+import { TbUserCancel } from "react-icons/tb";
+import { CgUnblock } from "react-icons/cg";
 
-function UserTable({ users }) {
+
+function UserTable({ users, deleteUser, blockUserById , unblockUserById }) {
+
+
+
     return (
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
@@ -22,11 +27,11 @@ function UserTable({ users }) {
                 </tr>
             </thead>
             <tbody>
-                {users.map((user,i) => {
+                {users.map((user, i) => {
                     return (
                         <tr key={i} className="border-b ">
                             <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
-                                {user.id}
+                                {user._id}
                             </th>
                             <td className="px-6 py-4">
                                 {user.email}
@@ -36,9 +41,15 @@ function UserTable({ users }) {
                             </td>
                             <td className="px-6 py-4">
                                 <div className="flex gap-2">
-                                    <GrView size={20} />
-                                    <FaEdit size={20} />
-                                    <MdDelete size={20} />
+                                    <div className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                        <GrView size={20} className="hover:text-white" />
+                                    </div>
+                                    <div className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                        {user.status === 'active' ? <TbUserCancel onClick={() => { blockUserById(user._id) }} size={20} /> : <CgUnblock onClick={() => { unblockUserById(user._id) }} size={20} />}
+                                    </div>
+                                    <div className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                        <MdDelete size={20} />
+                                    </div>
                                 </div>
                             </td>
                         </tr>
