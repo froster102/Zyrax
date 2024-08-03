@@ -11,6 +11,7 @@ import VerifyEmail from '../pages/User/VerifyEmail'
 import Home from '../pages/User/Home'
 import Profile from '../pages/User/Profile'
 import RequireUserAuth from '../components/RequireUserAuth'
+import ProductDetails from '../components/ProductDetails'
 
 function UserRoutes() {
     return (
@@ -24,7 +25,8 @@ function UserRoutes() {
                 <Route path='/reset-password' element={<Reset></Reset>} ></Route>
                 <Route path='/mobile-signin' element={<MobileSignIn></MobileSignIn>}></Route>
                 <Route path='/' element={<Home></Home>}></Route>
-                <Route element={<RequireUserAuth/>}>
+                <Route path='/product/:id' element={<ProductDetails></ProductDetails>}></Route>
+                <Route element={<RequireUserAuth />}>
                     <Route path='/profile' element={<Profile></Profile>} ></Route>
                 </Route>
                 <Route path='*' element={<NotFound></NotFound>} ></Route>
