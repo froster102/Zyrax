@@ -2,11 +2,7 @@ import { useState } from "react"
 import ProductCard from "./ProductCard"
 import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 
-
-
-function Row({ title, query, rowId }) {
-    const [products, setProducts] = useState(new Array(10).fill(0))
-
+function Row({ title, query, rowId , products }) {
     function scrollLeft() {
         let slider = document.getElementById('slider' + rowId)
         slider.scrollLeft = slider.scrollLeft - 500
@@ -20,7 +16,7 @@ function Row({ title, query, rowId }) {
     return (
         <>
             <div className="my-4">
-                <h1 className="text-3xl font-medium ml-8">{title}</h1>
+                <h1 className="text-3xl ml-8">{title}</h1>
                 <div className="flex items-center relative">
                     <div onClick={scrollLeft} className="absolute text-black left-2 z-10 bg-[#E6E6E6] w-[40px] h-[40px] rounded-full flex items-center justify-center">
                         <MdChevronLeft size={40} />

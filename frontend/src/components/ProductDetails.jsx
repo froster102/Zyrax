@@ -4,9 +4,26 @@ import Size from './Size';
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { IoIosArrowDown } from "react-icons/io";
 import Row from './Row';
+import Ratings from './Ratings';
 
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+
+const RATINGS = [
+    {
+        rating: 4.0,
+        ratings: 34,
+        reviewTotal: 20,
+        reviews: {
+            username: 'John Doe',
+            review: 'Awesome product loved it',
+            date: '27/02/2024',
+            images: []
+        }
+    }
+]
+
+const CUSTOMER_IMAGES = []
 
 function ProductDetails() {
     const { id } = useParams()
@@ -110,6 +127,8 @@ function ProductDetails() {
                         </div>
                     </div>
                 </div>
+                <div className='w-full h-[1px] bg-[#CFCBCB] my-8'></div>
+                <Ratings ratings={RATINGS} customerImages={CUSTOMER_IMAGES}></Ratings>
                 <Row title={'Similar Products'}></Row>
             </div>
         </>

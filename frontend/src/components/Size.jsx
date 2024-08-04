@@ -3,8 +3,6 @@ import React, { useState } from 'react'
 function Size({ sizes }) {
     const [defaultSizes, setDefaultSizes] = useState(['XS', 'S', 'M', 'L', 'XL', 'XXL'])
     const [selectedSize, setSelectedSize] = useState('')
-    console.log(selectedSize)
-
     return (
         <>
             {
