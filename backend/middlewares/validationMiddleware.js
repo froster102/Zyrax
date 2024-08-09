@@ -9,7 +9,7 @@ const signUpValidationRules = () => {
     ]
 }
 
-const signinValidationRules = ()=>{
+const signinValidationRules = () => {
     return [
         body('email').isEmail().withMessage('Invalid email'),
         body('password').notEmpty().withMessage('Field Required')
@@ -24,7 +24,7 @@ const validate = (req, res, next) => {
         for (let error of errorArr) {
             errMsg.push(error.msg)
         }
-        return res.status(400).json({ message: errMsg })
+        return res.status(400).json({ message: 'Bad request', errMsg })
     }
     next()
 }

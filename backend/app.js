@@ -8,6 +8,8 @@ import mongoose from 'mongoose'
 import cors from 'cors'
 import { verifyEmail } from './controller/user/userAuthController.js'
 import cookieParser from 'cookie-parser'
+import { refresh } from './controller/refreshController.js'
+import { logout } from './controller/logoutController.js'
 
 config()
 
@@ -30,12 +32,14 @@ app.use(session({
     saveUninitialized: false
 }))
 app.use(express.json())
-app.use('/api/user/', userRoutes)
-app.use('/api/admin/', adminRoutes)
-app.get('/verify-email',verifyEmail)
+app.use('/api/v1/users/', userRoutes)
+app.use('/api/v1/admin/', adminRoutes)
+app.get('/api/v1/auth/refresh',refresh)
+app.get('/api/v1/auth/logout',logout)
+app.get('/api/v1/verify-email',verifyEmail)
 
 app.get('/', (req, res) => {
-    console.log(req.session)
+    // console.log(req.)
     res.send('Server successfully running')
 })
 

@@ -1,19 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { setUserCredentials, setAdminCredentials, userLogout, adminLogout } from './authSlice.js'
+import { setUserCredentials, userLogout } from './authSlice.js'
 
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: 'http://localhost:3000/api',
+    baseUrl: 'http://localhost:3000/api/v1',
     credentials: 'include',
     prepareHeaders: (headers, { getState },) => {
-        const state = getState()
-        const { role } = getState().auth
-        let token = ''
-        if (role === 'user') {
-            token = state.auth.user?.token
-        } else if (role === 'admin') {
-            token = state.auth.admin?.token
-        }
+        const token = getState().auth.user.accessToken
         if (token) headers.set('authorization', `Bearer ${token}`)
         return headers
     }
@@ -24,36 +17,26 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         let response = await baseQuery(args, api, extraOptions)
         if (response?.error?.status === 403) {
             console.log('sending refresh token')
-            const { role } = api.getState().auth
-            if (role === 'user') {
-                const refreshResponce = await baseQuery('/user/auth/refresh', api, extraOptions)
-                if (refreshResponce?.data) {
-                    console.log('user')
-                    api.dispatch(setUserCredentials(...refreshResponce?.data))
-                } else {
-                    api.dispatch(userLogout())
-                }
-            } else if (role === 'admin') {
-                const refreshResponce = await baseQuery('/admin/auth/refresh', api, extraOptions)
-                if (refreshResponce?.data) {
-                    const { accessToken: token, role } = refreshResponce?.data
-                    console.log(refreshResponce)
-                    api.dispatch(setAdminCredentials({ token, role }))
-                } else {
-                    api.dispatch(adminLogout())
-                }
+            const refreshResponse = await baseQuery('/auth/refresh', api, extraOptions)
+            if (refreshResponse?.data) {
+                api.dispatch(setUserCredentials({ ...refreshResponse?.data }))
+            } else {
+                api.dispatch(userLogout())
             }
             response = await baseQuery(args, api, extraOptions)
+        } else if (response?.error?.status === 401) {
+            // console.log('eoroo 401')
+            api.dispatch(userLogout())
         }
         return response
     } catch (e) {
-        console.log(e)
     }
 }
 
 export const apiSlice = createApi({
     baseQuery: baseQueryWithReauth,
-    endpoints: (builder) => ({})
+    endpoints: (builder) => ({ })
 })
+
 
 

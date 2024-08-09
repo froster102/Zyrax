@@ -3,11 +3,15 @@ import Banner from "../../components/Banner"
 import Newsletter from "../../components/Newsletter"
 import Row from "../../components/Row"
 import TrendingCard from "../../components/TrendingCard"
+import { useGetProductsBycategoryQuery } from "../../features/userApiSlice"
 
 const TRENDING = new Array(10).fill(0)
 
 function Home() {
   const [trendings, setTrendings] = useState(TRENDING)
+  const { data: bottomwears, isLoading: bottomwearsLoading } = useGetProductsBycategoryQuery({ category: 'bottomwears' })
+  const { data: topwears, isLoading: topwearsLoading } = useGetProductsBycategoryQuery({ category: 'topwears' })
+  console.log(bottomwears)
 
   return (
     <>
@@ -21,13 +25,13 @@ function Home() {
         <p className="text-center text-4xl">Fresh and trending collections</p>
         <div className="w-[1176px] overflow-x-scroll scroll-smooth whitespace-nowrap ml-auto mr-auto py-4 scrollbar-hide" id="slider">
           {
-            trendings.map((trending) => {
-              return <TrendingCard></TrendingCard>
+            trendings.map((trending, i) => {
+              return <TrendingCard key={i}></TrendingCard>
             })
           }
         </div>
-        <Row title='All New Topwears' rowId={1} products={new Array(10).fill(0)}></Row>
-        <Row title='All New Bottomwears' rowId={2} products={new Array(10).fill(0)}></Row>
+        {!topwearsLoading && <Row title='All New Topwears' rowId={1} products={topwears?.products}></Row>}
+        {!bottomwearsLoading && <Row title='All New Bottomwears' rowId={2} products={bottomwears?.products}></Row>}
         <Newsletter></Newsletter>
       </div>
     </>

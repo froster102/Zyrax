@@ -10,12 +10,24 @@ import { IoNotifications } from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import {  adminLogout } from "../features/authSlice";
+import { userLogout } from "../features/authSlice";
+import { useAdminLogoutMutation } from "../features/adminApiSlice";
+import { BeatLoader, PulseLoader } from "react-spinners";
 
 
 
 function Sidebar() {
     const dispatch = useDispatch()
+    const [logout, { isLoading }] = useAdminLogoutMutation()
+
+    async function adminLogout() {
+        try {
+            const res = await logout()
+            dispatch(userLogout())
+            console.log(res)
+        } catch (error) {
+        }
+    }
 
     return (
         <>
@@ -29,8 +41,8 @@ function Sidebar() {
                         <li className='text-lg flex items-center font-normal mt-4'><IoMdAnalytics className="mr-2" />Analytics</li>
                         <Link to='/admin/dashboard/products'><li className='text-lg flex items-center font-normal mt-4'><FaBox className="mr-2" />Product</li></Link>
                         <Link to='/admin/dashboard/users'><li className='text-lg flex items-center font-normal mt-4'><FaUsers className="mr-2" />Users</li></Link>
-                        <li className='text-lg flex items-center font-normal mt-4'><RiShoppingBag3Line className="mr-2" />Orders</li>
-                        <li className='text-lg flex items-center font-normal mt-4'><MdManageHistory className="mr-2" />Manage</li>
+                        <Link><li className='text-lg flex items-center font-normal mt-4'><RiShoppingBag3Line className="mr-2" />Orders</li></Link>
+                        <Link to='/admin/dashboard/manage'><li className='text-lg flex items-center font-normal mt-4'><MdManageHistory className="mr-2" />Manage</li></Link>
                     </ul>
                 </div>
                 <div className="mt-4">
@@ -54,10 +66,7 @@ function Sidebar() {
                     </ul>
                 </div>
                 <div className="w-full flex justify-center">
-                    <button onClick={async () => {
-                        // const res = await 
-                        dispatch(adminLogout())
-                    }} className=" w-full py-2 bg-black text-white rounded-3xl font-medium mt-20">Logout</button>
+                    <button onClick={adminLogout} className=" w-full py-2 bg-black text-white rounded-3xl font-medium mt-20 flex justify-center items-center    ">{isLoading ? <BeatLoader color="white" /> : 'Logout'}</button>
                 </div>
             </div>
         </>

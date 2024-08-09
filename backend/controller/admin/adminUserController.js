@@ -3,7 +3,7 @@ import { User } from '../../model/user.js'
 
 const getUsers = async (req, res) => {
     try {
-        const users = await User.find()
+        const users = await User.find({}, { password: false })
         return res.status(200).json({ users: users })
     } catch (err) {
         console.log(err)
@@ -13,10 +13,10 @@ const getUsers = async (req, res) => {
 
 const viewUser = async (req, res) => {
     try {
-        const { userId } = req.body
+        const { id } = req.params
         const user = await User.find({
-            _id: userId
-        })
+            _id: id
+        }, { password: false })
         if (user) {
             return res.status(200).json({ user: user })
         }
@@ -27,9 +27,9 @@ const viewUser = async (req, res) => {
 }
 
 const blockUser = async (req, res) => {
+    const { id } = req.params
     try {
-        const { userId } = req.body
-        const user = await User.findByIdAndUpdate(userId, { status: 'blocked' })
+        const user = await User.findByIdAndUpdate(id, { status: 'blocked' })
         return res.status(200).json({ message: 'User blocked sucessfully' })
     } catch (err) {
         console.log(err)
@@ -38,9 +38,9 @@ const blockUser = async (req, res) => {
 }
 
 const unblockUser = async (req, res) => {
+    const { id } = req.params
     try {
-        const { userId } = req.body
-        const user = await User.findByIdAndUpdate(userId, { status: 'active' })
+        const user = await User.findByIdAndUpdate(id, { status: 'active' })
         return res.status(200).json({ message: 'User unblocked sucessfully' })
     } catch (err) {
         console.log(err)
@@ -49,9 +49,9 @@ const unblockUser = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
+    const { id } = req.params
     try {
-        const { userId } = req.body
-        const response = await User.findByIdAndDelete(userId)
+        const response = await User.findByIdAndDelete(id)
         if (!response) {
             return res.status(404).json({ message: 'User not found' })
         }

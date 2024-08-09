@@ -5,6 +5,17 @@ import jwt from 'jsonwebtoken'
 
 const googleSigninCallback = async (req, res) => {
     const user = await User.findOne({ googleId: req.user.id })
+    if (user.status === 'blocked') {
+        return res.send(`
+            <script>
+                window.onload = () => {
+                if (window.opener) {
+                     window.opener.postMessage({ error:'Failed to login user account has been blocked'}, 'http://localhost:5173');
+                    }
+                window.close();
+                };
+            </script>`)
+    }
     const token = generateAccessToken(user._id, 'user')
     res.send(`
         <script>
@@ -18,19 +29,14 @@ const googleSigninCallback = async (req, res) => {
         </script>`)
 }
 
-const facebookSigninCallback = (req, res) => {
-    res.send('sign in success with facebook')
-}
-
-const xSigninCallback = (req, res) => {
-    res.send('sign in sucess with X')
-}
-
 const signin = async (req, res) => {
     try {
         const { email, password } = req.body
         const user = await User.findOne({ email: email })
         if (user) {
+            if (user.status === 'blocked') {
+                return res.status(401).json({ message: 'User account blocked' })
+            }
             const match = await bcrypt.compare(password, user.password)
             if (!user.verification_status) {
                 return res.status(400).json({ message: 'Please verify your account by clicking the link send to your email' })
@@ -38,7 +44,7 @@ const signin = async (req, res) => {
             if (match && user.verification_status) {
                 const token = generateAccessToken(user._id, 'user')
                 const refreshToken = generateRefreshToken(user._id, 'user')
-                res.cookie('user_jwt', refreshToken, {
+                res.cookie('jwt', refreshToken, {
                     httpOnly: true,
                     secure: false,
                     maxAge: 7 * 24 * 60 * 60 * 1000
@@ -58,6 +64,9 @@ const signUp = async (req, res) => {
     try {
         const { firstName, lastName, email, password } = req.body
         const user = await User.findOne({ email: email })
+        if (user && user.verification_status === false) {
+            return res.status(409).json({ message: 'Please verify you email by clicking the link' })
+        }
         if (user && user.verification_status) {
             return res.status(409).json({ message: 'User already exists' })
         }
@@ -108,7 +117,7 @@ const verifyEmail = async (req, res) => {
         const email = decoded.email
         const user = await User.findOneAndUpdate({
             _id: userId
-        }, { verification_status: true }, { new: true })
+        }, { verification_status: true, status: 'active' }, { new: true })
         return res.send('Account verified successfully please login to continue')
     })
 }
@@ -120,8 +129,6 @@ const logout = (req, res) => {
 
 export {
     googleSigninCallback,
-    facebookSigninCallback,
-    xSigninCallback,
     signin,
     signUp,
     verifyEmail,

@@ -10,33 +10,110 @@ const adminApiSlice = apiSlice.injectEndpoints({
                 body: credentials
             })
         }),
-        fetchUsers: builder.query({
+        adminLogout: builder.mutation({
             query: () => ({
-                url: '/admin/get-users',
-                method: 'GET',
-            })
-        }),
-        fetchProducts: builder.query({
-            query: () => ({
-                url: '/admin/get-products',
+                url: 'auth/logout',
                 method: 'GET'
             })
         }),
+        fetchUsers: builder.query({
+            query: () => `/admin/users/`
+        }),
         blockUser: builder.mutation({
-            query: (userId) => ({
-                url: '/admin/block-user',
-                method: 'POST',
-                body: { userId }
+            query: (id) => ({
+                url: `/admin/users/${id}/block`,
+                method: 'PATCH',
             })
         }),
         unblockUser: builder.mutation({
-            query: (userId) => ({
-                url: '/admin/unblock-user',
-                method: 'POST',
-                body: { userId }
+            query: ({ id }) => ({
+                url: `/admin/users/${id}/unblock`,
+                method: 'PATCH',
             })
         }),
+        fetchProducts: builder.query({
+            query: () => '/admin/products'
+        }),
+        fetchProduct: builder.query({
+            query: ({ id }) => `/admin/products/${id}`
+        }),
+        addProduct: builder.mutation({
+            query: (productData) => ({
+                url: '/admin/products',
+                method: 'POST',
+                body: productData
+            })
+        }),
+        editProduct: builder.mutation({
+            query: ({ id, productData }) => ({
+                url: `/admin/products/${id}`,
+                method: 'PUT',
+                body: productData
+            })
+        }),
+        blockProduct: builder.mutation({
+            query: ({ id }) => ({
+                url: `/admin/products/${id}/block`,
+                method: 'PATCH',
+            })
+        }),
+        deleteProduct: builder.mutation({
+            query: ({ id }) => ({
+                url: `/admin/products/${id}`,
+                method: 'DELETE',
+            })
+        }),
+        getCategories: builder.query({
+            query: () => '/admin/categories'
+        }),
+        addCategory: builder.mutation({
+            query: (data) => ({
+                url: '/admin/categories/',
+                method: 'POST',
+                body: data
+            })
+        }),
+        editCategory: builder.mutation({
+            query: ({ id, data }) => {
+                console.log(id, data)
+                return {
+                    url: `/admin/categories/${id}`,
+                    method: 'PUT',
+                    body: data
+                }
+            }
+        }),
+        blockCategory: builder.mutation({
+            query: (id) => ({
+                url: `/admin/categories/${id}/block`,
+                method: 'PATCH',
+            })
+        }),
+        deleteCategory: builder.mutation({
+            query: (id) => ({
+                url: `/admin/categories/${id}`,
+                method: 'DELETE',
+            })
+        })
+
     })
 })
 
-export const { useAdminSigninMutation, useFetchUsersQuery, useFetchProductsQuery, useBlockUserMutation, useUnblockUserMutation , useLogoutMutation } = adminApiSlice
+export const {
+    useAdminSigninMutation,
+    useAdminLogoutMutation,
+    useFetchUsersQuery,
+    useBlockUserMutation,
+    useUnblockUserMutation,
+    useAddProductMutation,
+    useFetchProductQuery,
+    useFetchProductsQuery,
+    useEditProductMutation,
+    useBlockProductMutation,
+    useDeleteProductMutation,
+    useGetCategoriesQuery,
+    useAddCategoryMutation,
+    useEditCategoryMutation,
+    useBlockCategoryMutation,
+    useDeleteCategoryMutation
+} = adminApiSlice

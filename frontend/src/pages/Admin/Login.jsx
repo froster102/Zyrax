@@ -3,35 +3,35 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Flip, toast, ToastContainer } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAdminSigninMutation } from '../../features/adminApiSlice'
-import { setAdminCredentials, setUserCredentials } from '../../features/authSlice'
+import { setUserCredentials } from '../../features/authSlice'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 
+const schema = z.object({
+  email: z.string().trim().min(1,'Required').email('Enter a valid email'),
+  password: z.string().min(1,'Required')
+})
 
 function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const dispactch = useDispatch()
   const navigate = useNavigate()
   const [signin, { isLoading }] = useAdminSigninMutation()
   const location = useLocation()
   const redirect = location?.state?.from?.pathname || '/admin/dashboard'
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    if (email.length === 0 || password.length === 0) {
-      toast('Fields should not be empty')
-    } else if (!regex.test(email)) {
-      toast('Enter a valid email')
-    } else {
-      try {
-        const res = await signin({ email, password }).unwrap()
-        const { accessToken, role } = res
-        dispactch(setAdminCredentials({ token: accessToken, role: role }))
-        navigate(redirect, { replace: true })
-      } catch (err) {
-        toast(err?.data?.message)
-        console.log(err)
-      }
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    resolver: zodResolver(schema)
+  })
+  async function onSubmit(data) {
+    const { email, password } = data
+    try {
+      const res = await signin({ email, password }).unwrap()
+      const { accessToken, role } = res
+      dispactch(setUserCredentials({ accessToken, role }))
+      navigate(redirect, { replace: true })
+    } catch (err) {
+      toast(err?.data?.message)
+      console.log(err)
     }
   }
 
@@ -45,13 +45,15 @@ function Login() {
         transition={Flip}
       ></ToastContainer>
       <div className='bg-[#F1F1F1] flex justify-center items-center h-dvh'>
-        <form action="" onSubmit={handleSubmit}>
+        <form action="" onSubmit={handleSubmit(onSubmit)}>
           <div className='w-fit py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16'>
             <h1 className='text-4xl text-center font-medium'>Admin Login</h1>
             <span className='block mt-4  text-xl font-medium' htmlFor="">Email</span>
-            <input className='block mt-2 p-2 border-[1px] h-[43px] border-black rounded-md w-full' value={email} onChange={(e) => setEmail(e.target.value)} type="text" />
+            <input {...register('email')} className='block mt-2 p-2 border-[1px] h-[43px] border-black rounded-md w-full' type="text" />
+            {errors.email && <span className='text-red-700 text-sm'>{errors.email?.message}</span>}
             <span className='block mt-4  text-xl font-medium' htmlFor="">Password</span>
-            <input className='block mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' value={password} onChange={(e) => setPassword(e.target.value)} type="password" />
+            <input {...register('password')} className='block mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' type="password" />
+            {errors.password && <span className='text-red-700 text-sm'>{errors.password?.message}</span>}
             <Link to='/reset-password'><p className='text-right font-semibold text-sm hover:underline mt-1'>Forgot Password</p></Link>
             <button className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >Login</button>
           </div>

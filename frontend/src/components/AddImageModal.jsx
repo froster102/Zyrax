@@ -22,9 +22,9 @@ function AddImageModal({ closeModal, addImage }) {
                                 <IoMdClose size={40} />
                             </button>
                             <ImageCropper
-                                addImage={addImage}
                                 updateAvatar={''}
                                 closeModal={closeModal}
+                                addImage={addImage}
                             />
                         </div>
                     </div>

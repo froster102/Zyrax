@@ -3,15 +3,15 @@ import nodemailer from 'nodemailer'
 
 const generateAccessToken = (userId, role) => {
     return jwt.sign({
-        'userId': userId,
-        'role': role
-    }, process.env.SECRET, { expiresIn: '10s' })
+        userId: userId,
+        role: role
+    }, process.env.SECRET, { expiresIn: '15m' })
 }
 
 const generateRefreshToken = (userId, role) => {
     return jwt.sign({
-        'userId': userId,
-        'role': role
+        userId: userId,
+        role: role
     }, process.env.SECRET, { expiresIn: '1d' })
 }
 

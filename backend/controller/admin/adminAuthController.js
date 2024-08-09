@@ -14,16 +14,18 @@ const signin = async (req, res) => {
                 })
                 const acessToken = generateAccessToken(admin._id, 'admin')
                 const refreshToken = generateRefreshToken(admin._id, 'admin')
-                res.cookie('admin_jwt', refreshToken, {
+                res.cookie('jwt', refreshToken, {
                     httpOnly: true,
                     secure: false,
                     maxAge: 7 * 24 * 60 * 60 * 1000
                 })
                 return res.status(200).json({ accessToken: acessToken, role: 'admin' })
             } else {
+                console.log('sdhjsh')
                 return res.status(401).json({ message: 'Bad credentials' })
             }
         }
+        return res.status(401).json({ message: 'Bad credentials' })
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: 'Failed to login an error occured' })

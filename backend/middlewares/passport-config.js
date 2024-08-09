@@ -7,7 +7,7 @@ config()
 passport.use(new GoogleStrategy.Strategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/api/user/auth/google/callback"
+    callbackURL: "http://localhost:3000/api/v1/users/auth/google/callback"
 },
     async (accessToken, refreshToken, profile, cb) => {
         try {
@@ -20,7 +20,8 @@ passport.use(new GoogleStrategy.Strategy({
                     googleId : profile.id,
                     authProvider : 'google',
                     profilePic : profile.photos[0].value,
-                    status : 'active'
+                    status : 'active',
+                    verification_status : true
                 })
             }
             return cb(null, profile);

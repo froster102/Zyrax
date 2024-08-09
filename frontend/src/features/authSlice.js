@@ -3,12 +3,9 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth')) :
     {
         user: {
-            token: null,
-        },
-        admin: {
-            token: null,
-        },
-        role: null
+            accessToken: null,
+            role: null
+        }
     }
 
 const authSlice = createSlice({
@@ -16,32 +13,21 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setUserCredentials: (state, action) => {
-            const { token, role } = action.payload
-            state.user.token = token
-            state.role = role
-            localStorage.setItem('auth', JSON.stringify({ ...initialState, user: { token }, role }))
-        },
-        setAdminCredentials: (state, action) => {
-            const { token, role } = action.payload
-            state.admin.token = token
-            state.role = role
-            localStorage.setItem('auth', JSON.stringify({ ...initialState, admin: { token }, role }))
+            const { accessToken, role } = action.payload
+            state.user.accessToken = accessToken
+            state.user.role = role
+            localStorage.setItem('auth', JSON.stringify({ ...initialState, user: { accessToken, role } }))
         },
         userLogout: (state, action) => {
-            state.user.token = null
-            state.role = null
-            localStorage.setItem('auth', JSON.stringify({ ...initialState, user: {token:null}, role: null }))
-        },
-        adminLogout: (state, action) => {
-            state.admin.token = null
-            state.role = null
-            localStorage.setItem('auth', JSON.stringify({ ...initialState, admin: {token: null}, role: null }))
+            state.user.accessToken = null
+            state.user.role = null
+            localStorage.setItem('auth', JSON.stringify({ ...initialState, user: { accessToken: null, role: null } }))
         }
     }
 })
 
-export const { setUserCredentials, setAdminCredentials, userLogout, adminLogout } = authSlice.actions
+export const { setUserCredentials,userLogout } = authSlice.actions
 export default authSlice.reducer
 
-export const selectUserToken = state => state.auth.user.token
-export const selectAdminToken = state => state.auth.admin.token
+export const selectUserToken = state => state.auth.user.accessToken
+export const seleUserRole = state => state.auth.user.role

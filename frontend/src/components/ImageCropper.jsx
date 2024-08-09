@@ -11,17 +11,21 @@ const ASPECT_RATIO = FIXED_WIDTH / FIXED_HEIGHT;
 function ImageCropper({ closeModal, addImage }) {
     const canvasRef = useRef(null)
     const imgRef = useRef(null)
-    const [imgSrc, setImageSrc] = useState('')
+    const [imgSrc, setImageSrc] = useState({
+        name: '',
+        data: ''
+    })
     const [crop, setCrop] = useState()
 
     function onFileSelect(e) {
         const file = e.target.files?.[0]
+        const fileName = file.name
         if (!file) return
 
         const reader = new FileReader()
         reader.addEventListener('load', () => {
             const imageUrl = reader.result?.toString() || ''
-            setImageSrc(imageUrl)
+            setImageSrc({ name: fileName, data: imageUrl })
         })
         reader.readAsDataURL(file)
     }
@@ -68,12 +72,12 @@ function ImageCropper({ closeModal, addImage }) {
                 imgSrc &&
                 <div className='flex flex-col items-center'>
                     <ReactCrop crop={crop} keepSelection aspect={ASPECT_RATIO} onChange={crop => setCrop(crop)} minHeight={FIXED_HEIGHT} minWidth={FIXED_WIDTH}>
-                        <img ref={imgRef} src={imgSrc} onLoad={onImageLoad} />
+                        <img ref={imgRef} src={imgSrc.data} onLoad={onImageLoad} />
                     </ReactCrop>
                 </div>
             }
             <div className='w-full flex justify-center'>
-                {imgSrc && <button onClick={() => {
+                {imgSrc.data && <button onClick={() => {
                     setCanvas(
                         imgRef.current,
                         canvasRef.current,
@@ -83,9 +87,7 @@ function ImageCropper({ closeModal, addImage }) {
                             imgRef.current.height
                         )
                     )
-                    addImage((prev) => {
-                        return [...prev, canvasRef.current.toDataURL()]
-                    })
+                    addImage({ name: imgSrc.name, data: canvasRef.current.toDataURL() })
                     closeModal(false)
                 }}
                     className='bg-black px-4 py-2 rounded-lg mt-4'>Crop</button>}

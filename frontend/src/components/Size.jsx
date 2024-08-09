@@ -12,7 +12,7 @@ function Size({ sizes }) {
                             <p>{size}</p>
                         </div>
                     ) : (
-                        <div className='w-[48px] h-[28px] border border-[#CFCBCB] bg-[#CFCBCB] rounded-full flex items-center justify-center text-sm'>
+                        <div key={size} className='w-[48px] h-[28px] border border-[#CFCBCB] bg-[#CFCBCB] rounded-full flex items-center justify-center text-sm'>
                             <p>{size}</p>
                         </div>
                     )

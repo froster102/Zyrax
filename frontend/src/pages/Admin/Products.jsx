@@ -6,12 +6,7 @@ import { useFetchProductsQuery } from "../../features/adminApiSlice";
 
 
 function Products() {
-  const [products, setProducts] = useState([])
-  const data = useFetchProductsQuery()
-
-  useEffect(() => {
-    setProducts(data?.products)
-  }, [])
+  const { data, refetch } = useFetchProductsQuery()
 
   return (
     <>
@@ -22,13 +17,13 @@ function Products() {
             <IoSearchOutline size={20} color="gray" />
             <input className='h-[40px] rounded-md w-80 outline-none' type="text" placeholder='Search' />
           </div>
-          <Link to='/admin/dashboard/add-product' ><button className="bg-black text-white font-medium rounded-3xl w-fit h-fit px-8 py-4">Add Product</button></Link>
+          <Link to='/admin/dashboard/products/add' ><button className="bg-black text-white font-medium rounded-3xl w-fit h-fit px-8 py-4">Add Product</button></Link>
         </div>
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
-          {products && <ProductTable products={products}></ProductTable>}
+          <ProductTable products={data?.products || []} refetch={refetch}></ProductTable>
         </div>
-
       </div>
+
     </>
   )
 }
