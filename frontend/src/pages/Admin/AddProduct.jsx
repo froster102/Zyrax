@@ -31,7 +31,7 @@ const schema = z.object({
     description: z.string().min(1, 'Required').transform(val => val.split(' ')).refine(words => words.length >= 10, { message: 'Description should have a minimum of 10 words' })
         .transform(val => val.join(' ')),
     sizes: z.array(z.string()).min(1, 'Minimun one size should be selected'),
-    gender: z.string().min(1, 'Required'),
+    gender: z.enum(['men', 'women'], { message: 'Select a valid gender' }),
     price: z.string().transform(val => parseInt(val)).pipe(z.number().min(100, 'Price must number at least 100 or greater')),
     stock: z.string().transform(val => parseInt(val)).pipe(z.number().min(10, 'Stock must be at least 10 or greater')),
     discount: z.string().optional(),
@@ -178,8 +178,8 @@ function AddProduct({ mode }) {
                                     <div className='mt-4'>
                                         <select {...register('gender')} className=' rounded-lg bg-[#D9D9D9] h-[42px] mt-2 p-2 focus:border-none outline-none px-4' type="text">
                                             <option key={' '} value=''>Select gender</option>
-                                            <option key={'male'} value="male">Male</option>
-                                            <option key={'female'} value="female">Female</option>
+                                            <option key={'men'} value="men">Men</option>
+                                            <option key={'women'} value="women">Women</option>
                                         </select>
                                         {errors.gender && <span className='text-red-700 text-sm block'>{errors.gender?.message}</span>}
                                     </div>

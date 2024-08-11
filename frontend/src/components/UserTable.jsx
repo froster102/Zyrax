@@ -56,7 +56,7 @@ function UserTable({ users, blockUserById, unblockUserById }) {
                                             <GrView size={20} />
                                         </div>
                                         <div className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
-                                            {user.status === 'active' ? <TbUserCancel onClick={() => { blockUserById(user._id) }} size={20} /> : <CgUnblock onClick={() => { unblockUserById(user._id) }} size={20} />}
+                                            {user.status === 'active' ? <TbUserCancel onClick={() => { blockUserById({ id: user._id }) }} size={20} /> : <CgUnblock onClick={() => { unblockUserById({ id: user._id }) }} size={20} />}
                                         </div>
                                     </div>
                                 </td>

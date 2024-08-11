@@ -6,8 +6,9 @@ import { IoMdHeartEmpty } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../features/authSlice';
 import UserDropdown from './UserDropdown';
-import { Flip, toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const topwears = ['Shirts', 'Pollos', 'Oversized shirts', 'All T-shirts', 'Jackets']
 const bottomwears = ['Jeans', 'Pants', 'Joggers', 'Oversized joggers', 'Track pants']
@@ -25,15 +26,6 @@ function Navbar() {
 
   return (
     <>
-    <ToastContainer className='mt-10 rounded-lg font-bold text-center top-28 h-fit p-4 w-fit'
-                position='top-right'
-                autoClose='1000'
-                theme='dark'
-                stacked={false}
-                closeButton={false}
-                hideProgressBar={true}
-                transition={Flip}
-            ></ToastContainer>
       <div className='px-[20px]'>
         <div className='bg-white w-full h-[60px] rounded-[20px] mt-4 p-2 flex gap-4 items-center'>
           <Dropdown title='Topwears' options={topwears} ></Dropdown>
@@ -42,12 +34,12 @@ function Navbar() {
           <Dropdown title={'Accessories'} options={accessories}></Dropdown>
           <Dropdown title={'Bestsellers'} options={bestsellers}></Dropdown>
           <UserDropdown user={user} logoutUser={logoutUser}></UserDropdown>
-          <div className='w-fit p-2 rounded-full h-fit border-[1px] border-gray-500 flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
+          <Link to={'/cart'}><div className='w-fit p-2 rounded-full h-fit border-[1px] border-gray-500 flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
             <IoBagHandleOutline size={20}></IoBagHandleOutline>
-          </div>
-          <div className='w-fit p-2 rounded-full h-fit border-[1px] border-gray-500 flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
+          </div></Link>
+          <Link to={'/wishlist'} ><div className='w-fit p-2 rounded-full h-fit border-[1px] border-gray-500 flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
             <IoMdHeartEmpty size={20}></IoMdHeartEmpty>
-          </div>
+          </div></Link>
         </div>
       </div>
     </>

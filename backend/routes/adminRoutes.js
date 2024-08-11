@@ -1,7 +1,7 @@
 import express from 'express'
 import { logout, signin } from '../controller/admin/adminAuthController.js'
 import { blockUser, deleteUser, getUsers, unblockUser, viewUser } from '../controller/admin/adminUserController.js'
-import { addProduct, blockProduct, deleteProduct, editProduct, getProducts, viewProduct } from '../controller/admin/AdminProductController.js'
+import { addProduct, blockProduct, deleteProduct, editProduct, getProducts, viewProduct } from '../controller/admin/adminProductController.js'
 import { signinValidationRules, validate } from '../middlewares/validationMiddleware.js'
 import { adminAuth } from '../middlewares/authMiddleware.js'
 import multer from 'multer'

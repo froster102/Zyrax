@@ -38,10 +38,10 @@ function Sidebar() {
                     </h1>
                     <ul className='ml-4 mt-4'>
                         <Link to='/admin/dashboard/'><li className='text-lg flex items-center font-normal mt-4'><GrAnalytics className="mr-2 " />Overview</li></Link>
-                        <li className='text-lg flex items-center font-normal mt-4'><IoMdAnalytics className="mr-2" />Analytics</li>
-                        <Link to='/admin/dashboard/products'><li className='text-lg flex items-center font-normal mt-4'><FaBox className="mr-2" />Product</li></Link>
+                        <Link to='/admin/dashboard/analytics' ><li className='text-lg flex items-center font-normal mt-4'><IoMdAnalytics className="mr-2" />Analytics</li></Link>
+                        <Link to='/admin/dashboard/products'><li className='text-lg flex items-center font-normal mt-4'><FaBox className="mr-2" />Products</li></Link>
                         <Link to='/admin/dashboard/users'><li className='text-lg flex items-center font-normal mt-4'><FaUsers className="mr-2" />Users</li></Link>
-                        <Link><li className='text-lg flex items-center font-normal mt-4'><RiShoppingBag3Line className="mr-2" />Orders</li></Link>
+                        <Link to='/admin/dashboard/orders' ><li className='text-lg flex items-center font-normal mt-4'><RiShoppingBag3Line className="mr-2" />Orders</li></Link>
                         <Link to='/admin/dashboard/manage'><li className='text-lg flex items-center font-normal mt-4'><MdManageHistory className="mr-2" />Manage</li></Link>
                     </ul>
                 </div>
@@ -49,9 +49,9 @@ function Sidebar() {
                     <h1 className='font-bold'>Transaction</h1>
                     <ul>
                         <ul className='ml-4 mt-4'>
-                            <li className='text-lg flex items-center font-normal mt-4'><MdPayments className="mr-2 " />Payment</li>
-                            <li className='text-lg flex items-center font-normal mt-4'><RiRefund2Line className="mr-2" />Refunds</li>
-                            <li className='text-lg flex items-center font-normal mt-4'><MdAssignmentReturn className="mr-2" />Returns</li>
+                            <Link to='/admin/dashboard/payments' ><li className='text-lg flex items-center font-normal mt-4'><MdPayments className="mr-2 " />Payments</li></Link>
+                            <Link to='/admin/dashboard/refunds' ><li className='text-lg flex items-center font-normal mt-4'><RiRefund2Line className="mr-2" />Refunds</li></Link>
+                            <Link to='/admin/dashboard/returns' ><li className='text-lg flex items-center font-normal mt-4'><MdAssignmentReturn className="mr-2" />Returns</li></Link>
                         </ul>
                     </ul>
                 </div>
@@ -60,9 +60,11 @@ function Sidebar() {
                         General
                     </h1>
                     <ul className='ml-4 mt-4'>
-                        <li className='text-lg flex items-center font-normal mt-4'><IoNotifications className="mr-2 " />Notifications</li>
-                        <li className='text-lg flex items-center font-normal mt-4'><IoMdAnalytics className="mr-2" />Settings</li>
-                        <li className='text-lg flex items-center font-normal mt-4'><IoMdSettings className="mr-2" />Dark mode</li>
+                        <Link to='/admin/dashboard/notifications' ><li className='text-lg flex items-center font-normal mt-4'><IoNotifications className="mr-2 " />Notifications</li></Link>
+                        <Link to='/admin/dashboard/settings' ><li className='text-lg flex items-center font-normal mt-4'><IoMdAnalytics className="mr-2" />Settings</li></Link>
+                        <li onClick={() => {
+
+                        }} className='text-lg flex items-center font-normal mt-4'><IoMdSettings className="mr-2" />Dark mode</li>
                     </ul>
                 </div>
                 <div className="w-full flex justify-center">

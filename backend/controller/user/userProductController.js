@@ -3,23 +3,23 @@ import { Product } from '../../model/product.js'
 
 const getProducts = async (req, res) => {
     try {
-        const { category, exclude } = req.query
+        const { category, exclude = '', latest = false, limit = 0, gender = '' } = req.query
         const categoryData = await Category.findOne({ name: category })
         if (!categoryData || categoryData.status === 'blocked') return res.status(404).json({ message: 'Category either blocked or not found' })
-        const filter = { category: categoryData._id, status: 'active' }
-        if (exclude) {
-            filter.name = { $ne: exclude }
-            // console.log(categoryData._id, exclude)
-            const products = await Product.find({ category: categoryData._id, name: { $ne: exclude } })
-            return res.status(200).json({ products })
+        if (latest && category) {
+            const products = await Product.find({ category: categoryData._id, status: 'active', gender: gender }, { name: true, price: true, imageUrls: true, createdAt: true }).populate({
+                path: 'category',
+                select: 'name'
+            }).sort({ createdAt: -1 }).limit(limit)
+            return res.status(200).json(products)
         }
-        console.log(filter)
+        const filter = { category: categoryData._id, status: 'active', gender: gender }
+        if (exclude) filter.name = { $ne: exclude }
         const products = await Product.find(filter, { name: true, price: true, imageUrls: true }).populate({
             path: 'category',
             select: 'name'
         })
-        // console.log(products)
-        return res.status(200).json({ products })
+        return res.status(200).json(products)
     } catch (error) {
         console.log(error)
     }

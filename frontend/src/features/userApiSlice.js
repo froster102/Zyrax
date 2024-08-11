@@ -17,13 +17,12 @@ const userApiSlice = apiSlice.injectEndpoints({
                 body: credentials
             })
         }),
-        getProductsBycategory: builder.query({
-            query: ({ category, exclude }) => {
-                console.log(category, exclude)
-                if (category && exclude) {
-                    return `/users/products?category=${category}&exclude=${exclude}`
-                }
-                return `/users/products?category=${category}`
+        getProducts: builder.query({
+            query: ({ category, exclude, latest, gender }) => {
+                console.log(category, exclude, latest, gender)
+                if (latest && category) return `/users/products?latest=${latest}&category=${category}&gender=${gender}`
+                if (category && exclude) return `/users/products?category=${category}&exclude=${exclude}&gender=${gender}`
+                if (category) return `/users/products?category=${category}&gender=${gender}`
             }
         }),
         getProductDeatils: builder.query({
@@ -35,4 +34,4 @@ const userApiSlice = apiSlice.injectEndpoints({
     })
 })
 
-export const { useSigninMutation, useSignupMutation, useGetProductsBycategoryQuery, useGetProductDeatilsQuery, useGetProfileQuery } = userApiSlice
+export const { useSigninMutation, useSignupMutation, useGetProductsQuery, useGetProductDeatilsQuery, useGetProfileQuery } = userApiSlice

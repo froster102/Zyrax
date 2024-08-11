@@ -17,6 +17,7 @@ const addCategory = async (req, res) => {
                 name: name,
                 description: description,
                 parent: parentCategory,
+                status : 'active'
             })
             const responce = await Category.findByIdAndUpdate(parentCategory, {
                 $push: { children: newCategory._id }

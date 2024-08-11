@@ -44,7 +44,7 @@ function AddCategoryModal({ closeModal, refetch }) {
 
     return (
         <>
-            <div className="relative z-10" aria-labelledby="crop-image-dialog">
+            <div className="relative z-10" >
                 <div className="fixed inset-0 bg-[#f1f1f1] bg-opacity-75 transition-all backdrop-blur-sm"></div>
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                     <div className="flex min-h-full justify-center items-center px-2 py-12 text-center ">

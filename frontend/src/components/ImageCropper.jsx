@@ -32,11 +32,6 @@ function ImageCropper({ closeModal, addImage }) {
 
     function onImageLoad(e) {
         const { width, height, naturalWidth, naturalHeight } = e.currentTarget
-        if (naturalHeight < FIXED_HEIGHT || naturalWidth < FIXED_WIDTH) {
-            toast(`Size of the image should be minimum of ${FIXED_WIDTH}px width and ${FIXED_HEIGHT}px of height`, { autoClose: '2000' })
-            setImageSrc('')
-            return
-        }
         const crop = makeAspectCrop(
             {
                 unit: '%',

@@ -14,7 +14,7 @@ function ProductImageModal({ closeModal, image }) {
         const scale = zooming ? 2 : 1
 
         const originX = (x / rect.width) * 100
-        const originY = (y.rect.height) * 100
+        const originY = (y / rect.height) * 100
 
         imageRef.current.style.transformOrigin = `${originX}px ${originY}px`
     }
@@ -29,8 +29,8 @@ function ProductImageModal({ closeModal, image }) {
 
     return (
         <>
-            <div className="relative z-10" aria-labelledby="crop-image-dialog">
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-all backdrop-blur-sm"></div>
+            <div className="relative z-10">
+                <div onClick={closeModal} className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-all backdrop-blur-sm"></div>
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                     <div className="flex min-h-full justify-center items-center px-2 py-12 text-center ">
                         <div className="relative w-[95%] sm:w-[80%] min-h-[60vh] rounded-2xl bg-[#D9D9D9] flex justify-center text-slate-100 text-left overflow-hidden">

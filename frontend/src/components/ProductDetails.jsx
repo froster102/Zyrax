@@ -5,11 +5,15 @@ import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { IoIosArrowDown } from "react-icons/io";
 import Row from './Row';
 import Ratings from './Ratings';
-import { useGetProductDeatilsQuery, useGetProductsBycategoryQuery } from '../features/userApiSlice';
+import { useGetProductDeatilsQuery, useGetProductsQuery } from '../features/userApiSlice';
 import { useEffect, useState } from 'react';
 import ProductImageModal from './ProductImageModal';
 import BreadCrumbs from './BreadCrumbs';
 import _ from 'lodash'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+import { useSelector } from 'react-redux';
+import { selected_gender } from '../features/userSlice';
 
 const RATINGS = [
     {
@@ -29,45 +33,58 @@ const CUSTOMER_IMAGES = []
 
 function ProductDetails() {
     const { name } = useParams()
-    const { data: productDetails, error, isLoading: isProductDetailsLoading } = useGetProductDeatilsQuery(name)
-    const { data: similiarProducts, isLoading: isProductsLoading } = useGetProductsBycategoryQuery({ category: productDetails?.category.name, exclude: productDetails?.name })
+    const { pathname } = useLocation()
+    const gender = useSelector(selected_gender)
+    const { data: productDetails, isLoading: isProductDetailsLoading } = useGetProductDeatilsQuery(name)
+    const { data: similiarProducts, error, isLoading: isProductsLoading } = useGetProductsQuery({ category: productDetails?.category.name, exclude: productDetails?.name, gender })
     const [imageModal, setImageModal] = useState(false)
     const [previewImg, setPreviewImg] = useState('')
     const navigate = useNavigate()
 
     useEffect(() => {
-        window.scrollTo(0, 0)
-    }, [])
+        console.log('render')
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, [pathname])
 
-    useEffect(() => {
-        if (!productDetails && !isProductsLoading) {
-            navigate('/')
-        }
-    }, [error])
+    console.log('render')
 
-    // !isProductDetailsLoading ? console.log(productDetails?.category.name, productDetails?.name) : ''
+    // useEffect(() => {
+    //     if (!productDetails && !isProductsLoading) {
+    //         navigate('/')
+    //     }
+    // }, [error])
 
     return (
         <>
-            <BreadCrumbs category={productDetails?.category.name} name={productDetails?.name} ></BreadCrumbs>
+            {
+                isProductDetailsLoading ? <Skeleton width={'80px'} baseColor='#f1f1f1' /> :
+                    <BreadCrumbs category={productDetails?.category.name} name={productDetails?.name} ></BreadCrumbs>
+            }
             <div className='mx-[200px] mt-8 text-[#383333]'>
                 <div className='flex'>
-                    <div className='flex gap-4 h-fit w-fit flex-wrap'>
-                        {productDetails?.imageUrls?.map((imageUrl, i) => {
-                            return <img key={i} onClick={() => {
-                                setPreviewImg(imageUrl)
-                                setImageModal(true)
-                            }} className='w-[325px] h-[455px] border border-[#CFCBCB] rounded-md' src={imageUrl} alt="" />
-                        })}
-                    </div>
+                    {
+                        isProductDetailsLoading ? <div className='flex gap-4 h-fit w-fit flex-wrap'>
+                            {[...Array(4)].map((imageUrl, i) => {
+                                return <Skeleton key={i} className='w-[325px] h-[455px] border border-[#CFCBCB] rounded-md' />
+                            })}
+                        </div> : <div className='flex gap-4 h-fit w-fit flex-wrap'>
+                            {productDetails?.imageUrls?.map((imageUrl, i) => {
+                                return <img key={i} onClick={() => {
+                                    setPreviewImg(imageUrl)
+                                    setImageModal(true)
+                                }} className='w-[325px] h-[455px] border border-[#CFCBCB] rounded-md' src={imageUrl} alt="" />
+                            })}
+                        </div>
+                    }
                     <div className='bg-white w-full rounded-[20px] border border-[#CFCBCB] py-[20px]'>
                         <div className='px-[40px]'>
-                            <h1 className='font-bold text-4xl '>{_.startCase(productDetails?.name)}</h1>
-                            <p className='ml-1 text-sm pt-1 font-medium text-gray-700'>{_.startCase(productDetails?.category.name)}</p>
+
+                            <h1 className='font-bold text-4xl '>{_.startCase(productDetails?.name) || <Skeleton width={'400px'} />}</h1>
+                            <p className='ml-1 text-sm pt-1 font-medium text-gray-700'>{_.startCase(productDetails?.category.name) || <Skeleton width={'300px'} />}</p>
                         </div>
                         <div className='w-full h-[1px] bg-[#CFCBCB] mt-4'></div>
                         <div className='p-[40px]'>
-                            <p className='text-2xl font-semibold'>₹ {productDetails?.price}</p>
+                            <p className='text-2xl font-semibold w-full'>₹ {productDetails?.price || <Skeleton width={'50px'} />}</p>
                             <p className='font-light'>MRP incl. of all taxes</p>
                             <div className='h-[23px] bg-[#D9D9D9] w-fit rounded-lg border border-[#CFCBCB] my-8'>
                                 <div className='flex text-sm px-2 justify-center items-center font-semibold gap-2'>
@@ -81,7 +98,7 @@ function ProductDetails() {
                             <div className='my-8'>
                                 <p className='text-base font-semibold mt-4'>Please select a size.</p>
                                 <div className='mt-4 flex gap-2 '>
-                                    <Size sizes={productDetails?.sizes || []}></Size>
+                                    <Size sizes={productDetails?.sizes || []} isLoading={isProductDetailsLoading}></Size>
                                 </div>
                             </div>
                             <div className='flex my-8 justify-center items-center w-fit'>
@@ -144,7 +161,7 @@ function ProductDetails() {
                                 </div>
                                 <div className='w-full h-[1px] bg-[#CFCBCB] mt-2'></div>
                                 <p className='w-full text-wrap font-light'>
-                                    {productDetails?.description}
+                                    {productDetails?.description || <Skeleton count={5} />}
                                 </p>
                             </div>
                         </div>
@@ -152,7 +169,7 @@ function ProductDetails() {
                 </div>
                 <div className='w-full h-[1px] bg-[#CFCBCB] my-8'></div>
                 <Ratings ratings={RATINGS} customerImages={CUSTOMER_IMAGES}></Ratings>
-                <Row title={'Similar Products'} products={similiarProducts?.products || []}></Row>
+                {!error && <Row title={'Similar Products'} isLoading={isProductsLoading} products={similiarProducts} ></Row>}
             </div>
             {
                 imageModal && <ProductImageModal closeModal={() => { setImageModal(false) }} image={[previewImg]}></ProductImageModal>

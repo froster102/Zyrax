@@ -1,37 +1,41 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Banner from "../../components/Banner"
 import Newsletter from "../../components/Newsletter"
 import Row from "../../components/Row"
-import TrendingCard from "../../components/TrendingCard"
-import { useGetProductsBycategoryQuery } from "../../features/userApiSlice"
-
-const TRENDING = new Array(10).fill(0)
+import { useGetProductsQuery } from "../../features/userApiSlice"
+import TrendingRow from "../../components/TrendingRow"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { selectGender } from "../../features/userSlice"
+import Navbar from "../../components/Navbar"
 
 function Home() {
-  const [trendings, setTrendings] = useState(TRENDING)
-  const { data: bottomwears, isLoading: bottomwearsLoading } = useGetProductsBycategoryQuery({ category: 'bottomwears' })
-  const { data: topwears, isLoading: topwearsLoading } = useGetProductsBycategoryQuery({ category: 'topwears' })
-  console.log(bottomwears)
+  const { pathname } = useLocation()
+  const gender = pathname.replace(/\//g, '')
+  const [activeGender, setActiveGender] = useState(gender)
+  const { data: topwears, isLoading: isTopwearsLoading } = useGetProductsQuery({ category: 'topwears', gender })
+  const { data: bottomwears, error, isLoading: isBottomwearsLoading } = useGetProductsQuery({ category: 'bottomwears', gender })
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(selectGender(pathname.replace(/\//g, '')))
+  }, [pathname, dispatch])
+
+  console.log(activeGender)
 
   return (
     <>
       <div className="px-[20px]">
         <div className="ml-auto mr-auto w-fit mt-4">
-          <button className="px-10 py-4 border-[1px] border-black rounded-full bg-black text-white">Men</button>
-          <button className="px-10 py-4 border-[1px] border-black rounded-full text-black ml-2">Women</button>
+          <Link to={'/men'} ><button onClick={() => { setActiveGender('men') }} className={`${activeGender === 'men' ? 'bg-black text-white' : 'bg-transparent '} px-10 py-4 border-[1px] border-black rounded-full `}>Men</button></Link>
+          <Link to={'/women'} ><button onClick={() => { setActiveGender('women') }} className={`${activeGender === 'women' ? 'bg-black text-white' : 'bg-transparent '} px-10 py-4 border-[1px] border-black rounded-full ml-2`}>Women</button></Link>
         </div>
         <Banner></Banner>
         <p className="mt-2">Catelogs</p>
         <p className="text-center text-4xl">Fresh and trending collections</p>
-        <div className="w-[1176px] overflow-x-scroll scroll-smooth whitespace-nowrap ml-auto mr-auto py-4 scrollbar-hide" id="slider">
-          {
-            trendings.map((trending, i) => {
-              return <TrendingCard key={i}></TrendingCard>
-            })
-          }
-        </div>
-        {!topwearsLoading && <Row title='All New Topwears' rowId={1} products={topwears?.products}></Row>}
-        {!bottomwearsLoading && <Row title='All New Bottomwears' rowId={2} products={bottomwears?.products}></Row>}
+        <TrendingRow></TrendingRow>
+        {!error && <Row title='All New Topwears' products={topwears} isLoading={isBottomwearsLoading} ></Row>}
+        {!error && <Row title='All New Bottomwears' products={bottomwears} isLoading={isTopwearsLoading}></Row>}
         <Newsletter></Newsletter>
       </div>
     </>
