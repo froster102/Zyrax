@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const initialState = {
+const initialState = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {
     wishlist: {
         items: []
     },
@@ -24,20 +24,20 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         addToWishlist: (state, action) => {
-            state.wishlist.items.push(action.payload)
+            const newItems = Array.isArray(action.payload) ? action.payload : [action.payload]
+            newItems.forEach(newItem => {
+                if (!state.wishlist.items.find(item => item._id === newItem._id)) state.wishlist.items.push(newItem)
+            })
             saveToLocalStorage(state)
         },
         removeFromWishlist: (state, action) => {
-            state.wishlist.items = state.wishlist.items.filter((item) => {
-                item._id !== action.payload._id
-            })
+            state.wishlist.items = state.wishlist.items.filter((item) => item._id !== action.payload._id)
             saveToLocalStorage(state)
         },
         moveToCart: (state, action) => {
-            state.cart.items.push(action.payload)
-            state.wishlist.items.filter((item) => {
-                item._id !== action.payload._id
-            })
+            const itemToMove = (action.payload)
+            if (!state.cart.items.find(item => item._id === item._id)) state.cart.push(itemToMove)
+            state.wishlist.items.filter(item => item.id !== action.payload._id)
             saveToLocalStorage(state)
         },
         addToCart: (state, action) => {
@@ -46,19 +46,26 @@ const userSlice = createSlice({
         },
         removeFromCart: (state, action) => {
             state.cart.items = state.cart.items.filter((item) => {
-                item._id !== action.payload
+                console.log(action.payload)
+                item._id !== action.payload._id
             })
             saveToLocalStorage(state)
         },
         selectGender: (state, action) => {
             state.selected_gender = action.payload
             saveToLocalStorage(state)
+        },
+        resetCartAndWishlist: (state, action) => {
+            state.wishlist.items = []
+            state.cart.items = []
+            saveToLocalStorage(state)
         }
     }
 
 })
 
-export const { addToWishlist, removeFromWishlist, moveToCart, addToCart, removeFromCart, selectGender } = userSlice.actions
+export const { addToWishlist, removeFromWishlist, moveToCart, addToCart, removeFromCart, selectGender, resetCartAndWishlist } = userSlice.actions
 export default userSlice.reducer
 
-export const selected_gender = state => state.user.selected_gender
+export const selectActiveGender = state => state.user.selected_gender
+export const selectWishlistItems = state => state.user.wishlist.items

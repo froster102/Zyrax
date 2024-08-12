@@ -3,7 +3,7 @@ import { User } from '../model/user.js'
 
 const userAuth = (req, res, next) => {
     const authHeader = req.headers.Authorization || req.headers.authorization
-    const userToken = authHeader.split(' ')[1]
+    const userToken = authHeader?.split(' ')[1]
     if (!userToken) {
         return res.status(401).json({ message: 'Unauthorized' })
     }

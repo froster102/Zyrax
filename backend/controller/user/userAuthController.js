@@ -2,6 +2,8 @@ import { User } from "../../model/user.js"
 import bcrypt from 'bcryptjs'
 import { generateAccessToken, generateRefreshToken, sendVerifyEmail } from '../../utils/utils.js'
 import jwt from 'jsonwebtoken'
+import { Wishlist } from "../../model/wishlist.js"
+import { Cart } from "../../model/cart.js"
 
 const googleSigninCallback = async (req, res) => {
     const user = await User.findOne({ googleId: req.user.id })
@@ -65,41 +67,24 @@ const signUp = async (req, res) => {
         const { firstName, lastName, email, password } = req.body
         const user = await User.findOne({ email: email })
         if (user && user.verification_status === false) {
+            sendVerifyEmail(email, user._id)
             return res.status(409).json({ message: 'Please verify you email by clicking the link' })
         }
         if (user && user.verification_status) {
             return res.status(409).json({ message: 'User already exists' })
         }
-        if (user) {
+        if (!user) {
             const passwordHash = await bcrypt.hash(password, 10)
-            const user = await User.findOneAndUpdate({
-                email: email
-            },
-                {
-                    firstName: firstName,
-                    lastName: lastName,
-                    password: passwordHash,
-                    status: 'active',
-                    verification_status: false,
-                }, { new: true })
-            if (user) {
-                sendVerifyEmail(email, user._id)
-                return res.status(201).json({ message: 'Please verify you email by clicking the link sent to your email' })
-            }
-        }
-        else if (!user) {
-            const passwordHash = await bcrypt.hash(password, 10)
+            const verificationTokenExpiry = new Date(Date.now() + 5 * 60 * 1000)
             const user = await User.create({
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
                 password: passwordHash,
-                verification_status: false
+                verification_status: false,
             })
-            if (user) {
-                sendVerifyEmail(email, user._id)
-                return res.status(201).json({ message: 'Please verify you email by clicking the link sent to your email' })
-            }
+            sendVerifyEmail(email, user._id)
+            return res.status(201).json({ message: 'Please verify you email by clicking the link sent to your email' })
         }
     } catch (e) {
         console.log(e)
@@ -115,10 +100,22 @@ const verifyEmail = async (req, res) => {
         }
         const userId = decoded.userId
         const email = decoded.email
-        const user = await User.findOneAndUpdate({
-            _id: userId
-        }, { verification_status: true, status: 'active' }, { new: true })
-        return res.send('Account verified successfully please login to continue')
+        try {
+            const user = await User.findOneAndUpdate({
+                _id: userId
+            }, { verification_status: true, status: 'active', createdAt: null }, { new: true })
+
+            await Wishlist.create({
+                user_id: user._id
+            })
+            await Cart.create({
+                user_id: user._id
+            })
+            return res.send('Account verified successfully please login to continue')
+        } catch (error) {
+            return res.status(500).json({ message: 'Failed to verify please try again later' })
+        }
+
     })
 }
 

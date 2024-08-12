@@ -1,38 +1,46 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom';
 import { ToastContainer, toast, Flip } from 'react-toastify';
-import { useSigninMutation } from '../../features/userApiSlice';
+import { useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery, useSigninMutation } from '../../features/userApiSlice';
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { selectUserToken, setUserCredentials } from '../../features/authSlice';
 import { FaGoogle } from 'react-icons/fa6';
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { selected_gender } from '../../features/userSlice';
-
-const schema = z.object({
-    email: z.string().trim().email('Enter a valid email'),
-    password: z.string().min(1, 'Required')
-})
+import { selectActiveGender, selectWishlistItems } from '../../features/userSlice';
+import { loginSchema } from '../../../ValidationSchema/loginSchema';
 
 function Login() {
     const dispatch = useDispatch()
     const [signin, { isLoading }] = useSigninMutation()
-    const gender = useSelector(selected_gender)
+    const gender = useSelector(selectActiveGender)
     const navigate = useNavigate()
     const location = useLocation()
     const redirect = location?.state?.from?.pathname || `/${gender}`
     const user = useSelector(selectUserToken)
-    const { register, handleSubmit, formState: { errors }, reset } = useForm({
-        resolver: zodResolver(schema)
+    const loacalWishlistItems = useSelector(selectWishlistItems)
+    const [addItemsToUserWislist] = useAddItemsToUserWishlistMutation()
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: zodResolver(loginSchema)
     })
 
     useEffect(() => {
+        const syncWishlist = async () => {
+            try {
+                if (loacalWishlistItems.length > 0) {
+                    const items = loacalWishlistItems.map((item => item?._id))
+                    await addItemsToUserWislist({ items: items }).unwrap()
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
         if (user) {
+            syncWishlist()
             navigate(redirect, { replace: true })
         }
-    }, [])
+    }, [user])
 
     useEffect(() => {
         function handleAuthMsg(e) {
@@ -52,8 +60,8 @@ function Login() {
             const res = await signin({ email, password }).unwrap()
             console.log(res)
             dispatch(setUserCredentials({ ...res }))
-            navigate(redirect, { replace: true })
         } catch (error) {
+            console.log(error)
             toast(error?.data?.message)
         }
     }
@@ -67,18 +75,10 @@ function Login() {
             return toast(error)
         }
         dispatch(setUserCredentials({ accessToken, role }))
-        navigate(redirect, { replace: true })
+        // navigate(redirect, { replace: true })
     }
-
     return (
         <>
-            {/* <ToastContainer className='mt-10 rounded-lg font-semibold text-center'
-                position='top-center'
-                autoClose='1000'
-                theme='dark'
-                hideProgressBar={true}
-                transition={Flip}
-            ></ToastContainer> */}
             <form action="" onSubmit={handleSubmit(onSubmit)}>
                 <div className='w-fit py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16'>
                     <h1 className='text-4xl text-center font-medium'>Login</h1>

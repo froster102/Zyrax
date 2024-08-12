@@ -9,6 +9,8 @@ import UserDropdown from './UserDropdown';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { addToWishlist, resetCartAndWishlist, selectWishlistItems } from '../features/userSlice';
+import { useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery } from '../features/userApiSlice';
 
 const topwears = ['Shirts', 'Pollos', 'Oversized shirts', 'All T-shirts', 'Jackets']
 const bottomwears = ['Jeans', 'Pants', 'Joggers', 'Oversized joggers', 'Track pants']
@@ -17,10 +19,20 @@ const bestsellers = ['Top 20 t-shirts', 'Top 20 shirts', 'Top 20 joggers']
 
 function Navbar() {
   const dispatch = useDispatch()
-  const user = useSelector(selectUserToken)
+  const userAuth = useSelector(selectUserToken)
+  const loacalWishlistItems = useSelector(selectWishlistItems)
+  const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading } = useGetUserWishlistItemsQuery({}, { skip: !userAuth })
+    useEffect(() => {
+    console.log(userWishlistItems?.items)
+    dispatch(addToWishlist(userWishlistItems?.items || []))
+    if (userWishlistItems?.items > 0) {
+    }
+  }, [userWishlistItems,isUserWishlistItemsLoading])
+
 
   function logoutUser() {
     toast('Logged out sucessfully')
+    dispatch(resetCartAndWishlist())
     dispatch(userLogout())
   }
 
@@ -33,7 +45,7 @@ function Navbar() {
           <SearchBar></SearchBar>
           <Dropdown title={'Accessories'} options={accessories}></Dropdown>
           <Dropdown title={'Bestsellers'} options={bestsellers}></Dropdown>
-          <UserDropdown user={user} logoutUser={logoutUser}></UserDropdown>
+          <UserDropdown user={userAuth} logoutUser={logoutUser}></UserDropdown>
           <Link to={'/cart'}><div className='w-fit p-2 rounded-full h-fit border-[1px] border-gray-500 flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
             <IoBagHandleOutline size={20}></IoBagHandleOutline>
           </div></Link>

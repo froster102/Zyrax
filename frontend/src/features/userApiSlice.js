@@ -30,8 +30,34 @@ const userApiSlice = apiSlice.injectEndpoints({
         }),
         getProfile: builder.query({
             query: () => '/users/me'
+        }),
+        getUserWishlistItems: builder.query({
+            query: () => '/users/wishlist'
+        }),
+        addItemsToUserWishlist: builder.mutation({
+            query: ({ items }) => ({
+                url: '/users/wishlist',
+                method: 'POST',
+                body: { items }
+            })
+        }),
+        removeItemFromUserWishlist: builder.mutation({
+            query: ({ item }) => ({
+                url: '/users/wishlist',
+                method: 'DELETE',
+                body: { item }
+            })
         })
     })
 })
 
-export const { useSigninMutation, useSignupMutation, useGetProductsQuery, useGetProductDeatilsQuery, useGetProfileQuery } = userApiSlice
+export const {
+    useSigninMutation,
+    useSignupMutation,
+    useGetProductsQuery,
+    useGetProductDeatilsQuery,
+    useGetProfileQuery,
+    useGetUserWishlistItemsQuery,
+    useAddItemsToUserWishlistMutation,
+    useRemoveItemFromUserWishlistMutation,
+} = userApiSlice

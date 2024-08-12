@@ -4,10 +4,9 @@ import Newsletter from "../../components/Newsletter"
 import Row from "../../components/Row"
 import { useGetProductsQuery } from "../../features/userApiSlice"
 import TrendingRow from "../../components/TrendingRow"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { selectGender } from "../../features/userSlice"
-import Navbar from "../../components/Navbar"
 
 function Home() {
   const { pathname } = useLocation()
@@ -20,8 +19,6 @@ function Home() {
   useEffect(() => {
     dispatch(selectGender(pathname.replace(/\//g, '')))
   }, [pathname, dispatch])
-
-  console.log(activeGender)
 
   return (
     <>

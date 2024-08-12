@@ -69,13 +69,6 @@ function Register() {
 
   return (
     <>
-      <ToastContainer className='mt-10 rounded-lg font-bold text-center'
-        position='top-center'
-        autoClose='1000'
-        theme='dark'
-        hideProgressBar={true}
-        transition={Flip}
-      ></ToastContainer>
       <form action="" onSubmit={handleSubmit(onSubmit)}>
         <div className='w-[348px] py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16'>
           <h1 className='text-4xl text-center font-medium'>Register</h1>

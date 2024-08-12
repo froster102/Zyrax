@@ -6,6 +6,7 @@ import { logout } from '../controller/logoutController.js'
 import { getProductDeatils, getProducts } from '../controller/user/userProductController.js'
 import { getProfile } from '../controller/user/userProfileController.js'
 import { userAuth } from '../middlewares/authMiddleware.js'
+import { addItem, getItems, removeItem } from '../controller/user/userWishlistController.js'
 
 const router = express.Router()
 
@@ -28,6 +29,15 @@ router.get('/products', getProducts)
 router.get('/products/:name', getProductDeatils)
 
 router.use(userAuth)
+
+router.get('/wishlist', getItems)
+router.post('/wishlist', addItem)
+router.delete('/wishlist', removeItem)
+
+router.get('/cart')
+router.post('/cart')
+router.delete('/cart')
+
 
 router.get('/me', getProfile)
 router.get('/auth/logout', logout)

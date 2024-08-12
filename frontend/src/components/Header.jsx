@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
 import Zyrax_icon from '../assets/options-list.png'
 import { useSelector } from 'react-redux'
-import { selected_gender } from '../features/userSlice'
+import { selectActiveGender } from '../features/userSlice'
 
 function Header() {
-    const gender = useSelector(selected_gender)
+    const gender = useSelector(selectActiveGender)
     return (
         <>
             <div className='flex justify-between px-[40px] pt-[20px]' >

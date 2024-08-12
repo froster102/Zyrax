@@ -18,7 +18,12 @@ const UserSchema = new mongoose.Schema({
     password: { type: String },
     status: { type: String, enum: ['active', 'blocked', 'deleted'] },
     addresses: [addressSchema],
-    verification_status: { type: Boolean }
+    verification_status: { type: Boolean },
+    createdAt: {
+        type: Date, default: Date.now(), index: {
+            expires: '10m'
+        }
+    }
 })
 
 const User = mongoose.model('User', UserSchema)
