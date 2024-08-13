@@ -5,7 +5,7 @@ import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { IoIosArrowDown, IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import Row from './Row';
 import Ratings from './Ratings';
-import { useAddItemsToUserWishlistMutation, useGetProductDeatilsQuery, useGetProductsQuery, useRemoveItemFromUserWishlistMutation } from '../features/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetProductDeatilsQuery, useGetProductsQuery, useRemoveItemFromUserCartMutation, useRemoveItemFromUserWishlistMutation } from '../features/userApiSlice';
 import { useEffect, useState } from 'react';
 import ProductImageModal from './ProductImageModal';
 import BreadCrumbs from './BreadCrumbs';
@@ -13,8 +13,10 @@ import _ from 'lodash'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { useDispatch, useSelector } from 'react-redux';
-import { addToWishlist, removeFromWishlist, selectActiveGender, selectWishlistItems } from '../features/userSlice';
+import { addToCart, addToWishlist, removeFromCart, removeFromWishlist, selectActiveGender, selectCartItems, selectWishlistItems } from '../features/userSlice';
 import { selectUserToken } from '../features/authSlice';
+import ProductDetailsAccordion from './ProductDetailsAccordion';
+import { IoCart, IoCartOutline } from "react-icons/io5";
 
 const RATINGS = [
     {
@@ -37,15 +39,19 @@ function ProductDetails() {
     const { pathname } = useLocation()
     const gender = useSelector(selectActiveGender)
     const wishlistItems = useSelector(selectWishlistItems)
+    const cartItems = useSelector(selectCartItems)
     const { data: product, isLoading: isProductLoading } = useGetProductDeatilsQuery(name)
     const { data: similiarProducts, error, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
     const [imageModal, setImageModal] = useState(false)
     const [previewImg, setPreviewImg] = useState('')
     const [activeWishlistItem, setActiveWishlistItem] = useState(false)
+    const [activeCartItem, setActiveCartItem] = useState(false)
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [addToUserWishlist, { isLoading }] = useAddItemsToUserWishlistMutation()
     const [removeFromUserWishlist] = useRemoveItemFromUserWishlistMutation()
+    const [addToUserCart] = useAddItemsToUserCartMutation()
+    const [removeUserFromCart] = useRemoveItemFromUserCartMutation()
     const userAuth = useSelector(selectUserToken)
 
     useEffect(() => {
@@ -54,10 +60,14 @@ function ProductDetails() {
 
     useEffect(() => {
         if (wishlistItems.length > 0 && !isProductLoading) {
-            const ids = wishlistItems.map(item => item._id)
-            ids.includes(product._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
+            const wishlistItemIds = wishlistItems.map(item => item._id)
+            wishlistItemIds.includes(product._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
         }
-    }, [product, wishlistItems])
+        if (cartItems.length > 0 && !isProductLoading) {
+            const cartItemIds = cartItems.map(item => item._id)
+            cartItemIds.includes(product._id) ? setActiveCartItem(true) : setActiveCartItem(false)
+        }
+    }, [product, wishlistItems, cartItems])
 
     // useEffect(() => {
     //     if (!productDetails && !isProductsLoading) {
@@ -78,7 +88,23 @@ function ProductDetails() {
             setActiveWishlistItem(false)
             try {
                 userAuth && await removeFromUserWishlist({ item: product._id }).unwrap()
-                console.log(res)
+            } catch (error) {
+            }
+        }
+    }
+
+    async function handleCartItems(product) {
+        if (!activeCartItem) {
+            dispatch(addToCart(product))
+            try {
+                userAuth && await addToUserCart({ items: [product._id] }).unwrap()
+            } catch (error) {
+            }
+        } else {
+            dispatch(removeFromCart(product))
+            setActiveCartItem(false)
+            try {
+                userAuth && await removeUserFromCart({ item: product._id }).unwrap()
             } catch (error) {
             }
         }
@@ -141,7 +167,7 @@ function ProductDetails() {
                                 </select>
                             </div>
                             <div>
-                                <button className='px-10 py-2 border border-[#CFCBCB] rounded-full text-xl font-medium text-white bg-black'>Add to Cart</button>
+                                <button onClick={() => { handleCartItems(product) }} className='px-10 py-2 border border-[#CFCBCB] rounded-full text-xl font-medium text-white bg-black inline-flex items-center justify-center'>{activeCartItem ? <><IoCart />Added</> : <><IoCartOutline />Add</>} to Cart</button>
                                 <button onClick={() => { handleWishlistItems(product) }} className='inline-flex px-5 py-2 border border-[#CFCBCB] rounded-full ml-2 text-xl font-medium items-center w-fit'>
                                     {activeWishlistItem ? <><IoMdHeart />Added</> : <><IoMdHeartEmpty />Add</>} to Wishlist</button>
                             </div>
@@ -154,51 +180,19 @@ function ProductDetails() {
                                     <FaInstagram size={30}></FaInstagram>
                                 </div>
                             </div>
-                            <div className='mt-8 w-fit'>
+                            <div className='my-8 w-fit'>
                                 <p className='text-lg font-semibold'>Delivery Details</p>
                                 <div className='border border-[#CFCBCB] rounded-[20px] mt-4 px-2'>
                                     <input className='p-2 rounded-[20px] border-none outline-none' placeholder='Enter your pincode' type="text" />
                                     <span className='text-sm px-2 py-1 cursor-pointer bg-[#CFCBCB] transition hover:bg-[#949090] rounded-full font-semibold'>Check</span>
                                 </div>
                             </div>
-                            <div className='w-[504px] mt-8'>
-                                <div className='flex justify-between'>
-                                    <p className='font-semibold text-lg'>Product Details</p>
-                                    <IoIosArrowDown size={30} />
-                                </div>
-                                <div className='w-full h-[1px] bg-[#CFCBCB] mt-2'></div>
-                                <div>
-                                    <p className='font-semibold'>Material & Care:</p>
-                                    <div className='my-2 font-light'>
-                                        <p>100% Cotton</p>
-                                        <p>Machine Wash</p>
-                                    </div>
-                                    <p className='font-semibold'>Country of origin: <span className='font-light'>India</span> </p>
-                                </div>
-                                <p className='font-semibold my-4'>Manufactured & Sold by:</p>
-                                <p className='w-[176px] text-wrap font-light'>
-                                    Zyrax Store Pvt. Ltd.
-                                    224, 123 second street
-                                    Underworld City
-                                    Lower Parel (E)
-                                    Detroit - 11
-                                    connect@zyraxstore.com
-                                </p>
-                            </div>
-                            <div className='w-[504px] mt-8'>
-                                <div className='flex justify-between'>
-                                    <p className='font-semibold text-lg'>Product Description</p>
-                                    <IoIosArrowDown size={30} />
-                                </div>
-                                <div className='w-full h-[1px] bg-[#CFCBCB] mt-2'></div>
-                                <p className='w-full text-wrap font-light'>
-                                    {product?.description || <Skeleton count={5} />}
-                                </p>
-                            </div>
+                            <ProductDetailsAccordion title={'Product Details'}></ProductDetailsAccordion>
+                            <ProductDetailsAccordion title={'Product Description'} description={product?.description}></ProductDetailsAccordion>
                         </div>
                     </div>
                 </div>
-                <div className='w-full h-[1px] bg-[#CFCBCB] my-8'></div>
+                <div className='w-full h-[1px] bg-[#CFCBCB] mt-8'></div>
                 <Ratings ratings={RATINGS} customerImages={CUSTOMER_IMAGES}></Ratings>
                 {!error && <Row title={'Similar Products'} isLoading={isProductsLoading} products={similiarProducts} ></Row>}
             </div>

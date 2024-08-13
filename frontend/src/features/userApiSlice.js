@@ -19,7 +19,6 @@ const userApiSlice = apiSlice.injectEndpoints({
         }),
         getProducts: builder.query({
             query: ({ category, exclude, latest, gender }) => {
-                console.log(category, exclude, latest, gender)
                 if (latest && category) return `/users/products?latest=${latest}&category=${category}&gender=${gender}`
                 if (category && exclude) return `/users/products?category=${category}&exclude=${exclude}&gender=${gender}`
                 if (category) return `/users/products?category=${category}&gender=${gender}`
@@ -47,6 +46,23 @@ const userApiSlice = apiSlice.injectEndpoints({
                 method: 'DELETE',
                 body: { item }
             })
+        }),
+        getItemsFromUserCart: builder.query({
+            query: () => '/users/cart'
+        }),
+        addItemsToUserCart: builder.mutation({
+            query: ({ items }) => ({
+                url: '/users/cart',
+                method: 'POST',
+                body: { items }
+            })
+        }),
+        removeItemFromUserCart: builder.mutation({
+            query: ({ item }) => ({
+                url: '/users/cart',
+                method: 'DELETE',
+                body: { item }
+            })
         })
     })
 })
@@ -60,4 +76,7 @@ export const {
     useGetUserWishlistItemsQuery,
     useAddItemsToUserWishlistMutation,
     useRemoveItemFromUserWishlistMutation,
+    useGetItemsFromUserCartQuery,
+    useAddItemsToUserCartMutation,
+    useRemoveItemFromUserCartMutation
 } = userApiSlice

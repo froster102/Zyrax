@@ -2,33 +2,15 @@ import React from 'react'
 import { MdArrowForwardIos } from 'react-icons/md'
 import _ from 'lodash'
 import { IoMdClose } from "react-icons/io";
-import { useDispatch } from 'react-redux';
-import { removeFromWishlist } from '../features/userSlice';
-import { useRemoveItemFromUserWishlistMutation } from '../features/userApiSlice';
 import { Link } from 'react-router-dom';
 
-
-function WishlistProductCard({ product }) {
-    const dispatch = useDispatch()
-    const [removeUserWishlistItem,] = useRemoveItemFromUserWishlistMutation()
-
-    async function removeItemFromWishlist(e) {
-        e.preventDefault()
-        e.stopPropagation()
-        dispatch(removeFromWishlist(product))
-        try {
-            await removeUserWishlistItem({ item: product._id })
-        } catch (error) {
-        }
-    }
-
-
+function WishlistProductCard({ product , removeItemFromWishlist , moveItemToCart }) {
     return (
         <Link to={`/product/${product.name}`} className="relative" >
             <div className='border border-[#CFCBCB] rounded-[20px] group flex flex-col relative'>
-                <button className='rounded-full px-2 py-1 bg-white absolute bottom-[20%] right-4 text-sm'>Move to Cart</button>
+                <button onClick={(e) => { moveItemToCart(e, product) }} className='rounded-full px-2 py-1 bg-white absolute bottom-[20%] right-4 text-sm'>Move to Cart</button>
                 <div className='hidden group-hover:block transition ease-in'>
-                    <IoMdClose onClick={removeItemFromWishlist} className='w-[25px] h-[25px] transition ease-in bg-[#c9c8c8] rounded-full absolute z-50 right-4 top-4 flex items-center justify-center' size={20} />
+                    <IoMdClose onClick={(e) => { removeItemFromWishlist(e, product) }} className='w-[25px] h-[25px] transition ease-in bg-[#c9c8c8] rounded-full absolute z-50 right-4 top-4 flex items-center justify-center' size={20} />
                 </div>
                 <img className='w-[234px] h-[236px] rounded-t-[20px] object-cover' src={product.imageUrls[0]} alt="" />
                 <div className='bg-[#CFCECE] rounded-b-[20px] px-1 py-2'>

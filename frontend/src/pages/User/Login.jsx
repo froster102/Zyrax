@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom';
 import { ToastContainer, toast, Flip } from 'react-toastify';
-import { useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery, useSigninMutation } from '../../features/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery, useSigninMutation } from '../../features/userApiSlice';
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { selectUserToken, setUserCredentials } from '../../features/authSlice';
 import { FaGoogle } from 'react-icons/fa6';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { selectActiveGender, selectWishlistItems } from '../../features/userSlice';
+import { selectActiveGender, selectCartItems, selectWishlistItems } from '../../features/userSlice';
 import { loginSchema } from '../../../ValidationSchema/loginSchema';
 
 function Login() {
@@ -19,8 +19,10 @@ function Login() {
     const location = useLocation()
     const redirect = location?.state?.from?.pathname || `/${gender}`
     const user = useSelector(selectUserToken)
-    const loacalWishlistItems = useSelector(selectWishlistItems)
+    const localWishlistItems = useSelector(selectWishlistItems)
+    const localCartItems = useSelector(selectCartItems)
     const [addItemsToUserWislist] = useAddItemsToUserWishlistMutation()
+    const [addItemsToUserCart] = useAddItemsToUserCartMutation()
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(loginSchema)
     })
@@ -28,9 +30,13 @@ function Login() {
     useEffect(() => {
         const syncWishlist = async () => {
             try {
-                if (loacalWishlistItems.length > 0) {
-                    const items = loacalWishlistItems.map((item => item?._id))
+                if (localWishlistItems.length > 0) {
+                    const items = localWishlistItems.map((item => item?._id))
                     await addItemsToUserWislist({ items: items }).unwrap()
+                }
+                if (localCartItems.length > 0) {
+                    const items = localCartItems.map(item => item?._id)
+                    await addItemsToUserCart({ items: items })
                 }
             } catch (error) {
                 console.log(error)
@@ -75,7 +81,7 @@ function Login() {
             return toast(error)
         }
         dispatch(setUserCredentials({ accessToken, role }))
-        // navigate(redirect, { replace: true })
+        navigate(redirect, { replace: true })
     }
     return (
         <>

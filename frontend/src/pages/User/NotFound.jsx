@@ -1,4 +1,3 @@
-import React from 'react'
 import LookingEmoji from '../../assets/lookingEmoji.png'
 
 function NotFound() {
