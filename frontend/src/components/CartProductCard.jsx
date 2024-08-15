@@ -1,9 +1,9 @@
 import _ from "lodash"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation } from "../features/userApiSlice"
 import { selectUserToken } from "../features/authSlice"
-import { addToWishlist, moveToWishlist } from "../features/userSlice"
+import { addToCart, moveToWishlist } from "../features/userSlice"
 import { Link } from "react-router-dom"
 
 function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
@@ -13,6 +13,8 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
     const [addToUserWishlist] = useAddItemsToUserWishlistMutation()
     const [addToUserCart] = useAddItemsToUserCartMutation()
     const userAuth = useSelector(selectUserToken)
+    const selectedSizeRef = useRef(null)
+    const selectedQtyRef = useRef(null)
 
     async function moveItemToWishlist(item) {
         dispatch(moveToWishlist({ itemToMove: item.product }))
@@ -24,13 +26,17 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
         }
     }
 
-    async function handleSelectedSizeChange() {
-        dispatch(addToWishlist())
+    async function handleChange() {
+        const selectedSize = selectedSizeRef.current.value
+        const selectedQty = selectedQtyRef.current.value
+        console.log(selectedSize, selectedQty)
+        dispatch(addToCart({ product: item.product, selectedSize, selectedQty }))
         try {
-            userAuth && await addToUserWishlist({ items: [product._id] }).unwrap()
+            userAuth && await addToUserCart({ items: [{ productId: item.product._id, selectedSize, selectedQty }] }).unwrap()
         } catch (error) {
         }
     }
+
     return (
         <>
             <div className="relative">
@@ -41,10 +47,14 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
                             <div>
                                 <p className="font-semibold">{_.startCase(item?.product?.name)}</p>
                                 <div className="flex py-2">
-                                    <select className="ml-2 border border-[#CFCBCB] text-xs rounded-full text-[#828282] px-2 flex items-center justify-center outline-none"
-                                        value={selectedSize}
-                                        onChange={(e) => {
-                                            setSelectedSize(e.target.value)
+                                    <select ref={selectedSizeRef} className="ml-2 border border-[#CFCBCB] text-xs rounded-full text-[#828282] px-2 flex items-center justify-center outline-none"
+                                        value={item.selectedSize}
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            e.stopPropagation()
+                                        }}
+                                        onChange={() => {
+                                            handleChange()
                                         }}
                                     >
                                         <option value="" disabled >Size</option>
@@ -52,10 +62,14 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
                                             item?.product.sizes.map((size) => (<option key={size} value={size}>{size}</option>))
                                         }
                                     </select>
-                                    <select className="ml-2 border border-[#CFCBCB] text-xs rounded-full text-[#828282] px-2 flex items-center justify-center outline-none"
-                                        value={selectedQty}
-                                        onChange={(e) => {
-                                            setSelectedQty(e.target.value)
+                                    <select ref={selectedQtyRef} className="ml-2 border border-[#CFCBCB] text-xs rounded-full text-[#828282] px-2 flex items-center justify-center outline-none"
+                                        value={item.selectedQty}
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            e.stopPropagation()
+                                        }}
+                                        onChange={() => {
+                                            handleChange()
                                         }}
                                     >
                                         <option value="" disabled >Qty</option>

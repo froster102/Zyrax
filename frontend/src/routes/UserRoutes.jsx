@@ -4,9 +4,8 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Login from '../pages/User/Login'
 import Register from '../pages/User/Register'
-import Reset from '../pages/User/Reset'
+import ResetPassword from '../pages/User/ResetPassword'
 import NotFound from '../pages/User/NotFound'
-import MobileSignIn from '../pages/User/MobileSignIn'
 import VerifyEmail from '../pages/User/VerifyEmail'
 import Home from '../pages/User/Home'
 import Profile from '../pages/User/Profile'
@@ -32,8 +31,7 @@ function UserRoutes() {
                 <Route path='/login' element={<Login></Login>} ></Route>
                 <Route path='/register' element={<Register></Register>} ></Route>
                 <Route path='/verify-email' element={<VerifyEmail></VerifyEmail>}></Route>
-                <Route path='/reset-password' element={<Reset></Reset>} ></Route>
-                <Route path='/mobile-signin' element={<MobileSignIn></MobileSignIn>}></Route>
+                <Route path='/reset-password' element={<ResetPassword></ResetPassword>} ></Route>
                 <Route path='/men' element={<Home></Home>}></Route>
                 <Route path='/women' element={<Home></Home>}></Route>
                 <Route path='/wishlist' element={<Wishlist></Wishlist>} ></Route>

@@ -32,7 +32,7 @@ const blockUser = async (req, res) => {
         const user = await User.findByIdAndUpdate(id, { status: 'blocked' })
         return res.status(200).json({ message: 'User blocked sucessfully' })
     } catch (err) {
-        console.log(err)
+        // console.log(err)
         return res.status(500).json({ message: 'Action failed an error has occured' })
     }
 }

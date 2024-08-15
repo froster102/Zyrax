@@ -7,7 +7,7 @@ function Users() {
     const [blockUser] = useBlockUserMutation()
     const [unblockUser] = useUnblockUserMutation()
 
-    async function blockUserById(id) {
+    async function blockUserById({ id }) {
         try {
             const res = await blockUser(id).unwrap()
             refetch()
@@ -24,16 +24,6 @@ function Users() {
             toast(res?.message)
         } catch (error) {
             console.log(error)
-        }
-    }
-
-    async function deleteUserById(id) {
-        try {
-            const res = await deleteUser(id).unwrap()
-            refetch()
-            toast(res?.message)
-        } catch (e) {
-            toast(e?.data?.message)
         }
     }
 

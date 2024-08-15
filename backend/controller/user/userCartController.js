@@ -21,6 +21,7 @@ const addCartItems = async (req, res) => {
                 items: items
             })
             await newCart.save()
+            return res.status(201).json({ message: 'Cart created sucessfully' })
         }
         return res.status(201).json({ message: 'Product added to cart' })
     } catch (error) {

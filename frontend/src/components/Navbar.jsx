@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Dropdown from './Dropdown'
 import SearchBar from './SearchBar'
-import { IoBagHandleOutline } from "react-icons/io5";
 import { IoMdHeartEmpty } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../features/authSlice';
@@ -11,6 +10,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { addToCart, addToWishlist, resetCartAndWishlist, selectWishlistItems } from '../features/userSlice';
 import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery } from '../features/userApiSlice';
+import { FaShoppingCart } from "react-icons/fa";
+import { BiHeart } from "react-icons/bi";
 
 const topwears = ['Shirts', 'Pollos', 'Oversized shirts', 'All T-shirts', 'Jackets']
 const bottomwears = ['Jeans', 'Pants', 'Joggers', 'Oversized joggers', 'Track pants']
@@ -81,10 +82,10 @@ function Navbar() {
             <Dropdown title={'Bestsellers'} options={bestsellers}></Dropdown>
             <UserDropdown user={userAuth} logoutUser={logoutUser}></UserDropdown>
             <Link to={'/cart'}><div className='w-fit p-2 rounded-full h-fit border-[1px] border-gray-500 flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
-              <IoBagHandleOutline size={20}></IoBagHandleOutline>
+              <FaShoppingCart size={20}/>
             </div></Link>
             <Link to={'/wishlist'} ><div className='w-fit p-2 rounded-full h-fit border-[1px] border-gray-500 flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
-              <IoMdHeartEmpty size={20}></IoMdHeartEmpty>
+              <BiHeart  size={20}/>
             </div></Link>
           </div>
         </div>

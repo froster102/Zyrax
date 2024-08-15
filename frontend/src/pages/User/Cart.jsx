@@ -39,8 +39,6 @@ function Cart() {
     }
   }
 
-  // console.log(cartItems)
-
   return (
     <>
       <div className="max-w-[1170px] m-auto flex items-start justify-center mt-24 gap-4 ">
