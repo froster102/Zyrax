@@ -3,7 +3,7 @@ import { Wishlist } from "../../model/wishlist.js"
 const addWishlistItems = async (req, res) => {
     const { items } = req.body
     try {
-        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: { $each: items } } })
+        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: { $each: items } } }, { upsert: true })
         res.status(201).json({ message: 'Product added to wishlist' })
     } catch (error) {
         console.log(error)
@@ -25,7 +25,7 @@ const getWishlistItems = async (req, res) => {
 const removeWishlistItem = async (req, res) => {
     const { item } = req.body
     try {
-        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $pull: { items: item } }, { new: true })
+        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $pull: { items: item } }, { upsert: true }, { new: true })
         res.status(200).json({ message: 'Product removed from wishlist sucessfully' })
     } catch (error) {
         console.log(error)

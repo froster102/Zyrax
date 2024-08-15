@@ -104,13 +104,6 @@ const verifyEmail = async (req, res) => {
             const user = await User.findOneAndUpdate({
                 _id: userId
             }, { verification_status: true, status: 'active', createdAt: null }, { new: true })
-
-            await Wishlist.create({
-                user_id: user._id
-            })
-            await Cart.create({
-                user_id: user._id
-            })
             return res.send('Account verified successfully please login to continue')
         } catch (error) {
             return res.status(500).json({ message: 'Failed to verify please try again later' })
