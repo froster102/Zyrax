@@ -13,7 +13,7 @@ function Home() {
   const gender = pathname.replace(/\//g, '')
   const [activeGender, setActiveGender] = useState(gender)
   const { data: topwears, isLoading: isTopwearsLoading } = useGetProductsQuery({ category: 'topwears', gender })
-  const { data: bottomwears, error, isLoading: isBottomwearsLoading } = useGetProductsQuery({ category: 'bottomwears', gender })
+  const { data: bottomwears, isLoading: isBottomwearsLoading } = useGetProductsQuery({ category: 'bottomwears', gender })
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -31,8 +31,8 @@ function Home() {
         <p className="mt-2">Catelogs</p>
         <p className="text-center text-4xl">Fresh and trending collections</p>
         <TrendingRow></TrendingRow>
-        {!error && <Row title='All New Topwears' products={topwears} isLoading={isBottomwearsLoading} ></Row>}
-        {!error && <Row title='All New Bottomwears' products={bottomwears} isLoading={isTopwearsLoading}></Row>}
+        {<Row title='All New Topwears' products={topwears} isLoading={isTopwearsLoading} ></Row>}
+        {<Row title='All New Bottomwears' products={bottomwears} isLoading={isBottomwearsLoading}></Row>}
         <Newsletter></Newsletter>
       </div>
     </>

@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { FaStar } from "react-icons/fa6";
 import Size from './Size';
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
@@ -17,6 +17,9 @@ import { addToCart, addToWishlist, removeFromCart, removeFromWishlist, selectAct
 import { selectUserToken } from '../features/authSlice';
 import ProductDetailsAccordion from './ProductDetailsAccordion';
 import { IoCart, IoCartOutline } from "react-icons/io5";
+import Unavailable from './Unavailable';
+import StockOut from './StockOut';
+
 
 const RATINGS = [
     {
@@ -35,13 +38,16 @@ const RATINGS = [
 const CUSTOMER_IMAGES = []
 
 function ProductDetails() {
+    const [selectedSize, setSelectedSize] = useState('')
+    const [selectedQty, setSelectedQty] = useState(1)
+    const [error, setError] = useState(false)
     const { name } = useParams()
     const { pathname } = useLocation()
     const gender = useSelector(selectActiveGender)
     const wishlistItems = useSelector(selectWishlistItems)
     const cartItems = useSelector(selectCartItems)
-    const { data: product, isLoading: isProductLoading } = useGetProductDeatilsQuery(name)
-    const { data: similiarProducts, error, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
+    const { data: product, isError: isProductDeatilsError, isLoading: isProductLoading } = useGetProductDeatilsQuery(name)
+    const { data: similiarProducts, isError: isSimilarProductsError, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
     const [imageModal, setImageModal] = useState(false)
     const [previewImg, setPreviewImg] = useState('')
     const [activeWishlistItem, setActiveWishlistItem] = useState(false)
@@ -56,6 +62,8 @@ function ProductDetails() {
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
+        setSelectedSize('')
+        setError(false)
     }, [pathname])
 
     useEffect(() => {
@@ -64,16 +72,10 @@ function ProductDetails() {
             wishlistItemIds.includes(product._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
         }
         if (cartItems.length > 0 && !isProductLoading) {
-            const cartItemIds = cartItems.map(item => item._id)
-            cartItemIds.includes(product._id) ? setActiveCartItem(true) : setActiveCartItem(false)
+            const cartItemIds = cartItems.map(item => item?.product?._id)
+            cartItemIds.includes(product?._id) ? setActiveCartItem(true) : setActiveCartItem(false)
         }
     }, [product, wishlistItems, cartItems])
-
-    // useEffect(() => {
-    //     if (!productDetails && !isProductsLoading) {
-    //         navigate('/')
-    //     }
-    // }, [error])
 
     async function handleWishlistItems(product) {
         if (!activeWishlistItem) {
@@ -94,17 +96,14 @@ function ProductDetails() {
     }
 
     async function handleCartItems(product) {
+        if (!selectedSize) {
+            setError(true)
+            return
+        }
         if (!activeCartItem) {
-            dispatch(addToCart(product))
+            dispatch(addToCart({ product, selectedSize, selectedQty }))
             try {
-                userAuth && await addToUserCart({ items: [product._id] }).unwrap()
-            } catch (error) {
-            }
-        } else {
-            dispatch(removeFromCart(product))
-            setActiveCartItem(false)
-            try {
-                userAuth && await removeUserFromCart({ item: product._id }).unwrap()
+                userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize, selectedQty }] }).unwrap()
             } catch (error) {
             }
         }
@@ -119,7 +118,7 @@ function ProductDetails() {
             <div className='mx-[200px] mt-8 text-[#383333]'>
                 <div className='flex'>
                     {
-                        isProductLoading ? <div className='flex gap-4 h-fit w-fit flex-wrap'>
+                        isProductLoading || isProductDeatilsError ? <div className='flex gap-4 h-fit w-fit flex-wrap'>
                             {[...Array(4)].map((imageUrl, i) => {
                                 return <Skeleton key={i} className='w-[325px] h-[455px] border border-[#CFCBCB] rounded-md' />
                             })}
@@ -134,7 +133,6 @@ function ProductDetails() {
                     }
                     <div className='bg-white w-full rounded-[20px] border border-[#CFCBCB] py-[20px]'>
                         <div className='px-[40px]'>
-
                             <h1 className='font-bold text-4xl '>{_.startCase(product?.name) || <Skeleton width={'400px'} />}</h1>
                             <p className='ml-1 text-sm pt-1 font-medium text-gray-700'>{_.startCase(product?.category.name) || <Skeleton width={'300px'} />}</p>
                         </div>
@@ -154,23 +152,47 @@ function ProductDetails() {
                             <div className='my-8'>
                                 <p className='text-base font-semibold mt-4'>Please select a size.</p>
                                 <div className='mt-4 flex gap-2 '>
-                                    <Size sizes={product?.sizes || []} isLoading={isProductLoading}></Size>
+                                    <Size
+                                        sizes={product?.sizes || []}
+                                        isLoading={isProductLoading}
+                                        selectedSize={selectedSize}
+                                        setSelectedSize={setSelectedSize}
+                                        setActiveItem={setActiveCartItem}
+                                    />
                                 </div>
+                                {error && <div className='text-red-500 pt-2'>Please select a size</div>}
                             </div>
                             <div className='flex my-8 justify-center items-center w-fit'>
                                 <p>Quantity</p>
-                                <select className='ml-2 border-none outline-none text-black w-[35px] h-[21px] border border-[#CFCBCB] bg-[#D9D9D9] rounded-md m-0 p-0' name="quantity" id="">
+                                <select
+                                    className='ml-2 border-none outline-none text-black w-[35px] h-[21px] border border-[#CFCBCB] bg-[#D9D9D9] rounded-md m-0 p-0' name="quantity" id=""
+                                    value={selectedQty}
+                                    onChange={(e) => {
+                                        setSelectedQty(e.target.value)
+                                        setActiveCartItem(false)
+                                    }}
+                                >
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
                                     <option value="4">4</option>
                                 </select>
                             </div>
-                            <div>
-                                <button onClick={() => { handleCartItems(product) }} className='px-10 py-2 border border-[#CFCBCB] rounded-full text-xl font-medium text-white bg-black inline-flex items-center justify-center'>{activeCartItem ? <><IoCart />Added</> : <><IoCartOutline />Add</>} to Cart</button>
-                                <button onClick={() => { handleWishlistItems(product) }} className='inline-flex px-5 py-2 border border-[#CFCBCB] rounded-full ml-2 text-xl font-medium items-center w-fit'>
-                                    {activeWishlistItem ? <><IoMdHeart />Added</> : <><IoMdHeartEmpty />Add</>} to Wishlist</button>
-                            </div>
+                            {isProductDeatilsError ? <Unavailable /> : product?.stockQty === 0 ? < StockOut /> : <div>
+                                {activeCartItem
+                                    ? <Link to={'/cart'} >
+                                        <button className='px-10 py-2 border border-[#CFCBCB] uppercase rounded-full text-lg font-medium text-white bg-black inline-flex items-center justify-center'>
+                                            <IoCart /> Go to cart
+                                        </button>
+                                    </Link>
+                                    : <button onClick={() => { handleCartItems(product) }}
+                                        className='px-10 py-2 border border-[#CFCBCB] rounded-full text-lg font-medium text-white bg-black inline-flex items-center justify-center uppercase'
+                                    >
+                                        <IoCartOutline /> Add to Cart</button>
+                                }
+                                <button onClick={() => { handleWishlistItems(product) }} className='inline-flex px-5 py-2 border border-[#CFCBCB] rounded-full ml-2 text-lg font-medium items-center w-fit uppercase'>
+                                    {activeWishlistItem ? <><IoMdHeart /> Added</> : <><IoMdHeartEmpty /> Add</>} to Wishlist</button>
+                            </div>}
                             <div className='flex justify-center items-center w-fit my-8'>
                                 <p className='text-lg'>Share</p>
                                 <div className='flex ml-2 gap-2'>
@@ -194,7 +216,7 @@ function ProductDetails() {
                 </div>
                 <div className='w-full h-[1px] bg-[#CFCBCB] mt-8'></div>
                 <Ratings ratings={RATINGS} customerImages={CUSTOMER_IMAGES}></Ratings>
-                {!error && <Row title={'Similar Products'} isLoading={isProductsLoading} products={similiarProducts} ></Row>}
+                <Row title={'Similar Products'} isLoading={isProductsLoading} products={similiarProducts} ></Row>
             </div>
             {
                 imageModal && <ProductImageModal closeModal={() => { setImageModal(false) }} image={[previewImg]}></ProductImageModal>

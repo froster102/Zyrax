@@ -28,14 +28,20 @@ function Login() {
     })
 
     useEffect(() => {
-        const syncWishlist = async () => {
+        const syncUserData = async () => {
             try {
                 if (localWishlistItems.length > 0) {
                     const items = localWishlistItems.map((item => item?._id))
                     await addItemsToUserWislist({ items: items }).unwrap()
                 }
                 if (localCartItems.length > 0) {
-                    const items = localCartItems.map(item => item?._id)
+                    const items = localCartItems.map(item => (
+                        {
+                            productId: item?.product._id,
+                            selectedSize: item?.selectedSize,
+                            selectedQty: item?.selectedQty
+                        }
+                    ))
                     await addItemsToUserCart({ items: items })
                 }
             } catch (error) {
@@ -43,7 +49,7 @@ function Login() {
             }
         }
         if (user) {
-            syncWishlist()
+            syncUserData()
             navigate(redirect, { replace: true })
         }
     }, [user])

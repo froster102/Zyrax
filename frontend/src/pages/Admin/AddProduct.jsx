@@ -43,7 +43,7 @@ function AddProduct({ mode }) {
     const [modalOpen, setModalOpen] = useState(false)
     const [preview, setPreview] = useState(null)
     const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery()
-    const [addProduct, { isLoading }] = useAddProductMutation()
+    const [addProduct, { isLoading: isUploading }] = useAddProductMutation()
     const [editProduct, { isLoading: isUpdating }] = useEditProductMutation()
     const { id } = useParams()
     const { data: product, isLoading: isProductLoading, refetch } = useFetchProductQuery({ id }, { skip: !id })
@@ -111,13 +111,16 @@ function AddProduct({ mode }) {
         try {
             let res = ''
             mode === 'edit' ? res = await editProduct({ id: product._id, productData }).unwrap() : res = await addProduct(productData).unwrap()
-            console.log(res)
+            console.log(reset())
             refetch()
+            setPreview(null)
             toast(res?.message)
             setPreview(null)
         } catch (error) {
             console.log(error?.data?.message)
             toast(error?.data?.message)
+            setPreview(null)
+            reset()
         }
     }
 
@@ -147,10 +150,10 @@ function AddProduct({ mode }) {
                         onClick={() => {
                             formRef.current.requestSubmit()
                         }} >{isUpdating ? <BeatLoader color='white' loading={isUpdating} /> : 'Update Product'}<FaCheckCircle className='inline ml-2' /></button>
-                        : <button className="bg-black text-white font-medium rounded-3xl text-nowrap w-fit h-fit px-8 py-4 flex justify-center items-center"
+                        : <button disabled={isUploading} className="bg-black text-white font-medium rounded-3xl text-nowrap w-fit h-fit px-8 py-4 flex justify-center items-center"
                             onClick={() => {
                                 formRef.current.requestSubmit()
-                            }} >{isLoading ? <BeatLoader color='white' loading={isLoading} /> : 'Add Product'}<FaCheckCircle className='inline ml-2' /></button>}
+                            }} >{isUploading ? <BeatLoader color='white' loading={isUploading} /> : 'Add Product'}<FaCheckCircle className='inline ml-2' /></button>}
                 </div>
                 <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
                     <div className='grid grid-cols-2 grid-rows-2 gap-[20px] w-fit mt-6'>

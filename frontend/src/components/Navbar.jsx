@@ -47,13 +47,20 @@ function Navbar() {
   }, [])
 
   useEffect(() => {
-    // console.log(userWishlistItems?.items)
-    dispatch(addToWishlist(userWishlistItems?.items || []))
+    !isUserWishlistItemsLoading && dispatch(addToWishlist(userWishlistItems?.items || []))
   }, [userWishlistItems, isUserWishlistItemsLoading, dispatch])
 
   useEffect(() => {
-    console.log(userCartItems?.items)
-    dispatch(addToCart(userCartItems?.items || []))
+    if (!isUserCartItemsLoading) {
+      const dispatchCartState = userCartItems?.items.map(item => {
+        return {
+          product: item.productId,
+          selectedSize: item.selectedSize,
+          selectedQty: item.selectedQty
+        }
+      })
+      !isUserCartItemsLoading && dispatch(addToCart(dispatchCartState || []))
+    }
   }, [userCartItems, isUserCartItemsLoading, dispatch])
 
   function logoutUser() {

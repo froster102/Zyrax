@@ -13,7 +13,7 @@ function EmptyCart() {
                     <img className=' w-32' src={LookingEmoji} alt="" />
                     <h1 className=' text-white font-extrabold text-2xl ml-4' >Ahh! your cart is empty</h1>
                 </div>
-                <Link to={`/${activeGender}`} ><button className='rounded-lg bg-black w-fit mt-4 py-2 text-white font-medium px-4'>Back to Home</button></Link>
+                <Link to={`/${activeGender}`} ><button className='rounded-lg w-fit mt-4 py-2 text-black border border-black font-medium px-4'>Continue Shopping</button></Link>
             </div>
         </>
     )
