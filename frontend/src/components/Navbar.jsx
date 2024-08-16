@@ -8,7 +8,7 @@ import UserDropdown from './UserDropdown';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { addToCart, addToWishlist, resetCartAndWishlist, selectCartItems, selectWishlistItems } from '../features/userSlice';
+import { syncWishlist, syncCart, addToWishlist, resetCartAndWishlist, selectCartItems, selectWishlistItems } from '../features/userSlice';
 import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery } from '../features/userApiSlice';
 import { FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
@@ -51,11 +51,11 @@ function Navbar() {
   }, [])
 
   useEffect(() => {
-    !isUserWishlistItemsLoading && dispatch(addToWishlist(userWishlistItems?.items || []))
+    !isUserWishlistItemsLoading && userAuth && dispatch(syncWishlist(userWishlistItems?.items))
   }, [userWishlistItems, isUserWishlistItemsLoading, dispatch])
 
   useEffect(() => {
-    if (!isUserCartItemsLoading) {
+    if (!isUserCartItemsLoading && userAuth) {
       const dispatchCartState = userCartItems?.items.map(item => {
         return {
           product: item.productId,
@@ -63,7 +63,7 @@ function Navbar() {
           selectedQty: item.selectedQty
         }
       })
-      !isUserCartItemsLoading && dispatch(addToCart(dispatchCartState || []))
+      !isUserCartItemsLoading && dispatch(syncCart(dispatchCartState))
     }
   }, [userCartItems, isUserCartItemsLoading, dispatch])
 

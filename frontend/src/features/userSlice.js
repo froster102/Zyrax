@@ -23,10 +23,17 @@ const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
+        syncWishlist: (state, action) => {
+            const dbItems = Array.isArray(action.payload) ? action.payload : [action.payload]
+            state.wishlist.items = dbItems
+        },
         addToWishlist: (state, action) => {
             const newItems = Array.isArray(action.payload) ? action.payload : [action.payload]
             newItems.forEach(newItem => {
-                if (!state.wishlist.items.find(item => item._id === newItem._id)) state.wishlist.items.push(newItem)
+                if (!state.wishlist.items.find(item => item._id === newItem._id)) {
+                    console.log(newItem)
+                    state.wishlist.items.push(newItem)
+                }
             })
             saveToLocalStorage(state)
         },
@@ -41,11 +48,19 @@ const userSlice = createSlice({
             state.wishlist.items = state.wishlist.items.filter(item => item._id !== itemToMove?._id)
             saveToLocalStorage(state)
         },
+        syncCart: (state, action) => {
+            const dbItems = Array.isArray(action.payload) ? action.payload : [action.payload]
+            state.cart.items = dbItems
+            saveToLocalStorage(state)
+        },
         addToCart: (state, action) => {
             const newItems = Array.isArray(action.payload) ? action.payload : [action.payload]
+            console.log(newItems)
             const itemMap = new Map(state.cart.items.map(item => [item?.product?._id, item]))
             newItems.forEach(newItem => {
-                itemMap.set(newItem?.product?._id, newItem)
+                if (newItem?.product?._id) {
+                    itemMap.set(newItem?.product?._id, newItem)
+                }
             })
             state.cart.items = Array.from(itemMap.values())
             saveToLocalStorage(state)
@@ -74,7 +89,7 @@ const userSlice = createSlice({
 
 })
 
-export const { addToWishlist, removeFromWishlist, moveToCart, addToCart, removeFromCart, moveToWishlist, selectGender, resetCartAndWishlist } = userSlice.actions
+export const { syncWishlist,addToWishlist, removeFromWishlist, moveToCart, syncCart, addToCart, removeFromCart, moveToWishlist, selectGender, resetCartAndWishlist } = userSlice.actions
 export default userSlice.reducer
 
 export const selectActiveGender = state => state.user.selected_gender

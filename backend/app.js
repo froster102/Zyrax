@@ -22,8 +22,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/Zyrax').then(() => {
 const app = express()
 
 app.use(cors({
-    origin : 'http://localhost:5173',
-    credentials : true
+    origin: ['http://localhost:5173', 'https://1p4tj84j-5173.inc1.devtunnels.ms'],
+    credentials: true
 }))
 app.use(cookieParser())
 app.use(session({
@@ -34,9 +34,9 @@ app.use(session({
 app.use(express.json())
 app.use('/api/v1/users/', userRoutes)
 app.use('/api/v1/admin/', adminRoutes)
-app.get('/api/v1/auth/refresh',refresh)
-app.get('/api/v1/auth/logout',logout)
-app.get('/api/v1/verify-email',verifyEmail)
+app.get('/api/v1/auth/refresh', refresh)
+app.get('/api/v1/auth/logout', logout)
+app.get('/api/v1/verify-email', verifyEmail)
 
 app.get('/', (req, res) => {
     // console.log(req.)

@@ -14,9 +14,6 @@ function TrendingCard({ product }) {
                                 <p className="text-xs font-normal">{_.startCase(product?.category.name)}</p>
                                 <p className="text-sm font-medium">₹ {_.startCase(product?.price)}</p>
                             </div>
-                            <div className="h-[40px] w-[40px] rounded-full flex justify-center items-center transition ease-in group-hover:bg-[#E6E6E6] ml-2">
-                                <MdArrowForwardIos size={20} />
-                            </div>
                         </div>
                     </div>
                 </div>

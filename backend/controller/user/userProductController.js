@@ -38,7 +38,6 @@ const getProductDeatils = async (req, res) => {
             path: 'category',
             select: 'name status'
         })
-        // console.log(product)
         if (!product || product.category.status === 'blocked') return res.status(404).json({ message: 'Product either removed or not found' })
         return res.status(200).json(product)
     } catch (error) {

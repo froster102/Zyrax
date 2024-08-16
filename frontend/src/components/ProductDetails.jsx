@@ -68,7 +68,7 @@ function ProductDetails() {
 
     useEffect(() => {
         if (wishlistItems.length > 0 && !isProductLoading) {
-            const wishlistItemIds = wishlistItems.map(item => item._id)
+            const wishlistItemIds = wishlistItems.map(item => item?._id)
             wishlistItemIds.includes(product._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
         }
         if (cartItems.length > 0 && !isProductLoading) {
