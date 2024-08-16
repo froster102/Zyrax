@@ -5,10 +5,6 @@ import Skeleton from 'react-loading-skeleton'
 function ProductDetailsAccordion({ title, description }) {
     const [accordionOpen, setAccordinOpen] = useState(false)
     const useCase = title.split(' ')[1].toLowerCase()
-    
-    useEffect(()=>{
-        useCase === 'details' ? setAccordinOpen(true) : setAccordinOpen(false)
-    },[])
 
     return (
         <>

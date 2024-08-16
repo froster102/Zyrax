@@ -15,7 +15,7 @@ import { BsTwitterX } from 'react-icons/bs';
 function Footer() {
     return (
         <>
-            <div className='bg-[#E7E7E7] rounded-t-3xl'>
+            <div className='bg-stone-200 rounded-t-3xl'>
                 <div className='w-full grid grid-cols-12  p-6 mt-16'>
                     <div className='sm:col-start-3 sm:col-end-5 col-start-2 col-end-5'>
                         <h1 className='sm:text-lg text-sm font-semibold'>Need Help</h1>

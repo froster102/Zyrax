@@ -14,6 +14,7 @@ import ProductDetails from '../components/ProductDetails'
 import Wishlist from '../pages/User/Wishlist'
 import Cart from '../pages/User/Cart'
 import { Flip, ToastContainer } from 'react-toastify'
+import LayoutWithWidth from '../components/LayoutWithWidth'
 
 function UserRoutes() {
     return (
@@ -28,17 +29,15 @@ function UserRoutes() {
             <Header></Header>
             <Navbar></Navbar>
             <Routes>
-                <Route path='/login' element={<Login></Login>} ></Route>
-                <Route path='/register' element={<Register></Register>} ></Route>
-                <Route path='/verify-email' element={<VerifyEmail></VerifyEmail>}></Route>
-                <Route path='/reset-password' element={<ResetPassword></ResetPassword>} ></Route>
-                <Route path='/men' element={<Home></Home>}></Route>
-                <Route path='/women' element={<Home></Home>}></Route>
-                <Route path='/wishlist' element={<Wishlist></Wishlist>} ></Route>
+                <Route path='/login' element={<LayoutWithWidth><Login /></LayoutWithWidth>} ></Route>
+                <Route path='/register' element={<LayoutWithWidth> <Register /></LayoutWithWidth>} ></Route>
+                <Route path='/men' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>
+                <Route path='/women' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>
+                <Route path='/wishlist' element={<LayoutWithWidth><Wishlist /></LayoutWithWidth>} ></Route>
                 <Route path='/cart' element={<Cart></Cart>} ></Route>
-                <Route path='/product/:name' element={<ProductDetails></ProductDetails>}></Route>
+                <Route path='/product/:name' element={<LayoutWithWidth><ProductDetails /></LayoutWithWidth>}></Route>
                 <Route element={<RequireUserAuth />}>
-                    <Route path='/profile' element={<Profile></Profile>} ></Route>
+                    <Route path='/profile' element={<LayoutWithWidth><Profile /></LayoutWithWidth>} ></Route>
                 </Route>
                 <Route path='*' element={<NotFound></NotFound>} ></Route>
             </Routes>

@@ -33,6 +33,9 @@ const getCartItems = async (req, res) => {
     try {
         const items = await Cart.findOne({ user_id: req.userId }, { items: true, _id: false }).populate({
             path: 'items.productId',
+            populate : {
+                path : 'category'
+            }
         })
         return res.status(200).json(items)
     } catch (error) {

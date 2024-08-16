@@ -32,7 +32,7 @@ function TrendingRow() {
                 <button onClick={() => { handleShowProducts('bottomwears') }} className="bg-black px-4 py-2 rounded-full text-white ml-2">Bottomwears</button>
             </div>
             <div className="my-4">
-                <div className="flex items-center relative w-[1024px] ml-auto mr-auto h-full">
+                <div className="flex items-center relative lg:w-[1024px] md:w-[724px] sm:w-[624px] w-[324px] ml-auto mr-auto h-full">
                     <MdChevronLeft onClick={scrollLeft} className="absolute text-black left-2 z-10 bg-[#E6E6E6] w-[40px] h-[40px] rounded-full flex items-center justify-center" size={40} />
                     {!error && !isProductsLoading && <div ref={sliderRef} className="mt-4  overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide">
                         {

@@ -115,23 +115,23 @@ function ProductDetails() {
                 isProductLoading ? <Skeleton width={'80px'} baseColor='#f1f1f1' /> :
                     <BreadCrumbs category={product?.category.name} name={product?.name} ></BreadCrumbs>
             }
-            <div className='mx-[200px] mt-8 text-[#383333]'>
+            <div className='mt-2 text-[#383333] antialiased px-4'>
                 <div className='flex'>
                     {
                         isProductLoading || isProductDeatilsError ? <div className='flex gap-4 h-fit w-fit flex-wrap'>
                             {[...Array(4)].map((imageUrl, i) => {
                                 return <Skeleton key={i} className='w-[325px] h-[455px] border border-[#CFCBCB] rounded-md' />
                             })}
-                        </div> : <div className='flex gap-4 h-fit w-fit flex-wrap'>
+                        </div> : <div className='flex gap-4 h-fit w-fit flex-wrap '>
                             {product?.imageUrls?.map((imageUrl, i) => {
                                 return <img key={i} onClick={() => {
                                     setPreviewImg(imageUrl)
                                     setImageModal(true)
-                                }} className='w-[325px] h-[455px] border border-[#CFCBCB] rounded-md' src={imageUrl} alt="" />
+                                }} className='2xl:w-[325px] 2xl:h-[455px] xl:w-[300px] xl:h-[455px] lg:w-[290px] lg:h-[455px] border border-[#CFCBCB] rounded-md' src={imageUrl} alt="" />
                             })}
                         </div>
                     }
-                    <div className='bg-white w-full rounded-[20px] border border-[#CFCBCB] py-[20px]'>
+                    <div className='bg-white w-full rounded-lg border border-[#CFCBCB] py-[20px]'>
                         <div className='px-[40px]'>
                             <h1 className='font-bold text-4xl '>{_.startCase(product?.name) || <Skeleton width={'400px'} />}</h1>
                             <p className='ml-1 text-sm pt-1 font-medium text-gray-700'>{_.startCase(product?.category.name) || <Skeleton width={'300px'} />}</p>
@@ -181,16 +181,16 @@ function ProductDetails() {
                             {isProductDeatilsError ? <Unavailable /> : product?.stockQty === 0 ? < StockOut /> : <div>
                                 {activeCartItem
                                     ? <Link to={'/cart'} >
-                                        <button className='px-10 py-2 border border-[#CFCBCB] uppercase rounded-full text-lg font-medium text-white bg-black inline-flex items-center justify-center'>
+                                        <button className='px-10 py-2 border border-[#CFCBCB] uppercase rounded-lg text-lg font-medium text-white bg-black inline-flex items-center justify-center'>
                                             <IoCart /> Go to cart
                                         </button>
                                     </Link>
                                     : <button onClick={() => { handleCartItems(product) }}
-                                        className='px-10 py-2 border border-[#CFCBCB] rounded-full text-lg font-medium text-white bg-black inline-flex items-center justify-center uppercase'
+                                        className='px-10 py-2 border border-[#CFCBCB] rounded-lg text-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'
                                     >
                                         <IoCartOutline /> Add to Cart</button>
                                 }
-                                <button onClick={() => { handleWishlistItems(product) }} className='inline-flex px-5 py-2 border border-[#CFCBCB] rounded-full ml-2 text-lg font-medium items-center w-fit uppercase'>
+                                <button onClick={() => { handleWishlistItems(product) }} className='inline-flex px-5 py-2 border border-[#CFCBCB] rounded-lg ml-2 text-lg font-medium items-center w-fit uppercase'>
                                     {activeWishlistItem ? <><IoMdHeart /> Added</> : <><IoMdHeartEmpty /> Add</>} to Wishlist</button>
                             </div>}
                             <div className='flex justify-center items-center w-fit my-8'>

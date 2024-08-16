@@ -15,7 +15,7 @@ function Size({ sizes, isLoading, selectedSize, setSelectedSize, setActiveItem }
                             <div key={size} onClick={() => {
                                 setSelectedSize(size)
                                 setActiveItem ? setActiveItem(false) : ''
-                            }} className={`w-[48px] h-[28px] border border-[#CFCBCB] rounded-full  flex items-center justify-center text-sm ${size === selectedSize ? 'bg-black text-white' : ''}`} >
+                            }} className={`w-[48px] h-[28px] border border-[#CFCBCB] rounded-full  flex items-center justify-center text-sm ${size === selectedSize ? 'bg-stone-800 text-white' : ''}`} >
                                 <p>{size}</p>
                             </div>
                         ) : (

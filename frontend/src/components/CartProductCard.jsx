@@ -41,13 +41,14 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
         <>
             <div className="relative">
                 <Link to={`/product/${item?.product?.name}`} >
-                    <div className="bg-[#f1f1f1] min-w-[769px] h-[173px] rounded-[20px] border border-[#CFCBCB] flex p-[10px] relative mt-2">
+                    <div className="bg-stone-200 w-full h-[173px] rounded-lg border border-[#CFCBCB] flex p-[10px] relative mt-2 px-4">
                         <img className="w-[127px] h-[146px] rounded-[20px]" src={item?.product?.imageUrls[0]} alt="" />
                         <div className="flex justify-between w-full pl-4">
                             <div>
-                                <p className="font-semibold">{_.startCase(item?.product?.name)}</p>
-                                <div className="flex py-2">
-                                    <select ref={selectedSizeRef} className="ml-2 border border-[#CFCBCB] text-xs rounded-full text-[#828282] px-2 flex items-center justify-center outline-none"
+                                <p className="font-semibold py-4">{_.startCase(item?.product?.name)}</p>
+                                <p className="font-semibold text-xs">{_.startCase(item?.product?.category?.name)}</p>
+                                <div className="flex py-1">
+                                    <select ref={selectedSizeRef} className="border border-[#CFCBCB] text-xs rounded-full text-[#828282] px-2 flex items-center justify-center outline-none"
                                         value={item.selectedSize}
                                         onClick={(e) => {
                                             e.preventDefault()
@@ -87,7 +88,7 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
                         </div>
                     </div>
                 </Link>
-                <div className="absolute bottom-5 right-2 ">
+                <div className="absolute bottom-5 left-36">
                     <button onClick={() => { removeFromCart({ productId: item?.product?._id }) }} className="px-2 bg-white rounded-full border border-black text-sm font-medium z-10" >Remove</button>
                     <button onClick={() => { moveItemToWishlist(item) }} className="ml-2 px-2 bg-white rounded-full border border-black text-sm font-medium z-10" >Move to Wishlist</button>
                 </div>

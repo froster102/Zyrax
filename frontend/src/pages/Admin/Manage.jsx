@@ -2,6 +2,7 @@ import React from 'react'
 import ManageNav from '../../components/ManageNav'
 import Category from './Category';
 import { Route, Routes } from 'react-router-dom';
+import Discount from '../../components/Discount';
 
 function Manage() {
     return (
@@ -12,7 +13,8 @@ function Manage() {
                     <ManageNav></ManageNav>
                     <div className='h-96 bg-[#CFCBCB] w-[1px] ml-10' ></div>
                     <Routes>
-                        <Route path='category' element={<Category></Category>} ></Route>
+                        <Route path='category' element={<Category/>} ></Route>
+                        <Route path='discount' element={<Discount />} ></Route>
                     </Routes>
 
                 </div>
