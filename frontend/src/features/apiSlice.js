@@ -25,7 +25,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
             }
             response = await baseQuery(args, api, extraOptions)
         } else if (response?.error?.status === 401) {
-            console.log('sdskdj')
             api.dispatch(userLogout())
             api.dispatch(resetCartAndWishlist())
         }
