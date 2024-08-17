@@ -24,7 +24,6 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         syncWishlist: (state, action) => {
-            console.log(action.payload)
             const dbItems = Array.isArray(action.payload) ? action.payload : [action.payload]
             state.wishlist.items = dbItems
             saveToLocalStorage(state)
@@ -45,7 +44,6 @@ const userSlice = createSlice({
         },
         moveToCart: (state, action) => {
             const { itemToMove, selectedSize, selectedQty = 1 } = (action.payload)
-            console.log(itemToMove, selectedSize, selectedQty)
             if (!state.cart.items.find(item => item.product?._id === itemToMove._id)) state.cart.items.push({ product: itemToMove, selectedSize, selectedQty })
             state.wishlist.items = state.wishlist.items.filter(item => item._id !== itemToMove?._id)
             saveToLocalStorage(state)
@@ -57,7 +55,6 @@ const userSlice = createSlice({
         },
         addToCart: (state, action) => {
             const newItems = Array.isArray(action.payload) ? action.payload : [action.payload]
-            console.log(newItems)
             const itemMap = new Map(state.cart.items.map(item => [item?.product?._id, item]))
             newItems.forEach(newItem => {
                 if (newItem?.product?._id) {

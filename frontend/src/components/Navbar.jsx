@@ -7,7 +7,7 @@ import UserDropdown from './UserDropdown';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { syncWishlist, syncCart, addToWishlist, resetCartAndWishlist, selectCartItems, selectWishlistItems } from '../features/userSlice';
+import { syncWishlist, syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems } from '../features/userSlice';
 import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery } from '../features/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
@@ -51,7 +51,7 @@ function Navbar() {
   }, [])
 
   useEffect(() => {
-    !isUserWishlistItemsLoading && userAuth && dispatch(syncWishlist(userWishlistItems.items))
+    !isUserWishlistItemsLoading && userAuth && dispatch(syncWishlist(userWishlistItems?.items))
   }, [userWishlistItems, isUserWishlistItemsLoading, dispatch])
 
   useEffect(() => {
@@ -72,8 +72,6 @@ function Navbar() {
     dispatch(resetCartAndWishlist())
     dispatch(userLogout())
   }
-
-  console.log(localWishlistItems, userWishlistItems)
 
   return (
     <>

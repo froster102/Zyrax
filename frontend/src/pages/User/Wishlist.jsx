@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import PickSizeModal from "../../components/PickSizeModal"
 import { selectUserToken } from "../../features/authSlice"
 import EmptyCart from "../../components/EmptyCart"
+import toast, { Toaster } from "react-hot-toast"
 
 function Wishlist() {
   const items = useSelector(selectWishlistItems)
@@ -17,12 +18,13 @@ function Wishlist() {
   const [addToUserCart] = useAddItemsToUserCartMutation()
   const [productToMove, setProductToMove] = useState(null)
 
-  async function removeItemFromWishlist(e, product) {
+  async function removeItemFromWishlist({ e, product, moveToCart }) {
     e.preventDefault()
     e.stopPropagation()
     dispatch(removeFromWishlist(product))
     try {
       await removeUserWishlistItem({ item: product._id })
+      toast('Product removed from your wishlist')
     } catch (error) {
     }
   }
@@ -36,6 +38,7 @@ function Wishlist() {
     try {
       userAuth && await removeUserWishlistItem({ item: product._id })
       userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize }] }).unwrap()
+      toast('Product added to your cart')
       dispatch(moveToCart({ itemToMove: product, selectedSize }))
       setSelectedSize('')
     } catch (error) {
@@ -44,7 +47,17 @@ function Wishlist() {
   console.log(items)
   return (
     <>
-      <div className="max-w-[1120px] m-auto mt-8">
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            backgroundColor: 'black',
+            color: 'white',
+          },
+          duration: 1000
+        }}
+      />
+      <div className="max-w-[1120px] m-auto mt-8 px-8">
         <h1 className="mt-10 font-semibold text-lg">My Wishlist <span className="font-light">({items.length} Items)</span></h1>
         {items.length === 0 && <EmptyCart />}
         <div className="flex gap-4 mt-4 flex-wrap">

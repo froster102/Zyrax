@@ -5,6 +5,7 @@ import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation } from
 import { selectUserToken } from "../features/authSlice"
 import { addToCart, moveToWishlist } from "../features/userSlice"
 import { Link } from "react-router-dom"
+import toast from "react-hot-toast"
 
 function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
     const [selectedSize, setSelectedSize] = useState(item?.selectedSize)
@@ -19,8 +20,9 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
     async function moveItemToWishlist(item) {
         dispatch(moveToWishlist({ itemToMove: item.product }))
         try {
-            userAuth && await removeFromCart({ productId: item?.product?._id })
+            userAuth && await removeFromCart({ productId: item?.product?._id, moveToCart: true })
             userAuth && await addToUserWishlist({ items: [item.product._id] }).unwrap()
+            toast('Product added to your wishlist')
         } catch (error) {
 
         }

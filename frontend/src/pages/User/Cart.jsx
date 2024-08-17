@@ -6,6 +6,7 @@ import EmptyCart from "../../components/EmptyCart";
 import { useRemoveItemFromUserCartMutation } from "../../features/userApiSlice";
 import { selectUserToken } from "../../features/authSlice";
 import { useEffect, useState } from "react";
+import toast, { Toaster } from 'react-hot-toast'
 
 function Cart() {
   const cartItems = useSelector(selectCartItems)
@@ -31,9 +32,10 @@ function Cart() {
   }, [cartItems])
 
 
-  async function removeItemFromCart({ productId }) {
+  async function removeItemFromCart({ productId, moveToCart }) {
     try {
       userAuth && await removeUserCartItem({ productId }).unwrap()
+      !moveToCart && toast('Product removed from cart sucessfully')
       dispatch(removeFromCart({ productId }))
     } catch (error) {
     }
@@ -41,6 +43,16 @@ function Cart() {
 
   return (
     <>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            backgroundColor: 'black',
+            color: 'white',
+          },
+          duration: 1000
+        }}
+      />
       <div className="sm:max-w-[1040px] w-full m-auto">
         <div className="md:flex w-full mt-8 m-auto gap-10 px-4">
           <div className="w-full">

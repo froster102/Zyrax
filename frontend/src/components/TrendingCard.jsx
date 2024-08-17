@@ -1,5 +1,4 @@
 import _ from "lodash"
-import { MdArrowForwardIos } from "react-icons/md"
 
 function TrendingCard({ product }) {
     return (
