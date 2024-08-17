@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Dropdown from './Dropdown'
 import SearchBar from './SearchBar'
-import { IoMdHeartEmpty } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../features/authSlice';
 import UserDropdown from './UserDropdown';
@@ -10,9 +9,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { syncWishlist, syncCart, addToWishlist, resetCartAndWishlist, selectCartItems, selectWishlistItems } from '../features/userSlice';
 import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery } from '../features/userApiSlice';
-import { FaShoppingCart } from "react-icons/fa";
+import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
-import { IoSearch } from 'react-icons/io5';
+import { IoMenu } from "react-icons/io5";
+
 
 const topwears = ['Shirts', 'Pollos', 'Oversized shirts', 'All T-shirts', 'Jackets']
 const bottomwears = ['Jeans', 'Pants', 'Joggers', 'Oversized joggers', 'Track pants']
@@ -51,7 +51,7 @@ function Navbar() {
   }, [])
 
   useEffect(() => {
-    !isUserWishlistItemsLoading && userAuth && dispatch(syncWishlist(userWishlistItems?.items))
+    !isUserWishlistItemsLoading && userAuth && dispatch(syncWishlist(userWishlistItems.items))
   }, [userWishlistItems, isUserWishlistItemsLoading, dispatch])
 
   useEffect(() => {
@@ -73,6 +73,8 @@ function Navbar() {
     dispatch(userLogout())
   }
 
+  console.log(localWishlistItems, userWishlistItems)
+
   return (
     <>
       <div className='lg:max-w-[1600px] lg:block m-auto hidden'>
@@ -85,9 +87,6 @@ function Navbar() {
               <Dropdown title={'Accessories'} options={accessories}></Dropdown>
               <Dropdown title={'Bestsellers'} options={bestsellers}></Dropdown>
               <UserDropdown user={userAuth} logoutUser={logoutUser}></UserDropdown>
-              <div className='lg:hidden w-fit p-3 rounded-full h-fit flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
-                <IoSearch size={20} />
-              </div>
               <Link to={'/cart'}><div className='w-fit p-3 rounded-full h-fit flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in relative'>
                 {localCartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localCartItems.length}</div>}
                 <FaShoppingCart size={20} />
@@ -100,7 +99,30 @@ function Navbar() {
           </div>
         </div>
       </div>
-
+      <div className='lg:hidden'>
+        <div className={`${hideNav ? 'hidden' : 'block'}`} >
+          <div className={`${sticky ? 'fixed w-full top-0 z-50 drop-shadow-xl' : 'mt-2'} transition ease-in`} onScroll={() => { setSticky(true) }}>
+            <div className='bg-stone-200 h-[40px] px-2 flex items-center justify-between'>
+              <IoMenu size={30} />
+              <div className='flex gap-1 items-center'>
+                <Link to='/profile' >
+                  <div className='w-[35px] h-[35px] flex items-center justify-center'>
+                    <FaRegUser size={20} />
+                  </div>
+                </Link>
+                <Link to={'/cart'}><div className='w-[35px] h-[35px] flex items-center justify-items-center relative'>
+                  {localCartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localCartItems.length}</div>}
+                  <FaShoppingCart size={20} />
+                </div></Link>
+                <Link to={'/wishlist'}><div className='w-[35px] h-[35px] flex items-center justify-items-center relative'>
+                  {localWishlistItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localWishlistItems.length}</div>}
+                  <BiHeart size={20} />
+                </div></Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   )
 }

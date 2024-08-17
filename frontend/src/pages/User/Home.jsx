@@ -22,14 +22,14 @@ function Home() {
 
   return (
     <>
-      <div className="px-[20px]">
-        <div className="ml-auto mr-auto w-fit mt-4">
-          <Link to={'/men'} ><button onClick={() => { setActiveGender('men') }} className={`${activeGender === 'men' ? 'bg-black text-white' : 'bg-transparent '} px-10 py-4 border-[1px] border-black rounded-full `}>Men</button></Link>
-          <Link to={'/women'} ><button onClick={() => { setActiveGender('women') }} className={`${activeGender === 'women' ? 'bg-black text-white' : 'bg-transparent '} px-10 py-4 border-[1px] border-black rounded-full ml-2`}>Women</button></Link>
-        </div>
-        <Banner></Banner>
+      <div className="ml-auto mr-auto w-fit mt-4">
+        <Link to={'/men'} ><button onClick={() => { setActiveGender('men') }} className={`${activeGender === 'men' ? 'bg-black text-white' : 'bg-transparent '} px-10 py-4 border-[1px] border-black rounded-full `}>Men</button></Link>
+        <Link to={'/women'} ><button onClick={() => { setActiveGender('women') }} className={`${activeGender === 'women' ? 'bg-black text-white' : 'bg-transparent '} px-10 py-4 border-[1px] border-black rounded-full ml-2`}>Women</button></Link>
+      </div>
+      <Banner></Banner>
+      <div className="px-[10px]">
         <p className="mt-2">Catelogs</p>
-        <p className="text-center text-4xl">Fresh and trending collections</p>
+        <p className="text-center lg:text-4xl md:text-3xl text-2xl uppercase font-medium">Fresh and trending collections</p>
         <TrendingRow></TrendingRow>
         {<Row title='All New Topwears' products={topwears} isLoading={isTopwearsLoading} ></Row>}
         {<Row title='All New Bottomwears' products={bottomwears} isLoading={isBottomwearsLoading}></Row>}

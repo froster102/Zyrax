@@ -5,6 +5,7 @@ import { useAddItemsToUserCartMutation, useRemoveItemFromUserWishlistMutation } 
 import { useEffect, useState } from "react"
 import PickSizeModal from "../../components/PickSizeModal"
 import { selectUserToken } from "../../features/authSlice"
+import EmptyCart from "../../components/EmptyCart"
 
 function Wishlist() {
   const items = useSelector(selectWishlistItems)
@@ -40,10 +41,12 @@ function Wishlist() {
     } catch (error) {
     }
   }
+  console.log(items)
   return (
     <>
-      <div className="w-[1024px] ml-auto mr-auto mt-8">
+      <div className="max-w-[1120px] m-auto mt-8">
         <h1 className="mt-10 font-semibold text-lg">My Wishlist <span className="font-light">({items.length} Items)</span></h1>
+        {items.length === 0 && <EmptyCart />}
         <div className="flex gap-4 mt-4 flex-wrap">
           {items.map((item, i) => <WishlistProductCard key={i} product={item} removeItemFromWishlist={removeItemFromWishlist} moveItemToCart={moveItemToCart}></WishlistProductCard>)}
         </div>

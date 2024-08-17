@@ -24,8 +24,10 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         syncWishlist: (state, action) => {
+            console.log(action.payload)
             const dbItems = Array.isArray(action.payload) ? action.payload : [action.payload]
             state.wishlist.items = dbItems
+            saveToLocalStorage(state)
         },
         addToWishlist: (state, action) => {
             const newItems = Array.isArray(action.payload) ? action.payload : [action.payload]
