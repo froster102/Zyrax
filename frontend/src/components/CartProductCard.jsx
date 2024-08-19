@@ -62,7 +62,7 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
                                     >
                                         <option value="" disabled >Size</option>
                                         {
-                                            item?.product.sizes.map((size) => (<option key={size} value={size}>{size}</option>))
+                                            item?.product?.sizes.map((size) => (<option key={size} value={size}>{size}</option>))
                                         }
                                     </select>
                                     <select ref={selectedQtyRef} className="ml-2 border border-[#CFCBCB] text-xs rounded-md py-1 text-[#828282] px-2 flex items-center justify-center outline-none"
@@ -87,22 +87,18 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
                                         e.preventDefault()
                                         e.stopPropagation()
                                         removeFromCart({ productId: item?.product?._id })
-                                    }} className="md:px-2 p-[2px] text-nowrap bg-stone-300 rounded-full border border-stone-300 md:text-sm text-xs font-medium z-10" >Remove</button>
+                                    }} className="md:px-2 p-[2px] text-nowrap bg-stone-100 rounded-md border border-stone-300 hover:bg-black hover:text-white transition ease-in duration-200 md:text-sm text-xs font-medium z-10" >Remove</button>
                                     <button onClick={(e) => {
                                         e.preventDefault()
                                         e.stopPropagation()
                                         moveItemToWishlist(item)
-                                    }} className="ml-2 md:px-2 p-[2px] text-nowrap bg-stone-300 rounded-full border border-stone-300 md:text-sm font-medium z-10 text-xs" >Move to Wishlist</button>
+                                    }} className="ml-2 md:px-2 p-[2px] text-nowrap bg-stone-100 rounded-md border border-stone-300 hover:bg-black hover:text-white transition ease-in duration-200 md:text-sm font-medium z-10 text-xs" >Move to Wishlist</button>
                                 </div>
                             </div>
                             <p className="font-semibold text-right pt-4 md:text-base text-sm text-nowrap">₹ {item?.product.price}</p>
                         </div>
                     </div>
                 </Link>
-                {/* <div className="absolute bottom-5 left-36">
-                    <button onClick={() => { removeFromCart({ productId: item?.product?._id }) }} className="md:px-2 p-1 bg-stone-300 rounded-full border border-stone-300 text-sm font-medium z-10" >Remove</button>
-                    <button onClick={() => { moveItemToWishlist(item) }} className="ml-2 md:px-2 p-1 bg-stone-300 rounded-full border border-stone-300 text-sm font-medium z-10" >Move to Wishlist</button>
-                </div> */}
             </div>
         </>
     )

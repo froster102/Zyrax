@@ -3,7 +3,7 @@ import { setUserCredentials, userLogout } from './authSlice.js'
 import { resetCartAndWishlist } from './userSlice.js'
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: 'https://1p4tj84j-3000.inc1.devtunnels.ms/api/v1',
+    baseUrl: 'http://localhost:3000/api/v1',
     credentials: 'include',
     prepareHeaders: (headers, { getState },) => {
         const token = getState().auth.user.accessToken

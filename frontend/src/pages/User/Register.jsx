@@ -1,37 +1,31 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Flip, toast, ToastContainer } from 'react-toastify'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useSignupMutation } from '../../features/userApiSlice'
-import { setUserCredentials } from '../../features/authSlice'
+import { selectUserToken, setUserCredentials } from '../../features/authSlice'
 import { FaGoogle } from "react-icons/fa6";
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-
-const schema = z.object({
-  firstName: z.string().trim().min(1, 'Required').min(3, 'Must be minimum of 3 characters'),
-  lastName: z.string().trim().min(1, 'Required').min(3, 'Must be minimum of 3 characters'),
-  email: z.string().trim().email('Enter a valid email').min(1, 'Required'),
-  password: z.string().min(6, 'Must be minimum of 6 characters').regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{6,}$/, 'Must contain a letter,number,a special character'),
-  confirmPassword: z.string().min(1, 'Required')
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Password do not match',
-  path: ['confirmPassword']
-})
-
+import registerSchema from '../../../ValidationSchema/registerSchema'
+import toast from 'react-hot-toast'
+import { selectActiveGender } from '../../features/userSlice'
 
 function Register() {
   const dispatch = useDispatch()
   const [signup, { isLoading }] = useSignupMutation()
   const navigate = useNavigate()
+  const userAuth = useSelector(selectUserToken)
+  const activeGender = useSelector(selectActiveGender)
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
-    resolver: zodResolver(schema)
+    resolver: zodResolver(registerSchema)
   })
 
-
+  useEffect(() => {
+    if (userAuth) {
+      navigate(`/${activeGender}`)
+    }
+  }, [])
 
   useEffect(() => {
     function handleAuthMsg(e) {
@@ -53,10 +47,17 @@ function Register() {
     const { firstName, lastName, email, password } = data
     try {
       const res = await signup({ firstName, lastName, email, password }).unwrap()
-
+      toast(res?.message, {
+        position: 'top-center',
+        duration: 3000
+      })
       reset()
+      navigate('/login')
     } catch (error) {
-      toast(error?.data?.message)
+      toast(error?.data?.message, {
+        position: 'top-center',
+        duration: 3000
+      })
       reset()
     }
   }

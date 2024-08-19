@@ -13,9 +13,20 @@ passport.use(new GoogleStrategy.Strategy({
 },
     async (accessToken, refreshToken, profile, cb) => {
         try {
-            const user = await User.findOne({ googleId: profile.id })
+            const user = await User.findOne({ email: profile.emails[0].value })
+            if (user) {
+                await User.findOneAndUpdate({
+                    email: user.email
+                }, {
+                    googleId: profile.id,
+                    authProvider: 'google',
+                    profilePic: profile.photos[0].value,
+                    status: 'active',
+                    verification_status: true
+                })
+            }
             if (!user) {
-                const user = await User.create({
+                await User.create({
                     firstName: profile.name.givenName,
                     lastName: profile.name.familyName,
                     email: profile.emails[0].value,
@@ -24,12 +35,6 @@ passport.use(new GoogleStrategy.Strategy({
                     profilePic: profile.photos[0].value,
                     status: 'active',
                     verification_status: true
-                })
-                await Wishlist.create({
-                    user_id: user._id
-                })
-                await Cart.create({
-                    user_id: user._id
                 })
             }
             return cb(null, profile);

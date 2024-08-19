@@ -2,8 +2,6 @@ import { User } from "../../model/user.js"
 import bcrypt from 'bcryptjs'
 import { generateAccessToken, generateRefreshToken, sendVerifyEmail } from '../../utils/utils.js'
 import jwt from 'jsonwebtoken'
-import { Wishlist } from "../../model/wishlist.js"
-import { Cart } from "../../model/cart.js"
 
 const googleSigninCallback = async (req, res) => {
     const user = await User.findOne({ googleId: req.user.id })

@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const CartItemSchema = {
     productId: { type: mongoose.SchemaTypes.ObjectId, ref: 'Product' },
-    selectedSize: { type: String, default: '' },
-    selectedQty: { type: Number, default: 1 }
+    selectedSize: { type: String },
+    selectedQty: { type: Number }
 }
 
 const CartSchema = new mongoose.Schema({

@@ -8,7 +8,7 @@ function ProductDetailsAccordion({ title, description }) {
 
     return (
         <>
-            <div className='w-[504px] py-2'>
+            <div className='w-full py-2'>
                 <div onClick={() => setAccordinOpen(!accordionOpen)} className="flex justify-between items-center cursor-pointer">
                     <p className='font-semibold text-lg'>{title}</p>
                     <IoIosArrowDown className={`${accordionOpen?'rotate-180':'rotate-0'} transition-all ease-in`} size={20} />

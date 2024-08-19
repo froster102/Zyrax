@@ -4,14 +4,13 @@ import SearchBar from './SearchBar'
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../features/authSlice';
 import UserDropdown from './UserDropdown';
-import 'react-toastify/dist/ReactToastify.css';
 import { Link, useLocation } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { syncWishlist, syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems } from '../features/userSlice';
-import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery } from '../features/userApiSlice';
+import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery, useLogoutUserMutation } from '../features/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
 import { IoMenu } from "react-icons/io5";
+import toast, { Toaster } from 'react-hot-toast';
 
 
 const topwears = ['Shirts', 'Pollos', 'Oversized shirts', 'All T-shirts', 'Jackets']
@@ -27,8 +26,10 @@ function Navbar() {
   const userAuth = useSelector(selectUserToken)
   const localCartItems = useSelector(selectCartItems)
   const localWishlistItems = useSelector(selectWishlistItems)
-  const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
-  const { data: userCartItems, isLoading: isUserCartItemsLoading } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
+  const [userSignOut] = useLogoutUserMutation()
+  const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchWishlist } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
+  const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
+  // const 
 
   useEffect(() => {
     pathname === '/cart' || pathname === '/checkout' ? setHideNav(true) : setHideNav(false)
@@ -51,30 +52,51 @@ function Navbar() {
   }, [])
 
   useEffect(() => {
-    !isUserWishlistItemsLoading && userAuth && dispatch(syncWishlist(userWishlistItems?.items))
+    if (userAuth) {
+      refetchCart()
+      refetchWishlist()
+    }
+  }, [userAuth, refetchCart, refetchWishlist])
+
+  useEffect(() => {
+    !isUserWishlistItemsLoading && userWishlistItems?.items && userAuth && dispatch(syncWishlist(userWishlistItems.items))
   }, [userWishlistItems, isUserWishlistItemsLoading, dispatch])
 
   useEffect(() => {
-    if (!isUserCartItemsLoading && userAuth) {
-      const dispatchCartState = userCartItems?.items.map(item => {
+    if (!isUserCartItemsLoading && userCartItems?.items && userAuth) {
+      const dispatchCartState = userCartItems.items.map(item => {
         return {
           product: item.productId,
           selectedSize: item.selectedSize,
           selectedQty: item.selectedQty
         }
       })
-      !isUserCartItemsLoading && dispatch(syncCart(dispatchCartState))
+      dispatch(syncCart(dispatchCartState))
     }
   }, [userCartItems, isUserCartItemsLoading, dispatch])
 
-  function logoutUser() {
-    toast('Logged out sucessfully')
-    dispatch(resetCartAndWishlist())
-    dispatch(userLogout())
+  async function logoutUser() {
+    try {
+      await userSignOut().unwrap()
+      toast('Logged out sucessfully')
+      dispatch(resetCartAndWishlist())
+      dispatch(userLogout())
+    } catch (error) {
+    }
   }
 
   return (
     <>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            backgroundColor: 'black',
+            color: 'white',
+          },
+          duration: 2000
+        }}
+      />
       <div className='lg:max-w-[1600px] lg:block m-auto hidden'>
         <div className={`${hideNav ? 'hidden' : 'block'}`} >
           <div className={`px-[20px] ${sticky ? 'fixed w-full top-0 z-50 drop-shadow-xl' : 'mt-2'} transition ease-in`} onScroll={() => { setSticky(true) }}>

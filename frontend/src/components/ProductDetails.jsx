@@ -50,6 +50,7 @@ function ProductDetails() {
     const { data: similiarProducts, isError: isSimilarProductsError, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
     const [imageModal, setImageModal] = useState(false)
     const [previewImg, setPreviewImg] = useState('')
+    const [productImgPrev, setProductImgPrev] = useState(product?.imageUrls[0])
     const [activeWishlistItem, setActiveWishlistItem] = useState(false)
     const [activeCartItem, setActiveCartItem] = useState(false)
     const navigate = useNavigate()
@@ -59,6 +60,10 @@ function ProductDetails() {
     const [addToUserCart] = useAddItemsToUserCartMutation()
     const [removeUserFromCart] = useRemoveItemFromUserCartMutation()
     const userAuth = useSelector(selectUserToken)
+
+    useEffect(() => {
+        setProductImgPrev(product?.imageUrls[0])
+    }, [isProductLoading])
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -94,7 +99,7 @@ function ProductDetails() {
             }
         }
     }
-
+    
     async function handleCartItems(product) {
         if (!selectedSize) {
             setError(true)
@@ -116,31 +121,37 @@ function ProductDetails() {
                     <BreadCrumbs category={product?.category.name} name={product?.name} ></BreadCrumbs>
             }
             <div className='mt-2 text-[#383333] antialiased px-4'>
-                <div className='flex'>
-                    {
-                        isProductLoading || isProductDeatilsError ? <div className='flex gap-4 h-fit w-fit flex-wrap'>
-                            {[...Array(4)].map((imageUrl, i) => {
-                                return <Skeleton key={i} className='w-[325px] h-[455px] border border-[#CFCBCB] rounded-md' />
-                            })}
-                        </div> : <div className='flex gap-4 h-fit w-fit flex-wrap '>
-                            {product?.imageUrls?.map((imageUrl, i) => {
-                                return <img key={i} onClick={() => {
-                                    setPreviewImg(imageUrl)
+                <div className='md:flex gap-4 block'>
+                    <div className='w-full'>
+                        <div className='h-[640px] max-w-full border border-[#CFCBCB] rounded-lg '>
+                            <img
+                                onClick={() => {
                                     setImageModal(true)
-                                }} className='2xl:w-[325px] 2xl:h-[455px] xl:w-[300px] xl:h-[455px] lg:w-[290px] lg:h-[455px] border border-[#CFCBCB] rounded-md' src={imageUrl} alt="" />
-                            })}
+                                    setPreviewImg(productImgPrev)
+                                }}
+                                className='w-full h-full object-contain' src={productImgPrev} alt="" />
                         </div>
-                    }
-                    <div className='bg-white w-full rounded-lg border border-[#CFCBCB] py-[20px]'>
-                        <div className='px-[40px]'>
+                        <div className='md:flex mt-4 justify-between hidden'>
+                            {
+                                product?.imageUrls.map((img, i) => <img
+                                    onClick={() => {
+                                        setProductImgPrev(img)
+                                    }}
+                                    key={i}
+                                    className='min-w-[60px] max-h-[240px] p-2 border border-[#CFCBCB] rounded-md' src={img} alt="" />)
+                            }
+                        </div>
+                    </div>
+                    <div className='bg-white rounded-lg border border-[#CFCBCB] py-[20px] md:mt-0 mt-4 w-full'>
+                        <div className='md:px-8 px-4'>
                             <h1 className='font-bold text-4xl '>{_.startCase(product?.name) || <Skeleton width={'400px'} />}</h1>
                             <p className='ml-1 text-sm pt-1 font-medium text-gray-700'>{_.startCase(product?.category.name) || <Skeleton width={'300px'} />}</p>
                         </div>
-                        <div className='w-full h-[1px] bg-[#CFCBCB] mt-4'></div>
-                        <div className='p-[40px]'>
+                        <div className='w-full h-[1px] bg-[#CFCBCB]'></div>
+                        <div className='md:px-8 px-4 mt-4'>
                             <p className='text-2xl font-semibold w-full'>₹ {product?.price || <Skeleton width={'50px'} />}</p>
                             <p className='font-light'>MRP incl. of all taxes</p>
-                            <div className='h-[23px] bg-[#D9D9D9] w-fit rounded-lg border border-[#CFCBCB] my-8'>
+                            <div className='h-[23px] bg-[#D9D9D9] w-fit rounded-lg border border-[#CFCBCB]'>
                                 <div className='flex text-sm px-2 justify-center items-center font-semibold gap-2'>
                                     <p className='flex items-center justify-center'>4.0<FaStar className='inline ml-1' /></p>
                                     <p>|</p>
@@ -149,7 +160,7 @@ function ProductDetails() {
                                     <p>20 reviews</p>
                                 </div>
                             </div>
-                            <div className='my-8'>
+                            <div className='mt-8'>
                                 <p className='text-base font-semibold mt-4'>Please select a size.</p>
                                 <div className='mt-4 flex gap-2 '>
                                     <Size
@@ -179,19 +190,37 @@ function ProductDetails() {
                                 </select>
                             </div>
                             {isProductDeatilsError ? <Unavailable /> : product?.stockQty === 0 ? < StockOut /> : <div>
-                                {activeCartItem
-                                    ? <Link to={'/cart'} >
-                                        <button className='px-10 py-2 border border-[#CFCBCB] uppercase rounded-lg text-lg font-medium text-white bg-black inline-flex items-center justify-center'>
-                                            <IoCart /> Go to cart
-                                        </button>
-                                    </Link>
-                                    : <button onClick={() => { handleCartItems(product) }}
-                                        className='px-10 py-2 border border-[#CFCBCB] rounded-lg text-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'
-                                    >
-                                        <IoCartOutline /> Add to Cart</button>
-                                }
-                                <button onClick={() => { handleWishlistItems(product) }} className='inline-flex px-5 py-2 border border-[#CFCBCB] rounded-lg ml-2 text-lg font-medium items-center w-fit uppercase'>
-                                    {activeWishlistItem ? <><IoMdHeart /> Added</> : <><IoMdHeartEmpty /> Add</>} to Wishlist</button>
+                                <div className='sm:block hidden w-full'>
+                                    {activeCartItem
+                                        ? <Link to={'/cart'} >
+                                            <button className='md:px-4 md:py-2 md:text-lg p-2 text-sm  border border-[#CFCBCB] uppercase rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center'>
+                                                <IoCart /> Go to cart
+                                            </button>
+                                        </Link>
+                                        : <button onClick={() => { handleCartItems(product) }}
+                                            className='md:px-4 md:py-2 md:text-lg p-2 text-sm  border border-[#CFCBCB] rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'
+                                        >
+                                            <IoCartOutline /> Add to Cart</button>
+                                    }
+                                    <button onClick={() => { handleWishlistItems(product) }} className='md:px-4 md:py-2 md:text-lg p-2 text-sm inline-flex  border border-[#CFCBCB] rounded-lg ml-2 font-medium items-center uppercase'>
+                                        {activeWishlistItem ? <><IoMdHeart /> Added</> : <><IoMdHeartEmpty /> Add</>} to Wishlist</button>
+
+                                </div>
+                                <div className='sm:hidden fixed flex w-full justify-center bottom-0 left-1/2 -translate-x-1/2 z-50 bg-stone-100'>
+                                    {activeCartItem
+                                        ? <Link to={'/cart'} >
+                                            <button className='p-2 text-sm sm:text-lg w-full text-nowrap border border-[#CFCBCB] rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'>
+                                                <IoCart /> Go to cart
+                                            </button>
+                                        </Link>
+                                        : <button onClick={() => { handleCartItems(product) }}
+                                            className='p-2 text-sm sm:text-lg w-full border border-[#CFCBCB] rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'
+                                        >
+                                            <IoCartOutline /> Add to Cart</button>
+                                    }
+                                    <button onClick={() => { handleWishlistItems(product) }} className='w-full text-sm inline-flex items-center justify-center  border border-[#CFCBCB] rounded-lg ml-2 font-medium uppercase'>
+                                        {activeWishlistItem ? <><IoMdHeart /> Added</> : <><IoMdHeartEmpty /> Add</>} to Wishlist</button>
+                                </div>
                             </div>}
                             <div className='flex justify-center items-center w-fit my-8'>
                                 <p className='text-lg'>Share</p>
@@ -217,6 +246,7 @@ function ProductDetails() {
                 <div className='w-full h-[1px] bg-[#CFCBCB] mt-8'></div>
                 <Ratings ratings={RATINGS} customerImages={CUSTOMER_IMAGES}></Ratings>
                 <Row title={'Similar Products'} isLoading={isProductsLoading} products={similiarProducts} ></Row>
+                <div className='pt-[49px]'></div>
             </div>
             {
                 imageModal && <ProductImageModal closeModal={() => { setImageModal(false) }} image={[previewImg]}></ProductImageModal>

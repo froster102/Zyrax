@@ -4,7 +4,7 @@ const addWishlistItems = async (req, res) => {
     const { items } = req.body
     try {
         await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: { $each: items } } }, { upsert: true })
-        res.status(201).json({ message: 'Product added to wishlist' })
+        return res.status(201).json({ message: 'Product added to wishlist' })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: 'Failed to add product to wishlist' })
@@ -18,7 +18,7 @@ const getWishlistItems = async (req, res) => {
         })
         return res.status(200).json(items)
     } catch (error) {
-        res.status(500).json({ message: 'Failed to get products' })
+        return res.status(500).json({ message: 'Failed to get products' })
     }
 }
 
@@ -26,10 +26,10 @@ const removeWishlistItem = async (req, res) => {
     const { item } = req.body
     try {
         await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $pull: { items: item } }, { upsert: true }, { new: true })
-        res.status(200).json({ message: 'Product removed from wishlist sucessfully' })
+        return res.status(200).json({ message: 'Product removed from wishlist sucessfully' })
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: 'Failed to remove product from wishlist' })
+        return res.status(500).json({ message: 'Failed to remove product from wishlist' })
     }
 }
 

@@ -63,6 +63,12 @@ const userApiSlice = apiSlice.injectEndpoints({
                 method: 'DELETE',
                 body: { productId }
             })
+        }),
+        logoutUser: builder.mutation({
+            query: () => ({
+                url: '/auth/logout',
+                method: 'GET'
+            })
         })
     })
 })
@@ -70,6 +76,7 @@ const userApiSlice = apiSlice.injectEndpoints({
 export const {
     useSigninMutation,
     useSignupMutation,
+    useLogoutUserMutation,
     useGetProductsQuery,
     useGetProductDeatilsQuery,
     useGetProfileQuery,

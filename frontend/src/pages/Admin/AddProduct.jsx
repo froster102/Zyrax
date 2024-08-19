@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { RiStore3Fill } from "react-icons/ri";
 import { FaCheckCircle } from "react-icons/fa";
 import AddImageModal from '../../components/AddImageModal';
-import { toast } from 'react-toastify';
 import { useAddProductMutation, useEditProductMutation, useFetchProductQuery, useFetchProductsQuery, useGetCategoriesQuery } from '../../features/adminApiSlice'
 import { BeatLoader } from 'react-spinners'
 import { z } from 'zod';
@@ -11,6 +10,7 @@ import { useForm, } from 'react-hook-form'
 import SizeSelector from '../../components/SizeSelector';
 import ImageSelector from '../../components/ImageSelector';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 
 const imageSchema = z.object({
     name: z.string(),
@@ -111,7 +111,7 @@ function AddProduct({ mode }) {
         try {
             let res = ''
             mode === 'edit' ? res = await editProduct({ id: product._id, productData }).unwrap() : res = await addProduct(productData).unwrap()
-            console.log(reset())
+            reset()
             refetch()
             setPreview(null)
             toast(res?.message)
@@ -138,6 +138,16 @@ function AddProduct({ mode }) {
 
     return (
         <>
+            <Toaster
+                position="top-center"
+                toastOptions={{
+                    style: {
+                        backgroundColor: 'black',
+                        color: 'white',
+                    },
+                    duration: 3000
+                }}
+            />
             <img src="" alt="" />
             <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner py-[40px] px-[20px]'>
                 <h1 className='text-3xl font-semibold'>Products</h1>

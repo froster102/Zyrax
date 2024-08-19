@@ -82,7 +82,7 @@ const deleteCategory = async (req, res) => {
     const { id } = req.params
     try {
         const responce = await Category.deleteOne({ _id: id })
-        if (responce) res.status(200).json({ message: 'Category deleted sucessfully' })
+        if (responce) return res.status(200).json({ message: 'Category deleted sucessfully' })
     } catch (error) {
         console.log(error)
     }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ReturnPng from '../assets/30-days.png'
 import Cash from '../assets/cash-on-delivery.png'
 import Phonepe from '../assets/phonepe-icon.png'
@@ -11,11 +11,19 @@ import Dtdc from '../assets/dtdc-logo.png'
 import Delhivery from '../assets/delhivery-logo.png'
 import { FaInstagram, FaFacebook } from "react-icons/fa";
 import { BsTwitterX } from 'react-icons/bs';
+import { useLocation } from 'react-router-dom'
 
 function Footer() {
+    const { pathname } = useLocation()
+    const [hideFooter, setHideFooter] = useState(false)
+
+    useEffect(() => {
+        pathname.startsWith('/product') ? setHideFooter(true) : setHideFooter(false)
+    }, [pathname])
+
     return (
         <>
-            <div className='bg-stone-200 rounded-t-3xl'>
+            <div className={`bg-stone-200 rounded-t-3xl ${hideFooter ? 'hidden' : 'block'}`}>
                 <div className='w-full grid grid-cols-12  p-6 mt-16'>
                     <div className='sm:col-start-3 sm:col-end-5 col-start-2 col-end-5'>
                         <h1 className='sm:text-lg text-sm font-semibold'>Need Help</h1>

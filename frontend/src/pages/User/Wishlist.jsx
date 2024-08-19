@@ -23,7 +23,7 @@ function Wishlist() {
     e.stopPropagation()
     dispatch(removeFromWishlist(product))
     try {
-      await removeUserWishlistItem({ item: product._id })
+      userAuth && await removeUserWishlistItem({ item: product._id })
       toast('Product removed from your wishlist')
     } catch (error) {
     }
@@ -54,7 +54,7 @@ function Wishlist() {
             backgroundColor: 'black',
             color: 'white',
           },
-          duration: 1000
+          duration: 2000
         }}
       />
       <div className="max-w-[1120px] m-auto mt-8 px-8">

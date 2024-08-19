@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom';
-import { ToastContainer, toast, Flip } from 'react-toastify';
 import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery, useSigninMutation } from '../../features/userApiSlice';
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
@@ -10,10 +9,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { selectActiveGender, selectCartItems, selectWishlistItems } from '../../features/userSlice';
 import { loginSchema } from '../../../ValidationSchema/loginSchema';
+import toast, { Toaster } from 'react-hot-toast'
 
 function Login() {
     const dispatch = useDispatch()
-    const [signin, { isLoading }] = useSigninMutation()
+    const [signin, { isLoading, error, reset }] = useSigninMutation()
     const gender = useSelector(selectActiveGender)
     const navigate = useNavigate()
     const location = useLocation()
@@ -26,7 +26,7 @@ function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(loginSchema)
     })
-
+    
     useEffect(() => {
         const syncUserData = async () => {
             try {
@@ -70,11 +70,9 @@ function Login() {
         const { email, password } = data
         try {
             const res = await signin({ email, password }).unwrap()
-            console.log(res)
             dispatch(setUserCredentials({ ...res }))
         } catch (error) {
-            console.log(error)
-            toast(error?.data?.message)
+
         }
     }
 
@@ -89,6 +87,7 @@ function Login() {
         dispatch(setUserCredentials({ accessToken, role }))
         navigate(redirect, { replace: true })
     }
+
     return (
         <>
             <form action="" onSubmit={handleSubmit(onSubmit)}>
@@ -97,9 +96,11 @@ function Login() {
                     <div className='w-full bg-black rounded-md mt-2 text-white flex items-center justify-center py-2' onClick={signInWithGoogle}>Sign in with google<FaGoogle className='inline ml-2' /></div>
                     <span className='block mt-2  text-xl font-medium' htmlFor="">Email</span>
                     <input {...register('email')} className='block mt-2 p-2 border-[1px] h-[43px] border-black rounded-md w-full' type="text" />
+                    {error && <span className='text-red-700 text-sm'>{error?.data?.message}</span>}
                     {errors.email && <span className='text-red-700 text-sm'>{errors.email?.message}</span>}
                     <span className='block mt-4  text-xl font-medium' htmlFor="">Password</span>
-                    <input {...register('password')} className='block mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' type="password" />
+                    <input onChange={() => setError(null)} {...register('password')} className='block mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' type="password" />
+                    {error && <span className='text-red-700 text-sm'>{error?.data?.message}</span>}
                     {errors.password && <span className='text-red-700 text-sm'>{errors.password?.message}</span>}
                     <Link to='/reset-password'><p className='text-right font-semibold text-sm hover:underline mt-1'>Forgot Password</p></Link>
                     <button className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >Login</button>
