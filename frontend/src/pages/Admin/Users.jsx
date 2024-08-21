@@ -1,6 +1,6 @@
 import UserTable from "../../components/UserTable";
 import { useBlockUserMutation, useFetchUsersQuery, useUnblockUserMutation } from "../../features/adminApiSlice";
-import { toast } from "react-toastify";
+import toast, { Toaster } from "react-hot-toast";
 
 function Users() {
     const { data, error, isLoading, refetch } = useFetchUsersQuery()
@@ -29,6 +29,16 @@ function Users() {
 
     return (
         <>
+            <Toaster
+                position="top-center"
+                toastOptions={{
+                    style: {
+                        backgroundColor: 'black',
+                        color: 'white',
+                    },
+                    duration: 2000
+                }}
+            />
             <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px]'>
                 <h1 className='text-3xl font-semibold'>Users</h1>
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">

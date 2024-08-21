@@ -21,7 +21,6 @@ passport.use(new GoogleStrategy.Strategy({
                     googleId: profile.id,
                     authProvider: 'google',
                     profilePic: profile.photos[0].value,
-                    status: 'active',
                     verification_status: true
                 })
             }
@@ -34,7 +33,8 @@ passport.use(new GoogleStrategy.Strategy({
                     authProvider: 'google',
                     profilePic: profile.photos[0].value,
                     status: 'active',
-                    verification_status: true
+                    verification_status: true,
+                    createdAt: null
                 })
             }
             return cb(null, profile);

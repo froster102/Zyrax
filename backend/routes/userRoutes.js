@@ -7,7 +7,7 @@ import { getProductDeatils, getProducts } from '../controller/user/userProductCo
 import { getProfile } from '../controller/user/userProfileController.js'
 import { userAuth } from '../middlewares/authMiddleware.js'
 import { addWishlistItems, getWishlistItems, removeWishlistItem } from '../controller/user/userWishlistController.js'
-import { addCartItems, getCartItems, removeCartItem} from '../controller/user/userCartController.js'
+import { addCartItems, getCartItems, removeCartItem } from '../controller/user/userCartController.js'
 
 const router = express.Router()
 
@@ -31,6 +31,11 @@ router.get('/products/:name', getProductDeatils)
 
 router.use(userAuth)
 
+router.get('/addresses')
+router.post('/addresses')
+router.put('/addresses')
+router.delete('/addresses')
+
 router.get('/wishlist', getWishlistItems)
 router.post('/wishlist', addWishlistItems)
 router.delete('/wishlist', removeWishlistItem)
@@ -41,6 +46,10 @@ router.delete('/cart', removeCartItem)
 
 
 router.get('/me', getProfile)
+router.post('/me')
+router.put('/me')
+router.delete('/me')
+
 router.get('/auth/logout', logout)
 
 

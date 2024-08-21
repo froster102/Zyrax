@@ -29,7 +29,6 @@ function Navbar() {
   const [userSignOut] = useLogoutUserMutation()
   const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchWishlist } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
   const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
-  // const 
 
   useEffect(() => {
     pathname === '/cart' || pathname === '/checkout' ? setHideNav(true) : setHideNav(false)
@@ -56,7 +55,7 @@ function Navbar() {
       refetchCart()
       refetchWishlist()
     }
-  }, [userAuth, refetchCart, refetchWishlist])
+  }, [userAuth, refetchCart, refetchWishlist, userCartItems, userWishlistItems])
 
   useEffect(() => {
     !isUserWishlistItemsLoading && userWishlistItems?.items && userAuth && dispatch(syncWishlist(userWishlistItems.items))
@@ -77,8 +76,8 @@ function Navbar() {
 
   async function logoutUser() {
     try {
-      await userSignOut().unwrap()
       toast('Logged out sucessfully')
+      await userSignOut().unwrap()
       dispatch(resetCartAndWishlist())
       dispatch(userLogout())
     } catch (error) {

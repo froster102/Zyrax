@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
 import { useAddCategoryMutation, useGetCategoriesQuery } from '../features/adminApiSlice'
-import { toast } from 'react-toastify'
+import toast, { Toaster } from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -36,6 +36,7 @@ function AddCategoryModal({ closeModal, refetch }) {
             toast(res?.message)
             refetch()
             reset()
+            closeModal()
         } catch (error) {
             console.log(error)
             toast(error?.data?.message)
@@ -44,6 +45,16 @@ function AddCategoryModal({ closeModal, refetch }) {
 
     return (
         <>
+            <Toaster
+                position="top-center"
+                toastOptions={{
+                    style: {
+                        backgroundColor: 'black',
+                        color: 'white',
+                    },
+                    duration: 2000
+                }}
+            />
             <div className="relative z-10" >
                 <div className="fixed inset-0 bg-[#f1f1f1] bg-opacity-75 transition-all backdrop-blur-sm"></div>
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">

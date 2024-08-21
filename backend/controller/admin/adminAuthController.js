@@ -21,7 +21,6 @@ const signin = async (req, res) => {
                 })
                 return res.status(200).json({ accessToken: acessToken, role: 'admin' })
             } else {
-                console.log('sdhjsh')
                 return res.status(401).json({ message: 'Bad credentials' })
             }
         }

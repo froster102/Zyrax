@@ -3,7 +3,7 @@ import { GrView } from "react-icons/gr";
 import { FaEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useBlockProductMutation, useDeleteProductMutation } from "../features/adminApiSlice";
-import { toast } from 'react-toastify'
+import toast, { Toaster } from 'react-hot-toast'
 import { TbBarrierBlock, TbBarrierBlockOff } from "react-icons/tb";
 import { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
@@ -38,9 +38,19 @@ function ProductTable({ products, refetch }) {
 
     return (
         <>
+            <Toaster
+                position="top-center"
+                toastOptions={{
+                    style: {
+                        backgroundColor: 'black',
+                        color: 'white',
+                    },
+                    duration: 2000
+                }}
+            />
             <div className="w-fit mt-4 px-2 flex items-center justify-items-center bg-white  rounded-md h-fit border-[1px] border-black">
                 <IoSearchOutline size={20} color="gray" />
-                <input className='h-[40px] rounded-md w-80 outline-none' type="text" placeholder='Search' value={search} onChange={(e)=>setSearch(e.target.value)} />
+                <input className='h-[40px] rounded-md w-80 outline-none' type="text" placeholder='Search' value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <div className="pt-4">
                 <table className="w-full text-sm text-left rtl:text-right shadow-2xl text-gray-500">

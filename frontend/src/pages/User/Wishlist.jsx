@@ -44,7 +44,6 @@ function Wishlist() {
     } catch (error) {
     }
   }
-  console.log(items)
   return (
     <>
       <Toaster

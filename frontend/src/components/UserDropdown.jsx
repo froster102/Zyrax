@@ -9,7 +9,7 @@ function UserDropdown({ user, logoutUser }) {
     return (
         <>
             <div className="relative" onMouseEnter={() => { setShow(true) }} onMouseLeave={() => { setShow(false) }} >
-                <Link to={'/profile'} ><div className='w-fit p-2 z-50 rounded-full h-fit  flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
+                <Link to={'/account'} ><div className='w-fit p-2 z-50 rounded-full h-fit  flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in'>
                     <FaRegUser onClick={() => {
                     }} size={20}></FaRegUser>
                 </div>

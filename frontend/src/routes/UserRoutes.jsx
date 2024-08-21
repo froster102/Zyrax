@@ -8,13 +8,16 @@ import ResetPassword from '../pages/User/ResetPassword'
 import NotFound from '../pages/User/NotFound'
 import VerifyEmail from '../pages/User/VerifyEmail'
 import Home from '../pages/User/Home'
-import Profile from '../pages/User/Profile'
+import Account from '../pages/User/Account'
 import RequireUserAuth from '../components/RequireUserAuth'
 import ProductDetails from '../components/ProductDetails'
 import Wishlist from '../pages/User/Wishlist'
 import Cart from '../pages/User/Cart'
 import { Flip, ToastContainer } from 'react-toastify'
 import LayoutWithWidth from '../components/LayoutWithWidth'
+import Orders from '../components/Orders'
+import Wallet from '../components/Wallet'
+import Faq from '../components/Faq'
 
 function UserRoutes() {
     return (
@@ -37,7 +40,7 @@ function UserRoutes() {
                 <Route path='/cart' element={<Cart></Cart>} ></Route>
                 <Route path='/product/:name' element={<LayoutWithWidth><ProductDetails /></LayoutWithWidth>}></Route>
                 <Route element={<RequireUserAuth />}>
-                    <Route path='/profile' element={<LayoutWithWidth><Profile /></LayoutWithWidth>} ></Route>
+                    <Route path='/account/*' element={<LayoutWithWidth><Account /></LayoutWithWidth>} ></Route>
                 </Route>
                 <Route path='*' element={<NotFound></NotFound>} ></Route>
             </Routes>

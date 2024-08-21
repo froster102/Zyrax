@@ -16,11 +16,18 @@ const googleSigninCallback = async (req, res) => {
                 };
             </script>`)
     }
-    const token = generateAccessToken(user._id, 'user')
+    const accessToken = generateAccessToken(user._id, 'user')
+    const refreshToken = generateRefreshToken(user._id, 'user')
+    res.cookie('jwt', refreshToken, {
+        httpOnly: true,
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        domain: 'localhost'
+    })
     res.send(`
         <script>
             window.onload = () => {
-            const token = '${token}';
+            const token = '${accessToken}';
             if (window.opener) {
                  window.opener.postMessage({ accessToken: token , role : 'user'  }, 'http://localhost:5173');
                 }
@@ -68,6 +75,9 @@ const signUp = async (req, res) => {
             sendVerifyEmail(email, user._id)
             return res.status(409).json({ message: 'Please verify you email by clicking the link' })
         }
+        if (user && user?.authProvider === 'google') {
+            return res.status(409).json({ message: 'User has been logged in google ,Please use google sign in ' })
+        }
         if (user && user.verification_status) {
             return res.status(409).json({ message: 'User already exists' })
         }
@@ -111,6 +121,8 @@ const verifyEmail = async (req, res) => {
 }
 
 const logout = (req, res) => {
+    if (req.session) req.session.destroy()
+    req.clearCookies('connect.sid', { httpOnly: true, secure: false })
     req.clearCookies('admin_jwt', { httpOnly: true, secure: false })
     return res.status(200).json({ message: 'User Logged out successfully' })
 }

@@ -5,7 +5,7 @@ import { MdDelete } from 'react-icons/md'
 import CategoryEditModal from './CategoryEditModal'
 import ViewModal from './ViewModal'
 import { useBlockCategoryMutation, useDeleteCategoryMutation } from '../features/adminApiSlice'
-import { toast } from 'react-toastify'
+import toast, { Toaster } from 'react-hot-toast'
 import { MdBlock } from "react-icons/md";
 import { MoonLoader, PulseLoader } from 'react-spinners'
 
@@ -40,6 +40,16 @@ function categoryTable({ categories, refetch, isCategoriesLoading }) {
 
     return (
         <>
+            <Toaster
+                position="top-center"
+                toastOptions={{
+                    style: {
+                        backgroundColor: 'black',
+                        color: 'white',
+                    },
+                    duration: 2000
+                }}
+            />
             <div className='relative'>
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 mt-8  shadow-xl rounded-md">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
