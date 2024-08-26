@@ -3,7 +3,7 @@ import { useGetProfileQuery } from '../features/userApiSlice'
 import { useForm } from 'react-hook-form'
 
 function Profile() {
-  const { data: profileData, isLoading: isProfileDataLoading, refetch: refetchProfileData } = useGetProfileQuery()
+  const { data: profileData ,refetch: refetchProfileData } = useGetProfileQuery()
   const { register, handleSubmit, formState: { errors }, reset } = useForm()
 
   async function onSubmit(data) {

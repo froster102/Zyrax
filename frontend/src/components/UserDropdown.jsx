@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import { FaRegUser } from "react-icons/fa"
 import { useState } from "react"
+import PropTypes from 'prop-types'
 
 function UserDropdown({ user, logoutUser }) {
     const [show, setShow] = useState(false)
@@ -33,6 +34,11 @@ function UserDropdown({ user, logoutUser }) {
 
         </>
     )
+}
+
+UserDropdown.propTypes = {
+    user : PropTypes.bool,
+    logoutUser : PropTypes.func
 }
 
 export default UserDropdown

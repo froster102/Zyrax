@@ -17,6 +17,9 @@ const userApiSlice = apiSlice.injectEndpoints({
                 body: credentials
             })
         }),
+        getAllCategories : builder.query({
+            query : ()=> `/users/categories`
+        }),
         getProducts: builder.query({
             query: ({ category, exclude, latest, gender }) => {
                 if (latest && category) return `/users/products?latest=${latest}&category=${category}&gender=${gender}`
@@ -77,6 +80,7 @@ export const {
     useSigninMutation,
     useSignupMutation,
     useLogoutUserMutation,
+    useGetAllCategoriesQuery,
     useGetProductsQuery,
     useGetProductDeatilsQuery,
     useGetProfileQuery,

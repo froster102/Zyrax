@@ -1,32 +1,20 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
 import { useAddCategoryMutation, useGetCategoriesQuery } from '../features/adminApiSlice'
 import toast, { Toaster } from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import _ from 'lodash'
-
-const schema = z.object({
-    name: z.string().trim().min(1, 'Required').transform(val => val.toLocaleLowerCase()),
-    description: z.string().trim().trim().min(1, 'Required'),
-    categoryType: z.enum(['parent', 'child'], { message: 'Select a category type' }),
-    parentCategory: z.string().optional()
-}).refine((data => {
-    if (data.categoryType === 'child' && !data.parentCategory) return false
-    return true
-}), {
-    message: 'Parent category is required for child category',
-    path: ['parentCategory']
-})
+import PropTypes from 'prop-types'
+import AddCategoryschema from '../../ValidationSchema/addCategorySchema'
+import { RotatingLines } from 'react-loader-spinner'
 
 function AddCategoryModal({ closeModal, refetch }) {
     const [categoryType, setCategoryType] = useState('')
-    const [parentCategory, setParentCategory] = useState('')
     const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery()
     const [addCategory, { isLoading }] = useAddCategoryMutation()
     const { reset, register, formState: { errors }, handleSubmit } = useForm({
-        resolver: zodResolver(schema)
+        resolver: zodResolver(AddCategoryschema)
     })
 
     async function onSubmit(data) {
@@ -90,7 +78,7 @@ function AddCategoryModal({ closeModal, refetch }) {
                                 }
                                 {errors.parentCategory && <span className='text-red-700 text-sm block w-full'>{errors.parentCategory?.message}</span>}
                                 <div className='flex w-full justify-center'>
-                                    <button className='text-center mt-2 bg-black px-4 py-2 text-white rounded-full'>Add</button>
+                                    <button disabled={isLoading} className='flex gap-1 items-center text-center mt-2 bg-black px-4 py-2 text-white rounded-full'> {isLoading ? <RotatingLines width='20' strokeColor='white' /> : 'Add'}</button>
                                 </div>
                             </form>
                         </div>
@@ -99,6 +87,11 @@ function AddCategoryModal({ closeModal, refetch }) {
             </div>
         </>
     )
+}
+
+AddCategoryModal.propTypes = {
+    closeModal: PropTypes.func.isRequired,
+    refetch: PropTypes.func.isRequired
 }
 
 export default AddCategoryModal

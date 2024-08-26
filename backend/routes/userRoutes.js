@@ -8,6 +8,7 @@ import { getProfile } from '../controller/user/userProfileController.js'
 import { userAuth } from '../middlewares/authMiddleware.js'
 import { addWishlistItems, getWishlistItems, removeWishlistItem } from '../controller/user/userWishlistController.js'
 import { addCartItems, getCartItems, removeCartItem } from '../controller/user/userCartController.js'
+import { getAllCategories } from '../controller/user/userCategoryiesController.js'
 
 const router = express.Router()
 
@@ -44,6 +45,7 @@ router.get('/cart', getCartItems)
 router.post('/cart', addCartItems)
 router.delete('/cart', removeCartItem)
 
+router.get('/categories', getAllCategories)
 
 router.get('/me', getProfile)
 router.post('/me')

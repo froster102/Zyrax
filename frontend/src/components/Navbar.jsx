@@ -6,14 +6,14 @@ import { selectUserToken, userLogout } from '../features/authSlice';
 import UserDropdown from './UserDropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { syncWishlist, syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender } from '../features/userSlice';
-import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery, useLogoutUserMutation } from '../features/userApiSlice';
+import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery, useLogoutUserMutation, useGetAllCategoriesQuery } from '../features/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
 import { IoMenu } from "react-icons/io5";
 import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
-import { IoIosArrowDown } from "react-icons/io";
 import Zyrax_icon from '../assets/options-list.png'
+import SidebarAccordion from './SidebarAccordion';
 
 const topwears = ['Shirts', 'Pollos', 'Oversized shirts', 'All T-shirts', 'Jackets']
 const bottomwears = ['Jeans', 'Pants', 'Joggers', 'Oversized joggers', 'Track pants']
@@ -23,6 +23,7 @@ const bestsellers = ['Top 20 t-shirts', 'Top 20 shirts', 'Top 20 joggers']
 function Navbar() {
   const [sticky, setSticky] = useState(false)
   const [hideNav, setHideNav] = useState(false)
+  const [openListIndex, setOpenListIndex] = useState(null)
   const [openSideBar, setSidebarOpen] = useState(false)
   const { pathname } = useLocation()
   const activeGender = useSelector(selectActiveGender)
@@ -31,6 +32,7 @@ function Navbar() {
   const localCartItems = useSelector(selectCartItems)
   const localWishlistItems = useSelector(selectWishlistItems)
   const [userSignOut] = useLogoutUserMutation()
+  const { data: categories } = useGetAllCategoriesQuery()
   const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchWishlist } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
   const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
   const navigate = useNavigate()
@@ -71,7 +73,7 @@ function Navbar() {
       dispatch(syncCart(dispatchCartState))
       refetchCart()
     }
-  }, [userWishlistItems, isUserWishlistItemsLoading, dispatch, userAuth, refetchWishlist, userCartItems, isUserCartItemsLoading,refetchCart])
+  }, [userWishlistItems, isUserWishlistItemsLoading, dispatch, userAuth, refetchWishlist, userCartItems, isUserCartItemsLoading, refetchCart])
 
 
   async function logoutUser() {
@@ -172,13 +174,13 @@ function Navbar() {
                 setSidebarOpen(false)
               }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'women' ? 'bg-black text-white' : 'bg-stone-200 shadow-md'}`}>Women</button>
             </div>
-            <ul className='mt-4 w-full'>
-              <li className='pt-4 flex justify-between items-center'>Topwears <IoIosArrowDown /> </li>
-              <li className='pt-4 flex justify-between items-center'>Bottomwears<IoIosArrowDown /></li>
-              <li className='pt-4 flex justify-between items-center'>Sneakers<IoIosArrowDown /></li>
-              <li className='pt-4 flex justify-between items-center'>Accessories<IoIosArrowDown /></li>
-              <li className='pt-4 flex justify-between items-center'>BestSellers<IoIosArrowDown /></li>
-            </ul>
+            <div className='mt-4 w-full'>
+              {categories.map((category, i) => {
+                if (category.parent === null) {
+                  return <SidebarAccordion key={i} title={category.name} index={i} isOpen={openListIndex === i} subCategories={category.children} toggle={(index) => { setOpenListIndex(openListIndex === index ? null : index) }} />
+                }
+              })}
+            </div>
           </motion.div>
         </>}
     </>

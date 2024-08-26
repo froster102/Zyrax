@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import CategoryTable from '../../components/CategoryTable'
 import { FaListUl } from 'react-icons/fa'
 import AddCategoryModal from '../../components/AddCategoryModal'
