@@ -1,5 +1,6 @@
 import { IoMdClose } from "react-icons/io";
 import ImageCropper from "./ImageCropper";
+import PropTypes from 'prop-types'
 
 function AddImageModal({ closeModal, addImage }) {
     return (
@@ -32,6 +33,11 @@ function AddImageModal({ closeModal, addImage }) {
             </div>
         </div>
     )
+}
+
+AddImageModal.propTypes = {
+    closeModal: PropTypes.func.isRequired,
+    addImage: PropTypes.func.isRequired
 }
 
 export default AddImageModal

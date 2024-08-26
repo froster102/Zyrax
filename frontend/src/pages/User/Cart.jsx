@@ -38,6 +38,7 @@ function Cart() {
       !moveToCart && toast('Product removed from cart sucessfully')
       dispatch(removeFromCart({ productId }))
     } catch (error) {
+      ''
     }
   }
 

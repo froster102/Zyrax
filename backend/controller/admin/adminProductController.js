@@ -62,14 +62,11 @@ const getProducts = async (req, res) => {
 
 const viewProduct = async (req, res) => {
     const { id } = req.params
-    console.log(id)
     if (!id) {
-        console.log('no id')
         return res.status(400).json({ message: 'No id provided' })
     }
     try {
         const product = await Product.findById(id).populate('category')
-        console.log(product)
         if (!product) {
             return res.status(404).json({ message: 'Product not found' })
         }
@@ -142,7 +139,6 @@ const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params
         const response = await Product.findByIdAndDelete(id)
-        console.log(response)
         if (!response) {
             return res.status(404).json({ message: 'Product not found' })
         }

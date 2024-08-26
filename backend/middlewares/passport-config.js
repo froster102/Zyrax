@@ -2,8 +2,6 @@ import passport from "passport";
 import GoogleStrategy from 'passport-google-oauth20'
 import { User } from "../model/user.js";
 import { config } from "dotenv";
-import { Wishlist } from "../model/wishlist.js";
-import { Cart } from "../model/cart.js";
 config()
 
 passport.use(new GoogleStrategy.Strategy({

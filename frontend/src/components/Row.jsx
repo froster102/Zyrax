@@ -3,6 +3,7 @@ import ProductCard from "./ProductCard"
 import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 import { Link } from "react-router-dom"
 import ProductCardSkeleton from "./ProductCardSkeleton"
+import PropTypes from 'prop-types'
 
 
 function Row({ title, products, isLoading }) {
@@ -38,6 +39,12 @@ function Row({ title, products, isLoading }) {
             </div>
         </>
     )
+}
+
+Row.propTypes = {
+    title: PropTypes.string.isRequired,
+    products: PropTypes.array,
+    isLoading: PropTypes.bool.isRequired
 }
 
 export default Row

@@ -1,5 +1,7 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
+import { motion } from 'framer-motion'
+import PropTypes from 'prop-types'
 
 function ProductImageModal({ closeModal, image }) {
     const [zooming, setZooming] = useState(false)
@@ -11,26 +13,31 @@ function ProductImageModal({ closeModal, image }) {
         const x = e.clientX - rect.left
         const y = e.clientY - rect.top
 
-        const scale = zooming ? 2 : 1
-
         const originX = (x / rect.width) * 100
         const originY = (y / rect.height) * 100
 
         imageRef.current.style.transformOrigin = `${originX}px ${originY}px`
     }
 
-    function handleMouseEnter(e) {
+    function handleMouseEnter() {
         setZooming(true)
     }
 
-    function handleMouseLeave(e) {
+    function handleMouseLeave() {
         setZooming(false)
     }
 
     return (
         <>
-            <div className="relative z-10">
-                <div onClick={closeModal} className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-all backdrop-blur-sm"></div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                onClick={closeModal}
+                className="relative z-10"
+            >
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-all backdrop-blur-sm"></div>
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                     <div className="flex min-h-full justify-center items-center px-2 py-12 text-center ">
                         <div className="relative w-[95%] sm:w-[80%] min-h-[60vh] rounded-2xl bg-[#D9D9D9] flex justify-center text-slate-100 text-left overflow-hidden">
@@ -58,9 +65,14 @@ function ProductImageModal({ closeModal, image }) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </>
     )
+}
+
+ProductImageModal.propTypes = {
+    closeModal: PropTypes.func.isRequired,
+    image: PropTypes.string.isRequired
 }
 
 export default ProductImageModal

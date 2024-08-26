@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { setUserCredentials, userLogout } from './authSlice.js'
-import { resetCartAndWishlist } from './userSlice.js'
 
 const baseQuery = fetchBaseQuery({
     baseUrl: 'http://localhost:3000/api/v1',
@@ -26,16 +25,16 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
             response = await baseQuery(args, api, extraOptions)
         } else if (response?.error?.status === 401) {
             api.dispatch(userLogout())
-            api.dispatch(resetCartAndWishlist())
         }
         return response
     } catch (e) {
+        console.log()
     }
 }
 
 export const apiSlice = createApi({
     baseQuery: baseQueryWithReauth,
-    endpoints: (builder) => ({})
+    endpoints: () => ({})
 })
 
 

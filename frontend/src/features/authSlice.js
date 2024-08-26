@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth')) :
     {
         user: {
+            name: null,
             accessToken: null,
             role: null
         }
@@ -13,12 +14,13 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setUserCredentials: (state, action) => {
-            const { accessToken, role } = action.payload
+            const { accessToken, role, name } = action.payload
+            state.user.name = name
             state.user.accessToken = accessToken
             state.user.role = role
             localStorage.setItem('auth', JSON.stringify({ ...initialState, user: { accessToken, role } }))
         },
-        userLogout: (state, action) => {
+        userLogout: (state) => {
             state.user.accessToken = null
             state.user.role = null
             localStorage.setItem('auth', JSON.stringify({ ...initialState, user: { accessToken: null, role: null } }))

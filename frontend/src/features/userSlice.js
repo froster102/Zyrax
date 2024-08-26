@@ -79,7 +79,7 @@ const userSlice = createSlice({
             state.selected_gender = action.payload
             saveToLocalStorage(state)
         },
-        resetCartAndWishlist: (state, action) => {
+        resetCartAndWishlist: (state) => {
             state.wishlist.items = []
             state.cart.items = []
             saveToLocalStorage(state)

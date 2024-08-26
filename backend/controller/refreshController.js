@@ -17,7 +17,7 @@ const refresh = (req, res) => {
             console.log(error)
         }
         if (err) {
-            res.status(403).json(403).json({ message: 'Forbidden token expired' })
+            return res.status(403).json(403).json({ message: 'Forbidden token expired' })
         }
         const accessToken = generateAccessToken(decoded.userId, decoded.role)
         return res.status(200).json({ accessToken, role: decoded.role })

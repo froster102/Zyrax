@@ -1,15 +1,14 @@
 import _ from "lodash"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation } from "../features/userApiSlice"
 import { selectUserToken } from "../features/authSlice"
 import { addToCart, moveToWishlist } from "../features/userSlice"
 import { Link } from "react-router-dom"
 import toast from "react-hot-toast"
+import PropTypes from 'prop-types'
 
-function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
-    const [selectedSize, setSelectedSize] = useState(item?.selectedSize)
-    const [selectedQty, setSelectedQty] = useState(item?.selectedQty)
+function CartProductCard({ item, removeFromCart }) {
     const dispatch = useDispatch()
     const [addToUserWishlist] = useAddItemsToUserWishlistMutation()
     const [addToUserCart] = useAddItemsToUserCartMutation()
@@ -24,7 +23,7 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
             userAuth && await addToUserWishlist({ items: [item.product._id] }).unwrap()
             toast('Product added to your wishlist')
         } catch (error) {
-
+            ''
         }
     }
 
@@ -36,6 +35,7 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
         try {
             userAuth && await addToUserCart({ items: [{ productId: item.product._id, selectedSize, selectedQty }] }).unwrap()
         } catch (error) {
+            ''
         }
     }
 
@@ -102,6 +102,11 @@ function CartProductCard({ item, removeFromCart, changeSize, changeOty }) {
             </div>
         </>
     )
+}
+
+CartProductCard.propTypes = {
+    item : PropTypes.object.isRequired,
+    removeFromCart : PropTypes.func.isRequired
 }
 
 export default CartProductCard

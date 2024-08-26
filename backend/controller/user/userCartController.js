@@ -48,7 +48,6 @@ const removeCartItem = async (req, res) => {
     const { productId } = req.body
     try {
         const response = await Cart.findOneAndUpdate({ user_id: req.userId }, { $pull: { items: { productId: productId } } }, { new: true })
-        console.log(response)
         return res.status(200).json({ message: 'Product removed from cart sucessfully' })
     } catch (error) {
         return res.status(500).json({ message: 'Failed to remove product from cart' })

@@ -2,42 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import { RiStore3Fill } from "react-icons/ri";
 import { FaCheckCircle } from "react-icons/fa";
 import AddImageModal from '../../components/AddImageModal';
-import { useAddProductMutation, useEditProductMutation, useFetchProductQuery, useFetchProductsQuery, useGetCategoriesQuery } from '../../features/adminApiSlice'
+import { useAddProductMutation, useEditProductMutation, useFetchProductQuery, useGetCategoriesQuery } from '../../features/adminApiSlice'
 import { BeatLoader } from 'react-spinners'
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, } from 'react-hook-form'
 import SizeSelector from '../../components/SizeSelector';
 import ImageSelector from '../../components/ImageSelector';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
-
-const imageSchema = z.object({
-    name: z.string(),
-    data: z.string()
-})
-
-const imageUrlSchema = z.string().url('Invalid url')
-
-const imagesSchema = z.array(
-    z.union([
-        imageSchema,
-        imageUrlSchema
-    ])
-).length(4, { message: 'At least 4 images should be uploaded' })
-
-const schema = z.object({
-    name: z.string().trim().min(5, 'Required'),
-    description: z.string().min(1, 'Required').transform(val => val.split(' ')).refine(words => words.length >= 10, { message: 'Description should have a minimum of 10 words' })
-        .transform(val => val.join(' ')),
-    sizes: z.array(z.string()).min(1, 'Minimun one size should be selected'),
-    gender: z.enum(['men', 'women'], { message: 'Select a valid gender' }),
-    price: z.string().transform(val => parseInt(val)).pipe(z.number().min(100, 'Price must number at least 100 or greater')),
-    stock: z.string().transform(val => parseInt(val)).pipe(z.number().min(10, 'Stock must be at least 10 or greater')),
-    discount: z.string().optional(),
-    category: z.string().min(1, 'Please select one category'),
-    images: imagesSchema
-})
+import PropTypes from 'prop-types'
+import addProductSchema from '../../../ValidationSchema/addProductSchema';
 
 function AddProduct({ mode }) {
     const [modalOpen, setModalOpen] = useState(false)
@@ -49,7 +23,7 @@ function AddProduct({ mode }) {
     const { data: product, isLoading: isProductLoading, refetch } = useFetchProductQuery({ id }, { skip: !id })
     const { control, register, handleSubmit, getValues, setValue, formState: { errors, isDirty }, reset } = useForm(
         {
-            resolver: zodResolver(schema)
+            resolver: zodResolver(addProductSchema)
         }
     )
     const formRef = useRef(null)
@@ -255,6 +229,10 @@ function AddProduct({ mode }) {
             {modalOpen && <AddImageModal addImage={addImage} closeModal={() => { setModalOpen(false) }} />}
         </>
     )
+}
+
+AddProduct.propTypes = {
+    mode: PropTypes.string
 }
 
 export default AddProduct

@@ -13,7 +13,7 @@ import { logout } from './controller/logoutController.js'
 
 config()
 
-mongoose.connect('mongodb://127.0.0.1:27017/Zyrax').then(() => {
+mongoose.connect(process.env.ATLAS_URI).then(() => {
     console.log('connected to database')
 }).catch((err) => {
     console.log(err)

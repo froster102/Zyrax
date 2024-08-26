@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Dropdown from './Dropdown'
 import SearchBar from './SearchBar'
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../features/authSlice';
 import UserDropdown from './UserDropdown';
-import { Link, useLocation } from 'react-router-dom';
-import { syncWishlist, syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems } from '../features/userSlice';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { syncWishlist, syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender } from '../features/userSlice';
 import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery, useLogoutUserMutation } from '../features/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
 import { IoMenu } from "react-icons/io5";
 import toast, { Toaster } from 'react-hot-toast';
-
+import { motion } from 'framer-motion';
+import { IoIosArrowDown } from "react-icons/io";
+import Zyrax_icon from '../assets/options-list.png'
 
 const topwears = ['Shirts', 'Pollos', 'Oversized shirts', 'All T-shirts', 'Jackets']
 const bottomwears = ['Jeans', 'Pants', 'Joggers', 'Oversized joggers', 'Track pants']
@@ -21,7 +23,9 @@ const bestsellers = ['Top 20 t-shirts', 'Top 20 shirts', 'Top 20 joggers']
 function Navbar() {
   const [sticky, setSticky] = useState(false)
   const [hideNav, setHideNav] = useState(false)
+  const [openSideBar, setSidebarOpen] = useState(false)
   const { pathname } = useLocation()
+  const activeGender = useSelector(selectActiveGender)
   const dispatch = useDispatch()
   const userAuth = useSelector(selectUserToken)
   const localCartItems = useSelector(selectCartItems)
@@ -29,6 +33,7 @@ function Navbar() {
   const [userSignOut] = useLogoutUserMutation()
   const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchWishlist } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
   const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
+  const navigate = useNavigate()
 
   useEffect(() => {
     pathname === '/cart' || pathname === '/checkout' ? setHideNav(true) : setHideNav(false)
@@ -51,19 +56,12 @@ function Navbar() {
   }, [])
 
   useEffect(() => {
-    if (userAuth) {
-      refetchCart()
+    if (!isUserWishlistItemsLoading && userAuth) {
+      dispatch(syncWishlist(userWishlistItems?.items))
       refetchWishlist()
     }
-  }, [userAuth, refetchCart, refetchWishlist, userCartItems, userWishlistItems])
-
-  useEffect(() => {
-    !isUserWishlistItemsLoading && userWishlistItems?.items && userAuth && dispatch(syncWishlist(userWishlistItems.items))
-  }, [userWishlistItems, isUserWishlistItemsLoading, dispatch])
-
-  useEffect(() => {
-    if (!isUserCartItemsLoading && userCartItems?.items && userAuth) {
-      const dispatchCartState = userCartItems.items.map(item => {
+    if (!isUserCartItemsLoading && userAuth) {
+      const dispatchCartState = userCartItems?.items.map(item => {
         return {
           product: item.productId,
           selectedSize: item.selectedSize,
@@ -71,16 +69,19 @@ function Navbar() {
         }
       })
       dispatch(syncCart(dispatchCartState))
+      refetchCart()
     }
-  }, [userCartItems, isUserCartItemsLoading, dispatch])
+  }, [userWishlistItems, isUserWishlistItemsLoading, dispatch, userAuth, refetchWishlist, userCartItems, isUserCartItemsLoading,refetchCart])
+
 
   async function logoutUser() {
     try {
-      toast('Logged out sucessfully')
       await userSignOut().unwrap()
+      toast('Logged out sucessfully')
       dispatch(resetCartAndWishlist())
       dispatch(userLogout())
     } catch (error) {
+      console.log(error)
     }
   }
 
@@ -96,7 +97,7 @@ function Navbar() {
           duration: 2000
         }}
       />
-      <div className='lg:max-w-[1600px] lg:block m-auto hidden'>
+      <div className='lg:max-w-[1600px] lg:block m-auto hidden transition-all ease-in duration-500'>
         <div className={`${hideNav ? 'hidden' : 'block'}`} >
           <div className={`px-[20px] ${sticky ? 'fixed w-full top-0 z-50 drop-shadow-xl' : 'mt-2'} transition ease-in`} onScroll={() => { setSticky(true) }}>
             <div className='bg-stone-200 max-w-[1600px] h-[60px] rounded-[20px] p-2 flex gap-4 items-center justify-between'>
@@ -104,6 +105,7 @@ function Navbar() {
               <Dropdown title={'Bottomwear'} options={bottomwears}></Dropdown>
               <SearchBar></SearchBar>
               <Dropdown title={'Accessories'} options={accessories}></Dropdown>
+              <Dropdown title={'Sneakers'} options={accessories}></Dropdown>
               <Dropdown title={'Bestsellers'} options={bestsellers}></Dropdown>
               <UserDropdown user={userAuth} logoutUser={logoutUser}></UserDropdown>
               <Link to={'/cart'}><div className='w-fit p-3 rounded-full h-fit flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in relative'>
@@ -122,15 +124,15 @@ function Navbar() {
         <div className={`${hideNav ? 'hidden' : 'block'}`} >
           <div className={`${sticky ? 'fixed w-full top-0 z-50 drop-shadow-xl' : 'mt-2'} transition ease-in`} onScroll={() => { setSticky(true) }}>
             <div className='bg-stone-200 h-[40px] px-2 flex items-center justify-between'>
-              <IoMenu size={30} />
+              <IoMenu size={30} onClick={() => { setSidebarOpen(!openSideBar) }} />
               <div className='flex gap-1 items-center'>
-                <Link to='/profile' >
+                <Link to='/account/profile' >
                   <div className='w-[35px] h-[35px] flex items-center justify-center'>
                     <FaRegUser size={20} />
                   </div>
                 </Link>
                 <Link to={'/cart'}><div className='w-[35px] h-[35px] flex items-center justify-items-center relative'>
-                  {localCartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localCartItems.length}</div>}
+                  {localCartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localCartItems?.length}</div>}
                   <FaShoppingCart size={20} />
                 </div></Link>
                 <Link to={'/wishlist'}><div className='w-[35px] h-[35px] flex items-center justify-items-center relative'>
@@ -142,6 +144,43 @@ function Navbar() {
           </div>
         </div>
       </div>
+      {openSideBar &&
+        <>
+          <div onClick={() => { setSidebarOpen(!openSideBar) }} className="fixed inset-0 bg-stone-900 bg-opacity-75 transition-all backdrop-blur-sm z-50"></div>
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className='fixed top-0 left-0 z-50 bg-stone-300 w-[80%] h-screen p-4'>
+            <div className='flex items-center'>
+              <img className='w-10 h-10' src={Zyrax_icon} alt="" />
+              <h1 className='text-2xl font-bold'>Zyrax.Store</h1>
+              <div>
+                {
+                  !userAuth ? <button className='ml-2 py-1 px-2 text-sm border border-stone-900 rounded-lg'>Login/Register</button> : <p></p>
+                }
+
+              </div>
+            </div>
+            <div className='flex gap-2 w-full justify-center items-center mt-2'>
+              <button onClick={() => {
+                navigate('/men')
+                setSidebarOpen(false)
+              }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'men' ? 'bg-black text-white' : 'bg-stone-200 shadow-md'}`}>Men</button>
+              <button onClick={() => {
+                navigate('/women')
+                setSidebarOpen(false)
+              }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'women' ? 'bg-black text-white' : 'bg-stone-200 shadow-md'}`}>Women</button>
+            </div>
+            <ul className='mt-4 w-full'>
+              <li className='pt-4 flex justify-between items-center'>Topwears <IoIosArrowDown /> </li>
+              <li className='pt-4 flex justify-between items-center'>Bottomwears<IoIosArrowDown /></li>
+              <li className='pt-4 flex justify-between items-center'>Sneakers<IoIosArrowDown /></li>
+              <li className='pt-4 flex justify-between items-center'>Accessories<IoIosArrowDown /></li>
+              <li className='pt-4 flex justify-between items-center'>BestSellers<IoIosArrowDown /></li>
+            </ul>
+          </motion.div>
+        </>}
     </>
   )
 }

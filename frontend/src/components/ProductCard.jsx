@@ -1,9 +1,7 @@
-import { MdArrowForwardIos } from "react-icons/md";
 import _ from 'lodash'
-import { useState } from "react";
+import PropTypes from 'prop-types'
 
-function ProductCard({ product, isLoading }) {
-    const [changeImg, setChangeImg] = useState(false)
+function ProductCard({ product }) {
     return (
         <>
             <div className="lg:w-[300px] lg:h-[350px] md:w-[200px] md:h-[250px] sm:w-[150px] sm:h-[200px] w-[130px] h-[180px] border rounded-lg border-[#CFCBCB] relative inline-block lg:ml-8 md:ml-4 ml-2">
@@ -17,11 +15,15 @@ function ProductCard({ product, isLoading }) {
                                 <p className="lg:text-sm  md:text-xs sm:text-[10px] text-[10px] font-medium">₹ {_.startCase(product?.price)}</p>
                             </div>
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </div>
         </>
     )
+}
+
+ProductCard.propTypes = {
+    product: PropTypes.object.isRequired,
 }
 
 export default ProductCard

@@ -1,8 +1,8 @@
+import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import WishlistProductCard from "../../components/WishlistProductCard"
 import { moveToCart, removeFromWishlist, selectWishlistItems } from "../../features/userSlice"
 import { useAddItemsToUserCartMutation, useRemoveItemFromUserWishlistMutation } from "../../features/userApiSlice"
-import { useEffect, useState } from "react"
 import PickSizeModal from "../../components/PickSizeModal"
 import { selectUserToken } from "../../features/authSlice"
 import EmptyCart from "../../components/EmptyCart"
@@ -18,14 +18,15 @@ function Wishlist() {
   const [addToUserCart] = useAddItemsToUserCartMutation()
   const [productToMove, setProductToMove] = useState(null)
 
-  async function removeItemFromWishlist({ e, product, moveToCart }) {
+  async function removeItemFromWishlist({ e, product }) {
     e.preventDefault()
     e.stopPropagation()
-    dispatch(removeFromWishlist(product))
     try {
       userAuth && await removeUserWishlistItem({ item: product._id })
+      dispatch(removeFromWishlist(product))
       toast('Product removed from your wishlist')
     } catch (error) {
+      ''
     }
   }
 
@@ -42,6 +43,7 @@ function Wishlist() {
       dispatch(moveToCart({ itemToMove: product, selectedSize }))
       setSelectedSize('')
     } catch (error) {
+      ''
     }
   }
   return (

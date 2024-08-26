@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom';
 import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery, useSigninMutation } from '../../features/userApiSlice';
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,7 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { selectActiveGender, selectCartItems, selectWishlistItems } from '../../features/userSlice';
 import { loginSchema } from '../../../ValidationSchema/loginSchema';
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
+import { RotatingLines } from 'react-loader-spinner'
 
 function Login() {
     const dispatch = useDispatch()
@@ -23,8 +24,8 @@ function Login() {
     const localCartItems = useSelector(selectCartItems)
     const [addItemsToUserWislist] = useAddItemsToUserWishlistMutation()
     const [addItemsToUserCart] = useAddItemsToUserCartMutation()
-    // const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchWishlist } = useGetUserWishlistItemsQuery(undefined, { skip: !user })
-    // const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !user })
+    const { refetch: refetchWishlist } = useGetUserWishlistItemsQuery(undefined,{skip:!user})
+    const { refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined,{skip:!user})
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(loginSchema)
     })
@@ -35,7 +36,7 @@ function Login() {
                 if (localWishlistItems.length > 0) {
                     const items = localWishlistItems.map((item => item?._id))
                     await addItemsToUserWislist({ items: items }).unwrap()
-                    // refetchWishlist()
+                    refetchWishlist()
                 }
                 if (localCartItems.length > 0) {
                     const items = localCartItems.map(item => (
@@ -46,7 +47,7 @@ function Login() {
                         }
                     ))
                     await addItemsToUserCart({ items: items })
-                    // refetchCart()
+                    refetchCart()
                 }
             } catch (error) {
                 console.log(error)
@@ -56,6 +57,7 @@ function Login() {
             syncUserData()
             navigate(redirect, { replace: true })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
 
     useEffect(() => {
@@ -65,10 +67,18 @@ function Login() {
         }
         window.addEventListener('message', handleAuthMsg)
 
+        function handleAuth({ accessToken, role, error }) {
+            if (error) {
+                return toast(error)
+            }
+            dispatch(setUserCredentials({ accessToken, role }))
+            navigate(redirect, { replace: true })
+        }
+
         return () => {
             window.removeEventListener('message', handleAuthMsg)
         }
-    }, [])
+    }, [dispatch, navigate, redirect])
 
     async function onSubmit(data) {
         const { email, password } = data
@@ -76,19 +86,12 @@ function Login() {
             const res = await signin({ email, password }).unwrap()
             dispatch(setUserCredentials({ ...res }))
         } catch (error) {
+            reset()
         }
     }
 
     function signInWithGoogle() {
         window.open('http://localhost:3000/api/v1/users/auth/google', '_blank', 'width=600,height=600')
-    }
-
-    function handleAuth({ accessToken, role, error }) {
-        if (error) {
-            return toast(error)
-        }
-        dispatch(setUserCredentials({ accessToken, role }))
-        navigate(redirect, { replace: true })
     }
 
     return (
@@ -102,12 +105,12 @@ function Login() {
                     {error && <span className='text-red-700 text-sm'>{error?.data?.message}</span>}
                     {errors.email && <span className='text-red-700 text-sm'>{errors.email?.message}</span>}
                     <span className='block mt-4  text-xl font-medium' htmlFor="">Password</span>
-                    <input onChange={() => setError(null)} {...register('password')} className='block mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' type="password" />
+                    <input {...register('password')} className='block mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' type="password" />
                     {error && <span className='text-red-700 text-sm'>{error?.data?.message}</span>}
                     {errors.password && <span className='text-red-700 text-sm'>{errors.password?.message}</span>}
                     <Link to='/reset-password'><p className='text-right font-semibold text-sm hover:underline mt-1'>Forgot Password</p></Link>
-                    <button className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >Login</button>
-                    <p className='text-sm font-semibold text-right mt-2'>Don't have a account ? <span className='hover:underline'><Link to='/register'>Register</Link></span></p>
+                    <button disabled={isLoading} className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2 flex items-center gap-1' > {isLoading ? <RotatingLines strokeColor='white' width='20' /> : 'Login'}</button>
+                    <p className='text-sm font-semibold text-right mt-2'>Dont have a account ? <span className='hover:underline'><Link to='/register'>Register</Link></span></p>
                 </div>
             </form>
         </>
