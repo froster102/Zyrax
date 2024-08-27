@@ -8,14 +8,51 @@ const addressSchema = new mongoose.Schema({
 }, { _id: false })
 
 const UserSchema = new mongoose.Schema({
-    firstName: { type: String },
-    lastName: { type: String },
-    email: { type: String, required: true, unique: true },
-    phoneNumber: { type: String },
+    firstName: {
+        type: String,
+        trim: true,
+        required: [true, 'First name is required'],
+        minlength: [3, 'Minimum of 3 character required'],
+        validate: {
+            validator: v => /^[A-Za-z]+$/.test(v),
+            message: 'First name must only contain alphabets'
+        }
+    },
+    lastName: {
+        type: String,
+        trim: true,
+        required: [true, 'Last name is required'],
+        minlength: [3, 'Minimum of 3 character required'],
+        validate: {
+            validator: v => /^[A-Za-z]+$/.test(v),
+            message: 'Last name must only contain alphabets'
+        }
+    },
+    email: {
+        type: String,
+        trim: true,
+        required: [true, 'Email is required'],
+        unique: true,
+        lowercase: true,
+        validate: {
+            validator: v => /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(v),
+            message: 'Enter a valid email'
+        }
+    },
+    phoneNumber: {
+        type: Number,
+        trim: true,
+        validate: {
+            validator: (v) => v.toString().split('').length === 10,
+            message: 'Enter a valid phone number'
+        }
+    },
     googleId: { type: String },
-    authProvider: { type: String },
+    authProvider: { type: String, enum: ['google'] },
     profilePic: { type: String },
-    password: { type: String },
+    password: {
+        type: String,
+    },
     status: { type: String, enum: ['active', 'blocked', 'deleted'] },
     addresses: [addressSchema],
     verification_status: { type: Boolean },

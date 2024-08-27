@@ -1,36 +1,42 @@
-import { body, validationResult } from 'express-validator'
+import signinSchema from "../ValidationSchema/signinSchema.js";
+import { z } from 'zod'
 
-const signUpValidationRules = () => {
-    return [
-        body('firstName').notEmpty().withMessage('First Name field required'),
-        body('lastName').notEmpty().withMessage('Last Name field required'),
-        body('email').isEmail().withMessage('Invalid email'),
-        body('password').notEmpty().withMessage('Password required'),
-    ]
-}
-
-const signinValidationRules = () => {
-    return [
-        body('email').isEmail().withMessage('Invalid email'),
-        body('password').notEmpty().withMessage('Field Required')
-    ]
-}
-
-const validate = (req, res, next) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        let errMsg = []
-        const errorArr = errors.array()
-        for (let error of errorArr) {
-            errMsg.push(error.msg)
+const validateSignin = (req, res, next) => {
+    try {
+        signinSchema.parse(req.body)
+        next()
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            const errors = []
+            for (let e of error.errors) {
+                errors.push({ message: e.message })
+            }
+            return res.status(400).json(errors)
         }
-        return res.status(400).json({ message: 'Bad request', errMsg })
     }
-    next()
 }
+
+const passwordSchema = z.object({
+    password: z.string().regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{6,}$/, 'Must contain a letter,number,a special character')
+})
+
+const validatePassword = (req, res, next) => {
+    try {
+        passwordSchema.parse(req.body)
+        next()
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            const errors = []
+            for (let e of error.errors) {
+                errors.push({ message: e.message })
+            }
+            return res.status(400).json(errors)
+        }
+    }
+}
+
 
 export {
-    signUpValidationRules,
-    signinValidationRules,
-    validate
+    validateSignin,
+    validatePassword
 }

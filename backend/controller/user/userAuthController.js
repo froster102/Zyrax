@@ -63,6 +63,7 @@ const signin = async (req, res) => {
             return res.status(401).json({ message: 'Bad credentials' })
         }
     } catch (e) {
+        console.log(e)
         return res.status(500).json({ message: 'Failed to login user' })
     }
 }
@@ -95,7 +96,13 @@ const signUp = async (req, res) => {
             return res.status(201).json({ message: 'Please verify you email by clicking the link sent to your email' })
         }
     } catch (e) {
-        console.log(e)
+        if (e.name === 'ValidationError') {
+            const errMsg = []
+            for (let error in e.errors) {
+                errMsg.push(e.errors[error].properties.message)
+            }
+            return res.status(400).json({ errMsg })
+        }
         return res.status(500).json({ message: 'Something went wrong' })
     }
 }

@@ -2,7 +2,6 @@ import express from 'express'
 import { logout, signin } from '../controller/admin/adminAuthController.js'
 import { blockUser, deleteUser, getUsers, unblockUser, viewUser } from '../controller/admin/adminUserController.js'
 import { addProduct, blockProduct, deleteProduct, editProduct, getProducts, viewProduct } from '../controller/admin/adminProductController.js'
-import { signinValidationRules, validate } from '../middlewares/validationMiddleware.js'
 import { adminAuth } from '../middlewares/authMiddleware.js'
 import multer from 'multer'
 import { addCategory, blockCategory, deleteCategory, editCategory, getCategories } from '../controller/admin/AdminCategoryController.js'
@@ -13,7 +12,7 @@ const upload = multer({
     storage: multer.memoryStorage(),
 })
 
-router.post('/auth/signin', signinValidationRules(), validate, signin)
+router.post('/auth/signin', signin)
 
 router.use(adminAuth)
 
