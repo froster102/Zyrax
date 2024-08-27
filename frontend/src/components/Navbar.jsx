@@ -105,10 +105,10 @@ function Navbar() {
             <div className='bg-stone-200 max-w-[1600px] h-[60px] rounded-[20px] p-2 flex gap-4 items-center justify-between'>
               <Dropdown title='Topwears' options={topwears} ></Dropdown>
               <Dropdown title={'Bottomwear'} options={bottomwears}></Dropdown>
-              <SearchBar></SearchBar>
               <Dropdown title={'Accessories'} options={accessories}></Dropdown>
               <Dropdown title={'Sneakers'} options={accessories}></Dropdown>
               <Dropdown title={'Bestsellers'} options={bestsellers}></Dropdown>
+              <SearchBar></SearchBar>
               <UserDropdown user={userAuth} logoutUser={logoutUser}></UserDropdown>
               <Link to={'/cart'}><div className='w-fit p-3 rounded-full h-fit flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in relative'>
                 {localCartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localCartItems.length}</div>}

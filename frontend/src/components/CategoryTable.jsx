@@ -1,76 +1,54 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { FaEdit } from 'react-icons/fa'
 import { GrView } from 'react-icons/gr'
 import { MdDelete } from 'react-icons/md'
 import CategoryEditModal from './CategoryEditModal'
 import ViewModal from './ViewModal'
-import { useBlockCategoryMutation, useDeleteCategoryMutation } from '../features/adminApiSlice'
-import toast, { Toaster } from 'react-hot-toast'
 import { MdBlock } from "react-icons/md";
-import { MoonLoader, PulseLoader } from 'react-spinners'
+import { RotatingLines } from 'react-loader-spinner'
+import { IoSearchOutline } from 'react-icons/io5'
+import PropTypes from 'prop-types'
 
-
-function categoryTable({ categories, refetch, isCategoriesLoading }) {
+function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCategory, handleDelete, setAddCategoryModal }) {
     const [editCategory, setEditCategory] = useState('')
     const [viewCategory, setViewCategory] = useState('')
     const [editModal, setEditModal] = useState(false)
     const [viewModal, setViewModal] = useState(false)
-    const [deleteCategory, { isLoading }] = useDeleteCategoryMutation()
-    const [blockCategory] = useBlockCategoryMutation()
-
-    async function handleDelete(id) {
-        try {
-            const res = await deleteCategory(id).unwrap()
-            refetch()
-            toast(res?.message)
-        } catch (error) {
-            toast(error?.data?.message)
-        }
-    }
-
-    async function handleBlockCategory(id) {
-        try {
-            const res = await blockCategory(id).unwrap()
-            refetch()
-            toast(res?.message)
-        } catch (error) {
-            toast(error?.data?.message)
-        }
-    }
+    const [search, setSearch] = useState('')
 
     return (
         <>
-            <Toaster
-                position="top-center"
-                toastOptions={{
-                    style: {
-                        backgroundColor: 'black',
-                        color: 'white',
-                    },
-                    duration: 2000
-                }}
-            />
-            <div className='relative'>
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 mt-8  shadow-xl rounded-md">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
-                        <tr>
-                            <th className="px-6 py-3">
-                                category ID
-                            </th>
-                            <th className="px-6 py-3">
-                                Name
-                            </th>
-                            <th className="px-6 py-3">
-                                Status
-                            </th>
-                            <th className="px-6 py-3">
-                                Action
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        {!isCategoriesLoading && categories.map((category, i) => {
+            <div className='flex justify-between p-4'>
+                <div className="w-fit h-full px-2 flex items-center justify-items-center bg-white  rounded-md border border-neutral-400">
+                    <IoSearchOutline size={20} color="gray" />
+                    <input className='h-[36px] rounded-md w-80 outline-none' type="text" placeholder='Search' value={search} onChange={(e) => setSearch(e.target.value)} />
+                </div>
+                <button onClick={() => { setAddCategoryModal(true) }} className='bg-black px-4 py-2 rounded-full text-white font-medium'>Add category</button>
+            </div>
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                <thead className="text-xs text-black uppercase bg-neutral-200">
+                    <tr>
+                        <th className="px-6 py-3">
+                            category ID
+                        </th>
+                        <th className="px-6 py-3">
+                            Name
+                        </th>
+                        <th className="px-6 py-3">
+                            Status
+                        </th>
+                        <th className="px-6 py-3">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {!isCategoriesLoading &&
+                        categories.filter((category) => {
+                            return search.toLowerCase() === ''
+                                ? category
+                                : category.name.toLowerCase().includes(search.toLowerCase())
+                        }).map((category, i) => {
                             return (
                                 <tr key={i} className="border-b ">
                                     <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
@@ -111,14 +89,22 @@ function categoryTable({ categories, refetch, isCategoriesLoading }) {
                                 </tr>
                             )
                         })}
-                    </tbody>
-                </table>
-                <PulseLoader className='absolute top-20 left-1/2 transform -translate-x-1/2' loading={isCategoriesLoading} />
-            </div>
+                </tbody>
+            </table>
+            <RotatingLines className='absolute top-20 left-1/2 transform -translate-x-1/2' visible={isCategoriesLoading} strokeColor='black' strokeWidth='3' />
             {editModal && <CategoryEditModal category={editCategory} categories={categories} closeModal={() => { setEditModal(false) }} refetch={refetch}></CategoryEditModal>}
             {viewModal && <ViewModal category={viewCategory} closeModal={() => { setViewModal(false) }}></ViewModal>}
         </>
     )
 }
 
-export default categoryTable
+CategoryTable.propTypes = {
+    categories: PropTypes.array,
+    refetch: PropTypes.func,
+    isCategoriesLoading: PropTypes.bool,
+    handleBlockCategory: PropTypes.func,
+    handleDelete: PropTypes.func,
+    setAddCategoryModal: PropTypes.func.isRequired
+}
+
+export default CategoryTable

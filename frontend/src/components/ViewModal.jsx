@@ -1,11 +1,11 @@
-import React from 'react'
 import { IoMdClose } from 'react-icons/io'
 import _ from 'lodash'
+import PropTypes from 'prop-types'
 
 function ViewModal({ user, product, category, closeModal }) {
     return (
         <>
-            {user && <div className="relative z-10" aria-labelledby="crop-image-dialog">
+            {user && <div className="relative z-10" aria-labelledby="view category">
                 <div className="fixed inset-0 bg-[#f1f1f1] bg-opacity-75 transition-all backdrop-blur-sm"></div>
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                     <div className="flex min-h-full justify-center items-center px-2 py-12 text-center ">
@@ -66,7 +66,7 @@ function ViewModal({ user, product, category, closeModal }) {
                                     onClick={closeModal} >
                                     <IoMdClose size={20} />
                                 </button>
-                                <p>
+                                <div>
                                     <span className='font-semibold'>Category Name</span> : {_.startCase(category?.name)}
                                     <br />
                                     <span className='font-semibold'>Description</span> : {_.startCase(category?.description)}
@@ -89,7 +89,7 @@ function ViewModal({ user, product, category, closeModal }) {
                                             </>
                                     }
 
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -97,6 +97,13 @@ function ViewModal({ user, product, category, closeModal }) {
             }
         </>
     )
+}
+
+ViewModal.propTypes = {
+    user: PropTypes.object,
+    product: PropTypes.object,
+    category: PropTypes.object,
+    closeModal: PropTypes.func
 }
 
 export default ViewModal

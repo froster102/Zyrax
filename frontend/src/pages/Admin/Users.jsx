@@ -39,12 +39,17 @@ function Users() {
                     duration: 2000
                 }}
             />
-            <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px]'>
+            <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-neutral-50 shadow-inner pt-[40px] px-[20px]'>
                 <h1 className='text-3xl font-semibold'>Users</h1>
-                <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
-                    {data?.users && <UserTable blockUserById={blockUserById} unblockUserById={unblockUserById} users={data.users}></UserTable>}
+                <div className="relative overflow-x-auto shadow-xl mt-4 bg-neutral-200 rounded-lg">
+                    {
+                        data?.users && <UserTable
+                            blockUserById={blockUserById}
+                            unblockUserById={unblockUserById}
+                            users={data.users}
+                        />
+                    }
                 </div>
-
             </div>
         </>
     )

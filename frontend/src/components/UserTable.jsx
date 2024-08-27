@@ -3,7 +3,7 @@ import { TbUserCancel } from "react-icons/tb";
 import { CgUnblock } from "react-icons/cg";
 import { useState } from "react";
 import ViewModal from "./ViewModal";
-
+import PropTypes from 'prop-types'
 
 function UserTable({ users, blockUserById, unblockUserById }) {
     const [viewModal, setViewModal] = useState(false)
@@ -12,7 +12,7 @@ function UserTable({ users, blockUserById, unblockUserById }) {
     return (
         <>
             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
+                <thead className="text-xs text-gray-700 uppercase bg-neutral-300">
                     <tr>
                         <th className="px-6 py-3">
                             User ID
@@ -68,6 +68,12 @@ function UserTable({ users, blockUserById, unblockUserById }) {
             {viewModal && <ViewModal closeModal={() => setViewModal(false)} user={viewUser}> </ViewModal>}
         </>
     )
+}
+
+UserTable.propTypes = {
+    users : PropTypes.array,
+    blockUserById : PropTypes.func,
+    unblockUserById : PropTypes.func
 }
 
 export default UserTable

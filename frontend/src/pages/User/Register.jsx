@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import registerSchema from '../../../ValidationSchema/registerSchema'
 import toast from 'react-hot-toast'
 import { selectActiveGender } from '../../features/userSlice'
+import { RotatingLines } from 'react-loader-spinner'
 
 function Register() {
   const dispatch = useDispatch()
@@ -25,7 +26,7 @@ function Register() {
     if (userAuth) {
       navigate(`/${activeGender}`)
     }
-  }, [])
+  }, [navigate, userAuth, activeGender])
 
   useEffect(() => {
     function handleAuthMsg(e) {
@@ -37,6 +38,7 @@ function Register() {
     return () => {
       window.removeEventListener('message', handleAuthMsg)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function signInWithGoogle() {
@@ -61,7 +63,6 @@ function Register() {
       reset()
     }
   }
-
 
   function handleAuth({ accessToken, role }) {
     dispatch(setUserCredentials({ accessToken, role }))
@@ -101,7 +102,7 @@ function Register() {
             <input {...register('confirmPassword')} className='mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' type="password" />
             {errors.confirmPassword && <span className='text-red-700 text-sm'>{errors.confirmPassword?.message}</span>}
           </div>
-          <button className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >Sign up</button>
+          <button disabled={isLoading} className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >{isLoading ? <RotatingLines strokeColor='white' width='20' /> : 'Signup'}</button>
           <p className='text-sm font-semibold text-right mt-2'>Already have a account ? <span className='hover:underline'><Link to='/login' >Login</Link></span></p>
         </div>
       </form>

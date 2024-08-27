@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BiSolidCoupon } from "react-icons/bi";
 import { IoIosArrowDown } from "react-icons/io";
+import PropTypes from 'prop-types'
 
 function Accordion({ title, end }) {
     const [accordionOpen, setAccordinOpen] = useState(false)
@@ -22,6 +23,11 @@ function Accordion({ title, end }) {
             </div>
         </>
     )
+}
+
+Accordion.propTypes = {
+    title: PropTypes.string.isRequired,
+    end: PropTypes.bool.isRequired
 }
 
 export default Accordion

@@ -1,4 +1,3 @@
-import React from 'react'
 import ManageNav from '../../components/ManageNav'
 import Category from './Category';
 import { Route, Routes } from 'react-router-dom';
@@ -7,7 +6,7 @@ import Discount from '../../components/Discount';
 function Manage() {
     return (
         <>
-            <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px]'>
+            <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-neutral-50 shadow-inner pt-[40px] px-[20px]'>
                 <h1 className='text-3xl font-semibold'>Manage</h1>
                 <div className='flex'>
                     <ManageNav></ManageNav>

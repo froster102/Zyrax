@@ -2,25 +2,61 @@ import { useState } from 'react'
 import CategoryTable from '../../components/CategoryTable'
 import { FaListUl } from 'react-icons/fa'
 import AddCategoryModal from '../../components/AddCategoryModal'
-import { useGetCategoriesQuery } from '../../features/adminApiSlice'
+import { useBlockCategoryMutation, useDeleteCategoryMutation, useGetCategoriesQuery } from '../../features/adminApiSlice'
+import toast, { Toaster } from 'react-hot-toast'
 
 function Category() {
     const [addCategoryModal, setAddCategoryModal] = useState(false)
     const { data: categories, isLoading: isCategoriesLoading, refetch } = useGetCategoriesQuery()
+    const [deleteCategory] = useDeleteCategoryMutation()
+    const [blockCategory] = useBlockCategoryMutation()
 
+    async function handleDelete(id) {
+        try {
+            const res = await deleteCategory(id).unwrap()
+            refetch()
+            toast(res?.message)
+        } catch (error) {
+            toast(error?.data?.message)
+        }
+    }
+
+    async function handleBlockCategory(id) {
+        try {
+            const res = await blockCategory(id).unwrap()
+            refetch()
+            toast(res?.message)
+        } catch (error) {
+            toast(error?.data?.message)
+        }
+    }
 
     return (
         <>
+            <Toaster
+                position="top-center"
+                toastOptions={{
+                    style: {
+                        backgroundColor: 'black',
+                        color: 'white',
+                    },
+                    duration: 2000
+                }}
+            />
             <div className='ml-10'>
-                <div className='w-[610px]'>
-                    <div className='flex justify-between '>
-                        <div className='flex items-center'>
-                            <FaListUl size={30} />
-                            <p className='text-2xl font-medium ml-4'>Category</p>
-                        </div>
-                        <button onClick={() => { setAddCategoryModal(true) }} className='bg-black px-6 py-4 rounded-full text-white font-medium'>Add category</button>
-                    </div>
-                    <CategoryTable categories={categories} isCategoriesLoading={isCategoriesLoading} refetch={refetch} ></CategoryTable>
+                <div className='flex items-center'>
+                    <FaListUl size={30} />
+                    <p className='text-2xl font-medium ml-4'>Category</p>
+                </div>
+                <div className='bg-neutral-300 rounded-lg shadow-2xl mt-4'>
+                    <CategoryTable
+                        categories={categories}
+                        isCategoriesLoading={isCategoriesLoading}
+                        refetch={refetch}
+                        setAddCategoryModal={setAddCategoryModal}
+                        handleBlockCategory={handleBlockCategory}
+                        handleDelete={handleDelete}
+                    />
                 </div>
             </div>
             {
