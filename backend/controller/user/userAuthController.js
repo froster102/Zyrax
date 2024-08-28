@@ -1,6 +1,6 @@
 import { User } from "../../model/user.js"
 import bcrypt from 'bcryptjs'
-import { generateAccessToken, generateRefreshToken, sendVerifyEmail } from '../../utils/utils.js'
+import { generateAccessToken, generateRefreshToken, sendResetEmail, sendVerifyEmail } from '../../utils/utils.js'
 import jwt from 'jsonwebtoken'
 
 const googleSigninCallback = async (req, res) => {
@@ -92,8 +92,8 @@ const signUp = async (req, res) => {
                 password: passwordHash,
                 verification_status: false,
             })
-            sendVerifyEmail(email, user._id)
-            return res.status(201).json({ message: 'Please verify you email by clicking the link sent to your email' })
+            const response = await sendVerifyEmail(email, user._id)
+            if (response) return res.status(201).json({ message: 'Please verify you email by clicking the link sent to your email' })
         }
     } catch (e) {
         if (e.name === 'ValidationError') {
@@ -105,6 +105,32 @@ const signUp = async (req, res) => {
         }
         return res.status(500).json({ message: 'Something went wrong' })
     }
+}
+
+const forgotPassword = async (req, res) => {
+    const { email } = req.body
+    const user = await User.findOne({ email: email })
+    if (!user || user.verification_status === false) return res.status(404).json({ message: 'User not found' })
+    if (user.authProvider === 'google') return res.status(400).json({ message: 'Account have already signed in with google please use google sign in' })
+    const response = await sendResetEmail(email, user.firstName, user._id)
+    if (response) return res.status(200).json({ message: 'An email has been sent to your mail follow the email to reset the password' })
+}
+
+const resetPassword = async (req, res) => {
+    const { token, password } = req.body
+    jwt.verify(token, process.env.SECRET, async (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: 'Invalid link or link has been expired please try again' })
+        }
+        const { userId } = decoded
+        const { password: oldPasswordHash } = await User.findOne({ _id: userId }, { password: true })
+        const checkOld = await bcrypt.compare(password, oldPasswordHash)
+        if (checkOld) return res.status(400).json({ message: 'New password cannot be same as the current password' })
+        const newPasswordHash = await bcrypt.hash(password, 10)
+        const response = await User.findByIdAndUpdate(userId, { password: newPasswordHash }, { new: true })
+        if (response) return res.status(200).json({ message: 'Password updated sucessfully' })
+    })
+
 }
 
 const verifyEmail = async (req, res) => {
@@ -138,6 +164,8 @@ export {
     googleSigninCallback,
     signin,
     signUp,
+    forgotPassword,
+    resetPassword,
     verifyEmail,
     logout
 }

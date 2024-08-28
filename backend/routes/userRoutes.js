@@ -1,6 +1,6 @@
 import express from 'express'
 import { passport } from '../middlewares/passport-config.js'
-import { signin, googleSigninCallback, signUp } from '../controller/user/userAuthController.js'
+import { signin, googleSigninCallback, signUp, forgotPassword, resetPassword } from '../controller/user/userAuthController.js'
 import { logout } from '../controller/logoutController.js'
 import { getProductDeatils, getProducts } from '../controller/user/userProductController.js'
 import { getProfile } from '../controller/user/userProfileController.js'
@@ -8,7 +8,7 @@ import { userAuth } from '../middlewares/authMiddleware.js'
 import { addWishlistItems, getWishlistItems, removeWishlistItem } from '../controller/user/userWishlistController.js'
 import { addCartItems, getCartItems, removeCartItem } from '../controller/user/userCartController.js'
 import { getAllCategories } from '../controller/user/userCategoryiesController.js'
-import {validatePassword, validateSignin} from '../middlewares/validationMiddleware.js'
+import { validateEmail, validatePassword, validateResetPassword, validateSignin } from '../middlewares/validationMiddleware.js'
 
 const router = express.Router()
 
@@ -25,8 +25,10 @@ passport.deserializeUser((user, done) => {
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login' }), googleSigninCallback)
-router.post('/auth/signin',validateSignin, signin)
-router.post('/auth/signup',validatePassword, signUp)
+router.post('/auth/signin', validateSignin, signin)
+router.post('/auth/signup', validatePassword, signUp)
+router.post('/auth/forgot-password', validateEmail, forgotPassword)
+router.post('/auth/reset-password', validateResetPassword, resetPassword)
 router.get('/products', getProducts)
 router.get('/products/:name', getProductDeatils)
 

@@ -17,8 +17,22 @@ const userApiSlice = apiSlice.injectEndpoints({
                 body: credentials
             })
         }),
-        getAllCategories : builder.query({
-            query : ()=> `/users/categories`
+        forgotPassword: (builder).mutation({
+            query: ({ email }) => ({
+                url: '/users/auth/forgot-password',
+                method: 'POST',
+                body: { email }
+            })
+        }),
+        resetPassword: (builder).mutation({
+            query: ({ token, password }) => ({
+                url: '/users/auth/reset-password',
+                method: 'POST',
+                body: { token, password }
+            })
+        }),
+        getAllCategories: builder.query({
+            query: () => `/users/categories`
         }),
         getProducts: builder.query({
             query: ({ category, exclude, latest, gender }) => {
@@ -80,6 +94,8 @@ export const {
     useSigninMutation,
     useSignupMutation,
     useLogoutUserMutation,
+    useForgotPasswordMutation,
+    useResetPasswordMutation,
     useGetAllCategoriesQuery,
     useGetProductsQuery,
     useGetProductDeatilsQuery,

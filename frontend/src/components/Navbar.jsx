@@ -54,11 +54,12 @@ function Navbar() {
   }, [])
 
   useEffect(() => {
-    if (!isUserWishlistItemsLoading && userAuth) {
+    if (!isUserWishlistItemsLoading && userAuth && userWishlistItems) {
       dispatch(syncWishlist(userWishlistItems?.items))
+      console.log(userCartItems, userWishlistItems)
       refetchWishlist()
     }
-    if (!isUserCartItemsLoading && userAuth) {
+    if (!isUserCartItemsLoading && userAuth && userCartItems) {
       const dispatchCartState = userCartItems?.items.map(item => {
         return {
           product: item.productId,
@@ -173,13 +174,13 @@ function Navbar() {
             <div className='mt-4 w-full'>
               {categories.map((category, i) => {
                 if (category.parent === null) {
-                  return <SidebarAccordion 
-                  key={i} 
-                  title={category.name} 
-                  index={i} isOpen={openListIndex === i} 
-                  subCategories={category.children} 
-                  toggle={(index) => { setOpenListIndex(openListIndex === index ? null : index) }}
-                  closeSideBar={()=>{setSidebarOpen(false)}}
+                  return <SidebarAccordion
+                    key={i}
+                    title={category.name}
+                    index={i} isOpen={openListIndex === i}
+                    subCategories={category.children}
+                    toggle={(index) => { setOpenListIndex(openListIndex === index ? null : index) }}
+                    closeSideBar={() => { setSidebarOpen(false) }}
                   />
                 }
               })}

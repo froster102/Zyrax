@@ -26,7 +26,7 @@ function Dropdown({ title, subCategories }) {
               transition={{ ease: 'easeIn', duration: 0.2 }}
               className='bg-stone-200 p-4 rounded-xl absolute top-10 z-50 w-40'>
               {subCategories?.map((category, i) => {
-                return <Link to={`/${category.name}`} key={i}><li className='w-full pt-2 text-nowrap hover:text-[#147efb] transition ease-in-out'>{_.startCase(category?.name)}</li></Link>
+                return <Link to={`/products/${category.name}`} key={i}><li className='w-full pt-2 text-nowrap hover:text-[#147efb] transition ease-in-out'>{_.startCase(category?.name)}</li></Link>
               })}
             </motion.ul>
           }

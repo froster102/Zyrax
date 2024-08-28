@@ -4,7 +4,6 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Login from '../pages/User/Login'
 import Register from '../pages/User/Register'
-// import ResetPassword from '../pages/User/ResetPassword'
 import NotFound from '../pages/User/NotFound'
 import Home from '../pages/User/Home'
 import Account from '../pages/User/Account'
@@ -15,6 +14,8 @@ import Cart from '../pages/User/Cart'
 import { Flip, ToastContainer } from 'react-toastify'
 import LayoutWithWidth from '../components/LayoutWithWidth'
 import ProductLists from '../components/ProductLists'
+import ForgotPassword from '../components/ForgotPassword'
+import ResetPassword from '../components/ResetPassword'
 
 function UserRoutes() {
     return (
@@ -35,8 +36,10 @@ function UserRoutes() {
                 <Route path='/women' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>
                 <Route path='/wishlist' element={<LayoutWithWidth><Wishlist /></LayoutWithWidth>} ></Route>
                 <Route path='/cart' element={<Cart></Cart>} ></Route>
-                <Route path=':category' element={<LayoutWithWidth><ProductLists /></LayoutWithWidth>} ></Route>
+                <Route path='/products/:category' element={<LayoutWithWidth><ProductLists /></LayoutWithWidth>} ></Route>
                 <Route path='/product/:name' element={<LayoutWithWidth><ProductDetails /></LayoutWithWidth>}></Route>
+                <Route path='/forgot-password' element={<LayoutWithWidth><ForgotPassword /></LayoutWithWidth>}></Route>
+                <Route path='/reset-password/:token' element={<LayoutWithWidth><ResetPassword /></LayoutWithWidth>} ></Route>
                 <Route element={<RequireUserAuth />}>
                     <Route path='/account/*' element={<LayoutWithWidth><Account /></LayoutWithWidth>} ></Route>
                 </Route>

@@ -108,7 +108,7 @@ function Login() {
                     <input {...register('password')} className='block mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' type="password" />
                     {error && <span className='text-red-700 text-sm'>{error?.data?.message}</span>}
                     {errors.password && <span className='text-red-700 text-sm'>{errors.password?.message}</span>}
-                    <Link to='/reset-password'><p className='text-right font-semibold text-sm hover:underline mt-1'>Forgot Password</p></Link>
+                    <Link to='/forgot-password'><p className='text-right font-semibold text-sm hover:underline mt-1'>Forgot Password</p></Link>
                     <button disabled={isLoading} className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2 flex items-center gap-1' > {isLoading ? <RotatingLines strokeColor='white' width='20' /> : 'Login'}</button>
                     <p className='text-sm font-semibold text-right mt-2'>Dont have a account ? <span className='hover:underline'><Link to='/register'>Register</Link></span></p>
                 </div>

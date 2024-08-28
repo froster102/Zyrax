@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import BreadCrumbs from "./BreadCrumbs"
 import { useSelector } from "react-redux"
 import { selectActiveGender } from "../features/userSlice"
@@ -9,10 +9,10 @@ import _ from "lodash"
 import Filter from "./Filter"
 
 function ProductLists() {
-    const { pathname } = useLocation()
-    const category = decodeURIComponent(pathname).split('/')[1]
+    const { category } = useParams()
     const gender = useSelector(selectActiveGender)
     const { data: products, isLoading: isProductsLoading } = useGetProductsQuery({ category, gender })
+    console.log(products)
     return (
         <>
             <div className="flex justify-between md:justify-center items-center w-full px-6">
