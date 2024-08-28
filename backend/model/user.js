@@ -47,6 +47,7 @@ const UserSchema = new mongoose.Schema({
             message: 'Enter a valid phone number'
         }
     },
+    gender: { type: String, enum: ['male', 'female'] },
     googleId: { type: String },
     authProvider: { type: String, enum: ['google'] },
     profilePic: { type: String },

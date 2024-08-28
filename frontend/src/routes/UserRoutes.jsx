@@ -4,9 +4,8 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Login from '../pages/User/Login'
 import Register from '../pages/User/Register'
-import ResetPassword from '../pages/User/ResetPassword'
+// import ResetPassword from '../pages/User/ResetPassword'
 import NotFound from '../pages/User/NotFound'
-import VerifyEmail from '../pages/User/VerifyEmail'
 import Home from '../pages/User/Home'
 import Account from '../pages/User/Account'
 import RequireUserAuth from '../components/RequireUserAuth'
@@ -15,9 +14,7 @@ import Wishlist from '../pages/User/Wishlist'
 import Cart from '../pages/User/Cart'
 import { Flip, ToastContainer } from 'react-toastify'
 import LayoutWithWidth from '../components/LayoutWithWidth'
-import Orders from '../components/Orders'
-import Wallet from '../components/Wallet'
-import Faq from '../components/Faq'
+import ProductLists from '../components/ProductLists'
 
 function UserRoutes() {
     return (
@@ -38,6 +35,7 @@ function UserRoutes() {
                 <Route path='/women' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>
                 <Route path='/wishlist' element={<LayoutWithWidth><Wishlist /></LayoutWithWidth>} ></Route>
                 <Route path='/cart' element={<Cart></Cart>} ></Route>
+                <Route path=':category' element={<LayoutWithWidth><ProductLists /></LayoutWithWidth>} ></Route>
                 <Route path='/product/:name' element={<LayoutWithWidth><ProductDetails /></LayoutWithWidth>}></Route>
                 <Route element={<RequireUserAuth />}>
                     <Route path='/account/*' element={<LayoutWithWidth><Account /></LayoutWithWidth>} ></Route>

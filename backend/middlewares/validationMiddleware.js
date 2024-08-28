@@ -17,7 +17,8 @@ const validateSignin = (req, res, next) => {
 }
 
 const passwordSchema = z.object({
-    password: z.string().regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{6,}$/, 'Must contain a letter,number,a special character')
+    password: z.string()
+        .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{6,}$/, 'Password must be 6 character long and should contain a letter,number,a special character')
 })
 
 const validatePassword = (req, res, next) => {
@@ -28,9 +29,9 @@ const validatePassword = (req, res, next) => {
         if (error instanceof z.ZodError) {
             const errors = []
             for (let e of error.errors) {
-                errors.push({ message: e.message })
+                errors.push(e.message)
             }
-            return res.status(400).json(errors)
+            return res.status(400).json({message:errors})
         }
     }
 }

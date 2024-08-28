@@ -1,12 +1,16 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { BsChevronDown } from "react-icons/bs";
 import { motion, AnimatePresence } from 'framer-motion'
+import PropTypes, { object } from 'prop-types'
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
 
-function Dropdown({ title, options }) {
+function Dropdown({ title, subCategories }) {
   const [showList, setShowList] = useState(false)
+
   return (
     <>
-      <div className='relative'  onMouseEnter={() => { setShowList(true) }} onMouseLeave={() => { setShowList(false) }}>
+      <div className='relative' onMouseEnter={() => { setShowList(true) }} onMouseLeave={() => { setShowList(false) }}>
         <div className='bg-stone-100 flex justify-between items-center px-2 py-2 rounded-[21px]'>
           <p>{title}</p>
           <div className='p-1 bg-white rounded-full w-[24px] h-[24px] flex justify-center items-center lg:ml-5'>
@@ -20,10 +24,9 @@ function Dropdown({ title, options }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ ease: 'easeIn', duration: 0.2 }}
-
-              className='bg-stone-200 p-4 rounded-xl mt-2 absolute top-10 w-full'>
-              {options.map((option, i) => {
-                return <li className='mt-2 hover:text-[#147efb] transition ease-in-out' key={i}>{option}</li>
+              className='bg-stone-200 p-4 rounded-xl absolute top-10 z-50 w-40'>
+              {subCategories?.map((category, i) => {
+                return <Link to={`/${category.name}`} key={i}><li className='w-full pt-2 text-nowrap hover:text-[#147efb] transition ease-in-out'>{_.startCase(category?.name)}</li></Link>
               })}
             </motion.ul>
           }
@@ -31,6 +34,11 @@ function Dropdown({ title, options }) {
       </div>
     </>
   )
+}
+
+Dropdown.propTypes = {
+  title: PropTypes.string.isRequired,
+  subCategories: PropTypes.arrayOf(object).isRequired
 }
 
 export default Dropdown

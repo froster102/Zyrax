@@ -14,11 +14,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import Zyrax_icon from '../assets/options-list.png'
 import SidebarAccordion from './SidebarAccordion';
-
-const topwears = ['Shirts', 'Pollos', 'Oversized shirts', 'All T-shirts', 'Jackets']
-const bottomwears = ['Jeans', 'Pants', 'Joggers', 'Oversized joggers', 'Track pants']
-const accessories = ['Perfumes', 'Wallets', 'Watches']
-const bestsellers = ['Top 20 t-shirts', 'Top 20 shirts', 'Top 20 joggers']
+import _ from 'lodash';
 
 function Navbar() {
   const [sticky, setSticky] = useState(false)
@@ -32,7 +28,7 @@ function Navbar() {
   const localCartItems = useSelector(selectCartItems)
   const localWishlistItems = useSelector(selectWishlistItems)
   const [userSignOut] = useLogoutUserMutation()
-  const { data: categories } = useGetAllCategoriesQuery()
+  const { data: categories, isLoading: isCategoriesLoading } = useGetAllCategoriesQuery()
   const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchWishlist } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
   const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
   const navigate = useNavigate()
@@ -103,11 +99,11 @@ function Navbar() {
         <div className={`${hideNav ? 'hidden' : 'block'}`} >
           <div className={`px-[20px] ${sticky ? 'fixed w-full top-0 z-50 drop-shadow-xl' : 'mt-2'} transition ease-in`} onScroll={() => { setSticky(true) }}>
             <div className='bg-stone-200 max-w-[1600px] h-[60px] rounded-[20px] p-2 flex gap-4 items-center justify-between'>
-              <Dropdown title='Topwears' options={topwears} ></Dropdown>
-              <Dropdown title={'Bottomwear'} options={bottomwears}></Dropdown>
-              <Dropdown title={'Accessories'} options={accessories}></Dropdown>
-              <Dropdown title={'Sneakers'} options={accessories}></Dropdown>
-              <Dropdown title={'Bestsellers'} options={bestsellers}></Dropdown>
+              {!isCategoriesLoading && categories?.map((category, i) => {
+                if (category.parent === null) {
+                  return <Dropdown key={i} title={_.startCase(category.name)} subCategories={category.children} />
+                }
+              })}
               <SearchBar></SearchBar>
               <UserDropdown user={userAuth} logoutUser={logoutUser}></UserDropdown>
               <Link to={'/cart'}><div className='w-fit p-3 rounded-full h-fit flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in relative'>
@@ -177,7 +173,14 @@ function Navbar() {
             <div className='mt-4 w-full'>
               {categories.map((category, i) => {
                 if (category.parent === null) {
-                  return <SidebarAccordion key={i} title={category.name} index={i} isOpen={openListIndex === i} subCategories={category.children} toggle={(index) => { setOpenListIndex(openListIndex === index ? null : index) }} />
+                  return <SidebarAccordion 
+                  key={i} 
+                  title={category.name} 
+                  index={i} isOpen={openListIndex === i} 
+                  subCategories={category.children} 
+                  toggle={(index) => { setOpenListIndex(openListIndex === index ? null : index) }}
+                  closeSideBar={()=>{setSidebarOpen(false)}}
+                  />
                 }
               })}
             </div>

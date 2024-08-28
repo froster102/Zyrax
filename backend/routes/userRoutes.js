@@ -30,6 +30,8 @@ router.post('/auth/signup',validatePassword, signUp)
 router.get('/products', getProducts)
 router.get('/products/:name', getProductDeatils)
 
+router.get('/categories', getAllCategories)
+
 router.use(userAuth)
 
 router.get('/addresses')
@@ -45,14 +47,10 @@ router.get('/cart', getCartItems)
 router.post('/cart', addCartItems)
 router.delete('/cart', removeCartItem)
 
-router.get('/categories', getAllCategories)
-
 router.get('/me', getProfile)
-router.post('/me')
 router.put('/me')
 router.delete('/me')
 
 router.get('/auth/logout', logout)
-
 
 export default router

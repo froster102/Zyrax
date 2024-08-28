@@ -101,7 +101,7 @@ const signUp = async (req, res) => {
             for (let error in e.errors) {
                 errMsg.push(e.errors[error].properties.message)
             }
-            return res.status(400).json({ errMsg })
+            return res.status(400).json({ message: errMsg })
         }
         return res.status(500).json({ message: 'Something went wrong' })
     }

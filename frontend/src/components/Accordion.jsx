@@ -27,7 +27,7 @@ function Accordion({ title, end }) {
 
 Accordion.propTypes = {
     title: PropTypes.string.isRequired,
-    end: PropTypes.bool.isRequired
+    end: PropTypes.bool
 }
 
 export default Accordion

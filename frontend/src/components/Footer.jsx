@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ReturnPng from '../assets/30-days.png'
 import Cash from '../assets/cash-on-delivery.png'
 import Phonepe from '../assets/phonepe-icon.png'
