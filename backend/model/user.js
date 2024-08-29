@@ -1,18 +1,11 @@
 import mongoose from "mongoose";
 
-const addressSchema = new mongoose.Schema({
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    pincode: { type: String, required: true }
-}, { _id: false })
-
 const UserSchema = new mongoose.Schema({
     firstName: {
         type: String,
         trim: true,
         required: [true, 'First name is required'],
-        minlength: [3, 'Minimum of 3 character required'],
+        minlength: [3, 'First name must contain at least 3 characters'],
         validate: {
             validator: v => /^[A-Za-z]+$/.test(v),
             message: 'First name must only contain alphabets'
@@ -22,7 +15,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: [true, 'Last name is required'],
-        minlength: [3, 'Minimum of 3 character required'],
+        minlength: [3, 'Last name must contain at least 3 characters'],
         validate: {
             validator: v => /^[A-Za-z]+$/.test(v),
             message: 'Last name must only contain alphabets'
@@ -40,10 +33,10 @@ const UserSchema = new mongoose.Schema({
         }
     },
     phoneNumber: {
-        type: Number,
+        type: String,
         trim: true,
         validate: {
-            validator: (v) => v.toString().split('').length === 10,
+            validator: (v) => /^(\+91[-\s]?)?[6789]\d{9}$/.test(v),
             message: 'Enter a valid phone number'
         }
     },
@@ -55,7 +48,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
     },
     status: { type: String, enum: ['active', 'blocked', 'deleted'] },
-    addresses: [addressSchema],
+    addresses: { type: [mongoose.SchemaTypes.ObjectId], ref: ('Address'), default: [] },
     verification_status: { type: Boolean },
     createdAt: {
         type: Date, default: Date.now(), index: {

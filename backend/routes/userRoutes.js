@@ -3,12 +3,13 @@ import { passport } from '../middlewares/passport-config.js'
 import { signin, googleSigninCallback, signUp, forgotPassword, resetPassword } from '../controller/user/userAuthController.js'
 import { logout } from '../controller/logoutController.js'
 import { getProductDeatils, getProducts } from '../controller/user/userProductController.js'
-import { getProfile } from '../controller/user/userProfileController.js'
+import { getProfile, updateProfile } from '../controller/user/userProfileController.js'
 import { userAuth } from '../middlewares/authMiddleware.js'
 import { addWishlistItems, getWishlistItems, removeWishlistItem } from '../controller/user/userWishlistController.js'
 import { addCartItems, getCartItems, removeCartItem } from '../controller/user/userCartController.js'
 import { getAllCategories } from '../controller/user/userCategoryiesController.js'
 import { validateEmail, validatePassword, validateResetPassword, validateSignin } from '../middlewares/validationMiddleware.js'
+import { addAddress, deleteAddress, updateAddress } from '../controller/user/userAddressController.js'
 
 const router = express.Router()
 
@@ -36,11 +37,6 @@ router.get('/categories', getAllCategories)
 
 router.use(userAuth)
 
-router.get('/addresses')
-router.post('/addresses')
-router.put('/addresses')
-router.delete('/addresses')
-
 router.get('/wishlist', getWishlistItems)
 router.post('/wishlist', addWishlistItems)
 router.delete('/wishlist', removeWishlistItem)
@@ -49,9 +45,14 @@ router.get('/cart', getCartItems)
 router.post('/cart', addCartItems)
 router.delete('/cart', removeCartItem)
 
-router.get('/me', getProfile)
-router.put('/me')
-router.delete('/me')
+// router.get('/addresses')
+router.post('/addresses', addAddress)
+router.put('/addresses/:id', updateAddress)
+router.delete('/addresses/:id', deleteAddress)
+
+router.get('/profile', getProfile)
+router.put('/profile', updateProfile)
+router.delete('/profile')
 
 router.get('/auth/logout', logout)
 

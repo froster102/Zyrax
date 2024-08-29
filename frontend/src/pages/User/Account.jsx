@@ -6,6 +6,7 @@ import Profile from '../../components/Profile'
 import { useDispatch } from "react-redux"
 import toast from "react-hot-toast"
 import { resetCartAndWishlist } from "../../features/userSlice"
+import Address from "../../components/Address"
 
 function Account() {
   const [logoutUser] = useLogoutUserMutation()
@@ -40,6 +41,7 @@ function Account() {
         <Routes>
           <Route path="orders" element={<Orders />} ></Route>
           <Route path="profile" element={<Profile />}></Route>
+          <Route path="profile-address" element={<Address />}></Route>
         </Routes>
       </div>
     </div>

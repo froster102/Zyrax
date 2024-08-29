@@ -3,7 +3,7 @@ import { User } from "../../model/user.js"
 const getProfile = async (req, res) => {
     const { userId } = req
     try {
-        const user = await User.findOne({ _id: userId }, { firstName: true, lastName: true, email: true, addresses: true, gender: true })
+        const user = await User.findOne({ _id: userId }, { firstName: true, lastName: true, email: true, addresses: true, phoneNumber: true }).populate('addresses')
         if (user) return res.status(200).json(user)
     } catch (error) {
         console.log(error)
@@ -13,15 +13,14 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
     const { userId } = req
     try {
-        const { firstName, lastName, phoneNumber, gender } = req.body
+        const { firstName, lastName, phoneNumber } = req.body.profileData
         const user = await User.findByIdAndUpdate(userId, {
-            firstName: firstName,
-            lastName: lastName,
+            firstName: firstName.toLowerCase(),
+            lastName: lastName.toLowerCase(),
             phoneNumber: phoneNumber,
-            gender: gender
-        }, { new: true })
+        }, { new: true, runValidators: true })
         if (user) return res.status(200).json({ message: 'Profile updated sucessfully' })
-    } catch (error) {
+    } catch (e) {
         if (e.name === 'ValidationError') {
             const errMsg = []
             for (let error in e.errors) {

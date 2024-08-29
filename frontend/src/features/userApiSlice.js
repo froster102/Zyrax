@@ -1,6 +1,5 @@
 import { apiSlice } from "./apiSlice";
 
-
 const userApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         signin: builder.mutation({
@@ -46,7 +45,34 @@ const userApiSlice = apiSlice.injectEndpoints({
             query: (name) => `/users/products/${name}`
         }),
         getProfile: builder.query({
-            query: () => '/users/me'
+            query: () => '/users/profile'
+        }),
+        updateProfile: builder.mutation({
+            query: ({ profileData }) => ({
+                url: '/users/profile',
+                method: 'PUT',
+                body: { profileData }
+            })
+        }),
+        addAddress: builder.mutation({
+            query: ({ address }) => ({
+                url: '/users/addresses/',
+                method: 'POST',
+                body: { address }
+            })
+        }),
+        updateAddress: builder.mutation({
+            query: ({ id, address }) => ({
+                url: `/users/addresses/${id}`,
+                method: 'PUT',
+                body: { address }
+            })
+        }),
+        deleteAddress: builder.mutation({
+            query: ({ id }) => ({
+                url: `/users/addresses/${id}`,
+                method: 'DELETE',
+            })
         }),
         getUserWishlistItems: builder.query({
             query: () => '/users/wishlist'
@@ -101,6 +127,10 @@ export const {
     useGetProductsQuery,
     useGetProductDeatilsQuery,
     useGetProfileQuery,
+    useUpdateProfileMutation,
+    useAddAddressMutation,
+    useUpdateAddressMutation,
+    useDeleteAddressMutation,
     useGetUserWishlistItemsQuery,
     useAddItemsToUserWishlistMutation,
     useRemoveItemFromUserWishlistMutation,

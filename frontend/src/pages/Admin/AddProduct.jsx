@@ -47,7 +47,6 @@ function AddProduct({ mode }) {
     function onSubmit(data) {
         uploadProduct(data)
     }
-
     function addImage(newImage) {
         const currentImages = getValues('images')
         const updatedImages = [...currentImages, newImage]
