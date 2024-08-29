@@ -35,9 +35,10 @@ const userApiSlice = apiSlice.injectEndpoints({
             query: () => `/users/categories`
         }),
         getProducts: builder.query({
-            query: ({ category, exclude, latest, gender }) => {
+            query: ({ category, exclude, latest, gender, sort }) => {
                 if (latest && category) return `/users/products?latest=${latest}&category=${category}&gender=${gender}`
                 if (category && exclude) return `/users/products?category=${category}&exclude=${exclude}&gender=${gender}`
+                if (sort) return `users/products?category=${category}&gender=${gender}&sort=${sort}`
                 if (category) return `/users/products?category=${category}&gender=${gender}`
             }
         }),

@@ -13,7 +13,7 @@ function SidebarAccordion({ title, isOpen, index, subCategories, toggle, closeSi
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className='ml-2 transition ease-in duration-500'>
-                {subCategories.map((category, i) => <Link onClick={() => { closeSideBar() }} to={`/${category.name}`} key={i}><li className='pt-4 text-sm' >{_.startCase(category.name)}</li></Link>)}
+                {subCategories.map((category, i) => <Link onClick={() => { closeSideBar() }} to={`products/${category.name}`} key={i}><li className='pt-4 text-sm' >{_.startCase(category.name)}</li></Link>)}
             </motion.ul>}
         </>
     )

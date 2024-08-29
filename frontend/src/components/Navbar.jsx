@@ -56,7 +56,6 @@ function Navbar() {
   useEffect(() => {
     if (!isUserWishlistItemsLoading && userAuth && userWishlistItems) {
       dispatch(syncWishlist(userWishlistItems?.items))
-      console.log(userCartItems, userWishlistItems)
       refetchWishlist()
     }
     if (!isUserCartItemsLoading && userAuth && userCartItems) {

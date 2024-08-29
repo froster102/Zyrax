@@ -3,28 +3,89 @@ import { Product } from '../../model/product.js'
 
 const getProducts = async (req, res) => {
     try {
-        const { category, exclude = '', latest = false, limit = 0, gender = '' } = req.query
+        const { category, exclude = '', latest = false, limit = 0, gender = '', sort } = req.query
         const categoryData = await Category.findOne({ name: category }).populate({
             path: 'children'
         })
         if (!categoryData || categoryData.status === 'blocked') return res.status(404).json({ message: 'Category either blocked or not found' })
-        const categoryIds = categoryData.children.map((child) => {
-            if (child.status === 'active') return child._id
-        })
-        categoryIds.push(categoryData?._id)
-        if (latest && category) {
-            const products = await Product.find({ category: categoryIds, status: 'active', gender: gender }, { name: true, price: true, imageUrls: true, createdAt: true }).populate({
-                path: 'category',
-                select: 'name'
-            }).sort({ createdAt: -1 }).limit(limit)
-            return res.status(200).json(products)
+        const activeCatergoryIds = []
+        if (categoryData.parent === null) {
+            if (categoryData.status === 'active') {
+                activeCatergoryIds.push(categoryData._id)
+                categoryData.children.map((child) => {
+                    if (child.status === 'active') {
+                        activeCatergoryIds.push(child._id)
+                    }
+                })
+            }
+        } else {
+            const parentCategory = await Category.findOne({ _id: categoryData.parent })
+            if (parentCategory && parentCategory.status === 'active') {
+                activeCatergoryIds.push(categoryData._id)
+            }
         }
-        const filter = { category: categoryIds, status: 'active', gender: gender }
-        if (exclude) filter.name = { $ne: exclude }
-        const products = await Product.find(filter, { name: true, price: true, imageUrls: true }).populate({
-            path: 'category',
-            select: 'name'
-        })
+        const sortQuery = {}
+        if (latest) {
+            sortQuery.createdAt = -1
+        } else {
+            switch (sort) {
+                case 'L2H': {
+                    sortQuery.price = 1
+                    break
+                }
+                case 'H2L': {
+                    sortQuery.price = -1
+                    break
+                }
+                case 'A2Z': {
+                    sortQuery.name = 1
+                    break
+                }
+                case 'Z2A': {
+                    sortQuery.name = -1
+                    break
+                }
+                case 'newest': {
+                    sortQuery.createdAt = -1
+                    break
+                }
+                default: {
+                    sortQuery._id = 1
+                }
+            }
+        }
+        const products = await Product.aggregate([
+            { $match: {} },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            { $unwind: '$category' },
+            {
+                $match: {
+                    'category._id': { $in: activeCatergoryIds },
+                    'category.status': 'active',
+                    gender: gender,
+                    name: { $ne: exclude },
+                    status: 'active'
+                }
+            },
+            {
+                $sort: sortQuery
+            },
+            {
+                $project: {
+                    name: 1,
+                    price: 1,
+                    imageUrls: 1,
+                    'category.name': 1,
+                }
+            }
+        ])
         return res.status(200).json(products)
     } catch (error) {
         console.log(error)
