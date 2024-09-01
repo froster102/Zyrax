@@ -17,8 +17,9 @@ const addCategory = async (req, res) => {
                 name: name,
                 description: description,
                 parent: parentCategory,
-                status : 'active'
+                status: 'active'
             })
+            console.log(newCategory)
             const responce = await Category.findByIdAndUpdate(parentCategory, {
                 $push: { children: newCategory._id }
             })
@@ -27,7 +28,8 @@ const addCategory = async (req, res) => {
         await Category.create({
             name: name,
             description: description,
-            parent: null
+            parent: null,
+            status: 'active'
         })
         return res.status(201).json({ message: 'Category created sucessfully' })
     } catch (error) {

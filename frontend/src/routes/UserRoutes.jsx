@@ -16,6 +16,9 @@ import LayoutWithWidth from '../components/LayoutWithWidth'
 import ProductLists from '../components/ProductLists'
 import ForgotPassword from '../components/ForgotPassword'
 import ResetPassword from '../components/ResetPassword'
+import Checkout from '../pages/User/Checkout'
+import SelectDeliveryAddress from '../components/SelectDeliveryAddress'
+import OrderSucess from '../components/OrderSucess'
 
 function UserRoutes() {
     return (
@@ -42,7 +45,10 @@ function UserRoutes() {
                 <Route path='/reset-password/:token' element={<LayoutWithWidth><ResetPassword /></LayoutWithWidth>} ></Route>
                 <Route element={<RequireUserAuth />}>
                     <Route path='/account/*' element={<LayoutWithWidth><Account /></LayoutWithWidth>} ></Route>
+                    <Route path='/checkout' element={<Checkout></Checkout>} ></Route>
+                    <Route path='/select-address' element={<LayoutWithWidth><SelectDeliveryAddress /></LayoutWithWidth>} ></Route>
                 </Route>
+                <Route path='/order-sucess' element={<OrderSucess />} ></Route>
                 <Route path='*' element={<NotFound></NotFound>} ></Route>
             </Routes>
             <Footer></Footer>

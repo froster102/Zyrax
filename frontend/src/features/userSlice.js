@@ -7,6 +7,7 @@ const initialState = localStorage.getItem('user') ? JSON.parse(localStorage.getI
     cart: {
         items: []
     },
+    addresses: [],
     selected_gender: 'men'
 }
 
@@ -14,9 +15,9 @@ function saveToLocalStorage(state) {
     localStorage.setItem('user', JSON.stringify({
         wishlist: state.wishlist,
         cart: state.cart,
+        addresses: state.addresses,
         selected_gender: state.selected_gender
     }))
-
 }
 
 const userSlice = createSlice({
@@ -69,6 +70,11 @@ const userSlice = createSlice({
             state.cart.items = state.cart.items.filter((item) => item?.product._id !== productId)
             saveToLocalStorage(state)
         },
+        resetCart: (state) => {
+            console.log(state.cart.items)
+            state.cart.items = []
+            saveToLocalStorage(state)
+        },
         moveToWishlist: (state, action) => {
             const { itemToMove } = action.payload
             if (!state.wishlist.items.find(item => item._id === itemToMove._id)) state.wishlist.items.push(itemToMove)
@@ -82,13 +88,31 @@ const userSlice = createSlice({
         resetCartAndWishlist: (state) => {
             state.wishlist.items = []
             state.cart.items = []
+            state.addresses = []
+            saveToLocalStorage(state)
+        },
+        addAddress: (state, action) => {
+            state.addresses = action.payload.addresses
             saveToLocalStorage(state)
         }
     }
 
 })
 
-export const { syncWishlist,addToWishlist, removeFromWishlist, moveToCart, syncCart, addToCart, removeFromCart, moveToWishlist, selectGender, resetCartAndWishlist } = userSlice.actions
+export const {
+    syncWishlist,
+    addToWishlist,
+    removeFromWishlist,
+    moveToCart,
+    syncCart,
+    addToCart,
+    removeFromCart,
+    moveToWishlist,
+    resetCart,
+    selectGender,
+    resetCartAndWishlist,
+    addAddress
+} = userSlice.actions
 export default userSlice.reducer
 
 export const selectActiveGender = state => state.user.selected_gender

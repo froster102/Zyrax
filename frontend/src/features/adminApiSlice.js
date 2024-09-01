@@ -94,6 +94,16 @@ const adminApiSlice = apiSlice.injectEndpoints({
                 url: `/admin/categories/${id}`,
                 method: 'DELETE',
             })
+        }),
+        fetchOrders: builder.query({
+            query: () => '/admin/orders'
+        }),
+        changeOrderStatus: builder.mutation({
+            query: ({ orderId, status }) => ({
+                url: `/admin/orders/${orderId}/status`,
+                method: 'PATCH',
+                body: { status }
+            })
         })
 
     })
@@ -115,5 +125,7 @@ export const {
     useAddCategoryMutation,
     useEditCategoryMutation,
     useBlockCategoryMutation,
-    useDeleteCategoryMutation
+    useDeleteCategoryMutation,
+    useFetchOrdersQuery,
+    useChangeOrderStatusMutation,
 } = adminApiSlice

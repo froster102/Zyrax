@@ -5,7 +5,7 @@ const generateAccessToken = (userId, role) => {
     return jwt.sign({
         userId: userId,
         role: role
-    }, process.env.SECRET, { expiresIn: '45m' })
+    }, process.env.SECRET, { expiresIn: '1h' })
 }
 
 const generateRefreshToken = (userId, role) => {

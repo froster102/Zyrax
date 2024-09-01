@@ -22,6 +22,7 @@ const userAuth = (req, res, next) => {
             return res.status(401).json({ message: 'Unauthorized' })
         }
         req.userId = decoded?.userId
+        req.role = decoded?.role
         next()
     })
 }

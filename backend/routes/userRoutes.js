@@ -10,6 +10,8 @@ import { addCartItems, getCartItems, removeCartItem } from '../controller/user/u
 import { getAllCategories } from '../controller/user/userCategoryiesController.js'
 import { validateEmail, validatePassword, validateResetPassword, validateSignin } from '../middlewares/validationMiddleware.js'
 import { addAddress, deleteAddress, updateAddress } from '../controller/user/userAddressController.js'
+import { cancelOrder, getUserOrders } from '../controller/user/userOrderController.js'
+import { handleCheckOut } from '../controller/user/userCheckoutController.js'
 
 const router = express.Router()
 
@@ -49,6 +51,13 @@ router.delete('/cart', removeCartItem)
 router.post('/addresses', addAddress)
 router.put('/addresses/:id', updateAddress)
 router.delete('/addresses/:id', deleteAddress)
+
+router.post('/verify-payment')
+
+router.post('/checkout', handleCheckOut)
+
+router.get('/orders', getUserOrders)
+router.patch('/orders/:id/cancel', cancelOrder)
 
 router.get('/profile', getProfile)
 router.put('/profile', updateProfile)

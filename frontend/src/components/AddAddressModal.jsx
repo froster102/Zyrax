@@ -2,9 +2,8 @@ import { IoMdClose } from "react-icons/io"
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import _ from "lodash"
-import { useAddAddressMutation, useGetProfileQuery, useUpdateAddressMutation } from "../features/userApiSlice"
+import { useGetProfileQuery } from "../features/userApiSlice"
 import { useEffect } from "react"
-import toast from "react-hot-toast"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { addAddressSchema } from "../../ValidationSchema/addAddressSchema"
 import { RotatingLines } from "react-loader-spinner"
@@ -48,10 +47,8 @@ const states = [
     "jammu and kashmir"
 ]
 
-function AddAddressModal({ closeModal, refetch, mode, editData }) {
+function AddAddressModal({ closeModal, mode, editData, onSubmit, isAddressAdding, isAddressUpdating }) {
     const { data: profileData, isLoading: isProfileLoading } = useGetProfileQuery()
-    const [addUserAddress, { isLoading: isAddressAdding }] = useAddAddressMutation()
-    const [updateUserAddress, { isLoading: isAddressUpdating }] = useUpdateAddressMutation()
     const { register, handleSubmit, formState: { errors, isDirty }, reset } = useForm({
         resolver: zodResolver(addAddressSchema)
     })
@@ -72,39 +69,6 @@ function AddAddressModal({ closeModal, refetch, mode, editData }) {
             }
         }
     }, [isProfileLoading, reset, profileData, mode, editData])
-
-    async function onSubmit(data) {
-        if (mode === 'edit') {
-            try {
-                const res = await updateUserAddress({ id: editData._id, address: data }).unwrap()
-                refetch()
-                toast(res?.message, {
-                    position: 'top-center'
-                })
-                closeModal()
-            } catch (error) {
-                toast(error?.data?.message, {
-                    position: 'top-center'
-                })
-            }
-        }
-        else {
-            try {
-                const res = await addUserAddress({ address: data }).unwrap()
-                refetch()
-                toast(res?.message, {
-                    position: 'top-center'
-                })
-                closeModal()
-            } catch (error) {
-                toast(error?.data?.message, {
-                    position: 'top-center'
-                })
-            }
-        }
-
-    }
-
 
     return (
         <>
@@ -154,7 +118,7 @@ function AddAddressModal({ closeModal, refetch, mode, editData }) {
                                 </div>
                                 <div className='flex w-full justify-center'>
                                     {
-                                        mode === 'edit' ? <button disabled={!isDirty || isAddressUpdating} className={`flex gap-1 items-center text-center mt-2 ${isDirty?'bg-black':'bg-stone-400'} px-4 py-2 text-white rounded-md`}> {isAddressUpdating ? <RotatingLines strokeColor='white' width='20' /> : 'Edit'}</button>
+                                        mode === 'edit' ? <button disabled={!isDirty || isAddressUpdating} className={`flex gap-1 items-center text-center mt-2 ${isDirty ? 'bg-black' : 'bg-stone-400'} px-4 py-2 text-white rounded-md`}> {isAddressUpdating ? <RotatingLines strokeColor='white' width='20' /> : 'Edit'}</button>
                                             : <button disabled={isAddressAdding} className='flex gap-1 items-center text-center mt-2 bg-black px-4 py-2 text-white rounded-md'> {isAddressAdding ? <RotatingLines strokeColor='white' width='20' /> : 'Add'}</button>
                                     }
                                 </div>
@@ -169,7 +133,9 @@ function AddAddressModal({ closeModal, refetch, mode, editData }) {
 
 AddAddressModal.propTypes = {
     closeModal: PropTypes.func.isRequired,
-    refetch: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    isAddressAdding: PropTypes.bool,
+    isAddressUpdating: PropTypes.bool,
     mode: PropTypes.string,
     editData: PropTypes.object
 }

@@ -15,7 +15,6 @@ const AddressSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: [true, 'Last name is required'],
-        minlength: [3, 'Last name must contain at least 3 characters'],
         validate: {
             validator: v => /^[A-Za-z]+$/.test(v),
             message: 'Last name must only contain alphabets'

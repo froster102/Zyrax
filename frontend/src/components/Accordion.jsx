@@ -3,7 +3,7 @@ import { BiSolidCoupon } from "react-icons/bi";
 import { IoIosArrowDown } from "react-icons/io";
 import PropTypes from 'prop-types'
 
-function Accordion({ title, end }) {
+function Accordion({ title }) {
     const [accordionOpen, setAccordinOpen] = useState(false)
     return (
         <>
@@ -19,7 +19,6 @@ function Accordion({ title, end }) {
                             Apply</button>
                     </div>
                 </div>
-                {!end && <div className="border-b border-b-[#CFCBCB] pt-1"></div>}
             </div>
         </>
     )
@@ -27,7 +26,6 @@ function Accordion({ title, end }) {
 
 Accordion.propTypes = {
     title: PropTypes.string.isRequired,
-    end: PropTypes.bool
 }
 
 export default Accordion
