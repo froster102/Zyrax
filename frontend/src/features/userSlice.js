@@ -71,7 +71,6 @@ const userSlice = createSlice({
             saveToLocalStorage(state)
         },
         resetCart: (state) => {
-            console.log(state.cart.items)
             state.cart.items = []
             saveToLocalStorage(state)
         },

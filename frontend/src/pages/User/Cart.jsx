@@ -59,7 +59,7 @@ function Cart() {
             </div>}
           </div>
           {
-            cartItems.length !== 0 && <CartToatalCard cartTotal={totalCartAmount} navigateToSelectAddress={() => navigate('/select-address', { state: { cartItems, totalCartAmount, selectAddress: true } })} />
+            cartItems.length !== 0 && <CartToatalCard cartTotal={totalCartAmount} navigateToSelectAddress={() => navigate('/select-address', { state: { cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })} />
           }
         </div>
       </div>

@@ -1,20 +1,28 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import CardToatalCard from '../../components/CartToatalCard'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useChekoutMutation } from '../../features/userApiSlice'
 import toast from 'react-hot-toast'
 import { useDispatch } from 'react-redux'
 import { resetCart } from '../../features/userSlice'
+import { RotatingLines } from 'react-loader-spinner'
 
 function Checkout() {
     const location = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { cartItems, totalCartAmount, selectedAddress } = location.state
+    const [pageLoading, setPageLoading] = useState(true)
+    const { cartItems, totalCartAmount, selectedAddress } = location.state || ''
     const [paymentMethod, setPaymentMethod] = useState('')
     const [checkout, { isLoading }] = useChekoutMutation()
 
-    console.log(location.state)
+    useEffect(() => {
+        if (!location?.state) {
+            navigate('/cart')
+        } else {
+            setPageLoading(false)
+        }
+    }, [navigate, cartItems, location])
 
     async function proceedToCheckOut() {
         if (!paymentMethod) {
@@ -29,6 +37,12 @@ function Checkout() {
         } catch (error) {
             toast(error?.data?.message)
         }
+    }
+
+    if (pageLoading) {
+        return <div className='h-screen flex justify-center items-center'>
+            <RotatingLines />
+        </div>
     }
 
     return (
