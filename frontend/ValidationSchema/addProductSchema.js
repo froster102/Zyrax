@@ -15,7 +15,7 @@ const imagesSchema = z.array(
 ).length(4, { message: 'At least 4 images should be uploaded' })
 
 const addProductSchema = z.object({
-    name: z.string().trim().min(5, 'Required').regex(/^[A-Za-z]+$/,'Product name must contain only alphabets'),
+    name: z.string().trim().min(5, 'Required').regex(/^[A-Za-z\s:]+$/,'Product name must contain only alphabets'),
     description: z.string().min(1, 'Required')
         .transform(val => val.split(' '))
         .refine(words => words.length >= 10, { message: 'Description should have a minimum of 10 words' })

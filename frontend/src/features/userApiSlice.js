@@ -51,21 +51,21 @@ const userApiSlice = apiSlice.injectEndpoints({
             query: ({ profileData }) => ({
                 url: '/users/profile',
                 method: 'PUT',
-                body: { profileData }
+                body: profileData
             })
         }),
         addAddress: builder.mutation({
             query: ({ address }) => ({
                 url: '/users/addresses/',
                 method: 'POST',
-                body: { address }
+                body: address
             })
         }),
         updateAddress: builder.mutation({
             query: ({ id, address }) => ({
                 url: `/users/addresses/${id}`,
                 method: 'PUT',
-                body: { address }
+                body: address
             })
         }),
         deleteAddress: builder.mutation({

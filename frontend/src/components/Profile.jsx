@@ -7,13 +7,14 @@ import { RotatingLines } from 'react-loader-spinner'
 import { Link } from 'react-router-dom'
 
 function Profile() {
-  const { data: profileData, isLoading } = useGetProfileQuery()
+  const { data: profileData, isLoading, refetch } = useGetProfileQuery()
   const { register, handleSubmit, formState: { errors, isDirty }, reset } = useForm({})
   const [updateProfile, { isLoading: isProfileUpdating }] = useUpdateProfileMutation()
 
   async function onSubmit(profileData) {
     try {
       const res = await updateProfile({ profileData }).unwrap()
+      refetch()
       toast(res?.message)
     } catch (error) {
       toast(error?.data?.message)
@@ -92,7 +93,7 @@ function Profile() {
                 <input {...register('phoneNumber', {
                   required: 'Required',
                   pattern: {
-                    value: /^(\+91[-\s]?)?[0]?(91)?[689]\d{9}$/,
+                    value: /^(\+91[-\s]?)?[6789]\d{9}$/,
                     message: 'Enter a valid phone number'
                   }
                 })} className='w-full block p-2 border border-[#CFCBCB] focus:outline-none rounded-md' type="text" />

@@ -48,6 +48,10 @@ router.get('/cart', getCartItems)
 router.post('/cart', addCartItems)
 router.delete('/cart/:itemId', validateObjectId, removeCartItem)
 
+router.get('/profile', getProfile)
+router.put('/profile', updateProfile)
+router.delete('/profile')
+
 router.post('/addresses', addAddress)
 router.put('/addresses/:id', updateAddress)
 router.delete('/addresses/:id', deleteAddress)
@@ -58,10 +62,6 @@ router.post('/checkout', handleCheckOut)
 
 router.get('/orders', getUserOrders)
 router.patch('/orders/:id/cancel', cancelOrder)
-
-router.get('/profile', getProfile)
-router.put('/profile', updateProfile)
-router.delete('/profile')
 
 router.get('/auth/logout', logout)
 

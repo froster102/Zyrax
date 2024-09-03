@@ -27,7 +27,7 @@ function SelectDeliveryAddress() {
 
     return (
         <div className="my-20 px-4 md:flex gap-4 w-full justify-evenly">
-            <Address deliveryAddress={deliveryAddress} setDeliveryAddress={setDeliveryAddress} />
+            <Address deliveryAddress={deliveryAddress} setDeliveryAddress={setDeliveryAddress} orderMode={true} />
             <CartToatalCard
                 cartTotal={totalCartAmount}
                 proceedToCheckout={() => navigate('/checkout', { state: { cartItems, totalCartAmount, selectedAddress: deliveryAddress } })}

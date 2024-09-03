@@ -8,13 +8,14 @@ const ProductSchema = new mongoose.Schema({
         trim: true,
         minlength: [5, 'Product name must contain at least 5 characters'],
         validate: {
-            validator: v => /^[A-Za-z]+$/.test(v),
+            validator: v => /^[A-Za-z\s:]+$/.test(v),
             message: 'Product name must only contain alphabets'
         },
         unique: true
     },
     description: {
         type: String,
+        trim: true,
         required: [true, 'Product description is required']
     },
     sizes: {

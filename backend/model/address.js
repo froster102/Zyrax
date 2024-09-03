@@ -25,8 +25,8 @@ const AddressSchema = new mongoose.Schema({
         trim: true,
         minLength: [3, 'Building name must be at least 3 character'],
         validate: {
-            validator: v => /^[A-Za-z]+$/.test(v),
-            message: 'Street must contain only alphabets'
+            validator: v => /^[A-Za-z\s]+$/.test(v),
+            message: 'Building name must contain only alphabets'
         },
         required: [true, 'Building name is required']
     },
@@ -42,6 +42,7 @@ const AddressSchema = new mongoose.Schema({
     },
     city: {
         type: String,
+        trim: true,
         minLength: [3, 'City must be at least 3 character'],
         required: [true, 'City is required'],
         validate: {
@@ -96,6 +97,7 @@ const AddressSchema = new mongoose.Schema({
     },
     pincode: {
         type: String,
+        trim: true,
         required: [true, 'Pincode is required'],
         validate: {
             validator: v => /^[1-9][0-9]{5}$/.test(v),

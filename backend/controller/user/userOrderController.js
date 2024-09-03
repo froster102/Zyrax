@@ -2,7 +2,7 @@ import { Order } from "../../model/order.js"
 
 const getUserOrders = async (req, res) => {
     try {
-        const orders = await Order.findOne({ userId: req.userId }).populate('products.productId')
+        const orders = await Order.find({ userId: req.userId }).populate('products.productId')
         return res.status(200).json(orders)
     } catch (e) {
         if (e.name === 'ValidationError') {
