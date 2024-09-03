@@ -6,9 +6,9 @@ function Orders() {
   const { data: orders, isLoading: isOrderLoading, refetch } = useFetchOrdersQuery()
   const [changeUserOrderStatus] = useChangeOrderStatusMutation()
 
-  async function changeOrderStatus({ orderId, status }) {
+  async function changeOrderStatus({ orderId, productId, status }) {
     try {
-      const res = await changeUserOrderStatus({ orderId, status }).unwrap()
+      const res = await changeUserOrderStatus({ orderId,productId, status }).unwrap()
       refetch()
       toast(res?.message)
     } catch (error) {

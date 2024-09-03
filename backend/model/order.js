@@ -15,15 +15,15 @@ const OrderSchema = new mongoose.Schema({
             message: 'User id not found'
         }
     },
-    status: {
-        type: String,
-        enum: {
-            values: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
-            message: 'Status not valid',
-            default: 'pending'
-        },
-        required: [true, 'Order status is required']
-    },
+    // status: {
+    //     type: String,
+    //     enum: {
+    //         values: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    //         message: 'Status not valid',
+    //         default: 'pending'
+    //     },
+    //     required: [true, 'Order status is required']
+    // },
     totalAmount: {
         type: Number,
         validate: {
@@ -115,6 +115,15 @@ const OrderSchema = new mongoose.Schema({
                 discountId: {
                     type: Number
                 }
+            },
+            status: {
+                type: String,
+                enum: {
+                    values: ['in progress', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+                    message: 'Status not valid',
+                    default: 'pending'
+                },
+                required: [true, 'Product order status is required']
             }
         }
     ]

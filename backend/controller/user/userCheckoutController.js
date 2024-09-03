@@ -19,7 +19,8 @@ const handleCheckOut = async (req, res) => {
                 quantity: item?.selectedQty,
                 size: item?.selectedSize,
                 unitPrice: item?.product?.price,
-                totalPrice: itemTotalPrice
+                totalPrice: itemTotalPrice,
+                status: 'confirmed'
             })
         }
         if (paymentMethod === 'cash on delivery') {
