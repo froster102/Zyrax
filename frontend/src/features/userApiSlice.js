@@ -85,10 +85,9 @@ const userApiSlice = apiSlice.injectEndpoints({
             })
         }),
         removeItemFromUserWishlist: builder.mutation({
-            query: ({ item }) => ({
-                url: '/users/wishlist',
-                method: 'DELETE',
-                body: { item }
+            query: ({ itemId }) => ({
+                url: `/users/wishlist/${itemId}`,
+                method: 'DELETE'
             })
         }),
         getItemsFromUserCart: builder.query({
@@ -102,10 +101,9 @@ const userApiSlice = apiSlice.injectEndpoints({
             })
         }),
         removeItemFromUserCart: builder.mutation({
-            query: ({ productId }) => ({
-                url: '/users/cart',
-                method: 'DELETE',
-                body: { productId }
+            query: ({ itemId }) => ({
+                url: `/users/cart/${itemId}`,
+                method: 'DELETE'
             })
         }),
         fetchUserOrders: builder.query({

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import TrendingCard from './TrendingCard'
 import { useGetProductsQuery } from '../features/userApiSlice'
 import TrendingRowSkeleton from './TrendingRowSkeleton'

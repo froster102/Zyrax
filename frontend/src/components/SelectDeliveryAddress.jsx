@@ -14,6 +14,8 @@ function SelectDeliveryAddress() {
     useEffect(() => {
         if (!orderProcess) {
             navigate('/cart')
+        } else {
+            setPageLoading(false)
         }
     }, [navigate, orderProcess])
 

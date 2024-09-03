@@ -3,10 +3,23 @@ import { Wishlist } from "../../model/wishlist.js"
 const addWishlistItems = async (req, res) => {
     const { items } = req.body
     try {
-        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: { $each: items } } }, { upsert: true })
-        return res.status(201).json({ message: 'Product added to wishlist' })
-    } catch (error) {
-        console.log(error)
+        if (!Array.isArray(items) || items.length) {
+            return res.status(400).json({ message: 'Invalid items field or items does not contain items to add to wishlist' })
+        }
+        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: { $each: items } } }, { new: true, upsert: true, runValidators: true })
+        return res.status(201).json({ message: 'Products added to wishlist' })
+    } catch (e) {
+        const message = []
+        if (e.name === 'ValidationError') {
+            for (let error in e.errors) {
+                message.push(e.errors[error].properties.message)
+            }
+            return res.status(400).json(message)
+        }
+        if (e.name === 'CastError') {
+            message.push('Invalid id found in the items')
+            return res.status(400).json({ message })
+        }
         return res.status(500).json({ message: 'Failed to add product to wishlist' })
     }
 }
@@ -23,12 +36,14 @@ const getWishlistItems = async (req, res) => {
 }
 
 const removeWishlistItem = async (req, res) => {
-    const { item } = req.body
+    const { itemId } = req.params
     try {
-        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $pull: { items: item } }, { upsert: true }, { new: true })
+        const response = await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $pull: { items: itemId } }, { upsert: true }, { new: true })
+        if (!response.items.includes(itemId)) {
+            return res.status(404).json({ message: 'Item with id not found' })
+        }
         return res.status(200).json({ message: 'Product removed from wishlist sucessfully' })
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: 'Failed to remove product from wishlist' })
     }
 }

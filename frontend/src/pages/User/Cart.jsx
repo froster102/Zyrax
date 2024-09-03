@@ -30,7 +30,7 @@ function Cart() {
 
   async function removeItemFromCart({ productId, moveToCart }) {
     try {
-      userAuth && await removeUserCartItem({ productId }).unwrap()
+      userAuth && await removeUserCartItem({ itemId: productId }).unwrap()
       !moveToCart && toast('Product removed from cart sucessfully')
       dispatch(removeFromCart({ productId }))
     } catch (error) {

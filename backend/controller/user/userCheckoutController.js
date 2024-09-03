@@ -4,7 +4,6 @@ import { Product } from "../../model/product.js"
 
 const handleCheckOut = async (req, res) => {
     const { cartItems, paymentMethod, shippingAddressId } = req.body
-    console.log(paymentMethod)
     const validPaymentMethods = ['upi/card', 'cash on delivery', 'paypal']
     if (!validPaymentMethods.includes(paymentMethod)) return res.status(400).json({ message: 'Payment method not valid' })
     try {

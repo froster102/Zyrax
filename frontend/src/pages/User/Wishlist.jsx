@@ -22,7 +22,7 @@ function Wishlist() {
     e.preventDefault()
     e.stopPropagation()
     try {
-      userAuth && await removeUserWishlistItem({ item: product._id })
+      userAuth && await removeUserWishlistItem({ itemId: product._id })
       dispatch(removeFromWishlist(product))
       toast('Product removed from your wishlist')
     } catch (error) {
@@ -37,7 +37,7 @@ function Wishlist() {
       return
     }
     try {
-      userAuth && await removeUserWishlistItem({ item: product._id })
+      userAuth && await removeUserWishlistItem({ itemId: product._id })
       userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize }] }).unwrap()
       toast('Product added to your cart')
       dispatch(moveToCart({ itemToMove: product, selectedSize }))

@@ -7,7 +7,8 @@ const getProducts = async (req, res) => {
         const categoryData = await Category.findOne({ name: category }).populate({
             path: 'children'
         })
-        if (!categoryData || categoryData.status === 'blocked') return res.status(404).json({ message: 'Category either blocked or not found' })
+        if (!categoryData) return res.status(404).json({ message: 'Category not found' })
+        if (categoryData.status === 'blocked') return res.status(404).json({ message: 'Category not available' })
         const activeCatergoryIds = []
         if (categoryData.parent === null) {
             if (categoryData.status === 'active') {

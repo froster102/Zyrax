@@ -8,7 +8,7 @@ import { userAuth } from '../middlewares/authMiddleware.js'
 import { addWishlistItems, getWishlistItems, removeWishlistItem } from '../controller/user/userWishlistController.js'
 import { addCartItems, getCartItems, removeCartItem } from '../controller/user/userCartController.js'
 import { getAllCategories } from '../controller/user/userCategoryiesController.js'
-import { validateEmail, validatePassword, validateResetPassword, validateSignin } from '../middlewares/validationMiddleware.js'
+import { validateEmail, validateGetProducts, validatePassword, validateResetPassword, validateSignin, validateObjectId } from '../middlewares/validationMiddleware.js'
 import { addAddress, deleteAddress, updateAddress } from '../controller/user/userAddressController.js'
 import { cancelOrder, getUserOrders } from '../controller/user/userOrderController.js'
 import { handleCheckOut } from '../controller/user/userCheckoutController.js'
@@ -32,7 +32,8 @@ router.post('/auth/signin', validateSignin, signin)
 router.post('/auth/signup', validatePassword, signUp)
 router.post('/auth/forgot-password', validateEmail, forgotPassword)
 router.post('/auth/reset-password', validateResetPassword, resetPassword)
-router.get('/products', getProducts)
+
+router.get('/products', validateGetProducts, getProducts)
 router.get('/products/:name', getProductDeatils)
 
 router.get('/categories', getAllCategories)
@@ -41,13 +42,12 @@ router.use(userAuth)
 
 router.get('/wishlist', getWishlistItems)
 router.post('/wishlist', addWishlistItems)
-router.delete('/wishlist', removeWishlistItem)
+router.delete('/wishlist/:itemId', validateObjectId, removeWishlistItem)
 
 router.get('/cart', getCartItems)
 router.post('/cart', addCartItems)
-router.delete('/cart', removeCartItem)
+router.delete('/cart/:itemId', validateObjectId, removeCartItem)
 
-// router.get('/addresses')
 router.post('/addresses', addAddress)
 router.put('/addresses/:id', updateAddress)
 router.delete('/addresses/:id', deleteAddress)
