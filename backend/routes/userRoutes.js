@@ -61,7 +61,7 @@ router.post('/verify-payment')
 router.post('/checkout', handleCheckOut)
 
 router.get('/orders', getUserOrders)
-router.patch('/orders/:id/cancel', cancelOrder)
+router.patch('/orders/:orderId/products/:productId/cancel', cancelOrder)
 
 router.get('/auth/logout', logout)
 

@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux"
 import toast from "react-hot-toast"
 import { resetCartAndWishlist } from "../../features/userSlice"
 import Address from "../../components/Address"
+import OrderDetails from "../../components/OrderDetails"
 
 function Account() {
   const [logoutUser] = useLogoutUserMutation()
@@ -40,6 +41,7 @@ function Account() {
       <div className="w-full font-medium">
         <Routes>
           <Route path="orders" element={<Orders />} ></Route>
+          <Route path="orders/details/:productId" element={<OrderDetails />} ></Route>
           <Route path="profile" element={<Profile />}></Route>
           <Route path="profile-address" element={<Address />}></Route>
         </Routes>

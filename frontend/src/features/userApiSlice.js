@@ -116,6 +116,12 @@ const userApiSlice = apiSlice.injectEndpoints({
                 body: { cartItems, paymentMethod, shippingAddressId }
             })
         }),
+        cancelOrder: builder.mutation({
+            query: ({ orderId, productId }) => ({
+                url: `/users/orders/${orderId}/products/${productId}/cancel`,
+                method : 'PATCH',
+            })
+        }),
         logoutUser: builder.mutation({
             query: () => ({
                 url: '/auth/logout',
@@ -146,5 +152,6 @@ export const {
     useAddItemsToUserCartMutation,
     useRemoveItemFromUserCartMutation,
     useChekoutMutation,
+    useCancelOrderMutation,
     useFetchUserOrdersQuery
 } = userApiSlice

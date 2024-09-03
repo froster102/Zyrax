@@ -2,7 +2,7 @@ import { Order } from "../../model/order.js"
 
 const getUserOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ userId: req.userId }).populate('products.productId').sort({createdAt:-1})
+        const orders = await Order.find({ userId: req.userId }).populate('products.productId').sort({ createdAt: -1 })
         return res.status(200).json(orders)
     } catch (e) {
         if (e.name === 'ValidationError') {
@@ -26,13 +26,15 @@ const processOrder = async (req, res) => {
 }
 
 const cancelOrder = async (req, res) => {
-    const { id } = req.params
+    const { orderId, productId } = req.params
     try {
         const order = await Order.findOneAndUpdate({
-            _id: id
-        }, { status: 'cancelled' }, { new: true, runValidators: true })
+            _id: orderId,
+            'products.productId': productId
+        }, { $set: { 'products.$.status': 'cancelled' } }, { new: true, runValidators: true })
         if (order) return res.status(200).json({ message: 'Order cancelled sucessfully' })
     } catch (e) {
+        console.log(e)
         if (e.name === 'ValidationError') {
             const errMsg = []
             for (let error in e.errors) {
