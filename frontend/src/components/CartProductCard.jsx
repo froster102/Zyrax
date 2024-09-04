@@ -39,6 +39,17 @@ function CartProductCard({ item, removeFromCart }) {
         }
     }
 
+    const itemQtyMap = item.product.stock.reduce((acc, { size, quantity }) => {
+        acc[size] = quantity
+        return acc
+    }, {})
+    const maxQty = Math.min(itemQtyMap[item.selectedSize], 5)
+    const maxQtyOptions = Array.from({ length: maxQty }, (_, i) => i + 1)
+    const sizes = item.product.stock.map(({ size, quantity }) => {
+        if (quantity > 0) return size
+        return null
+    }).filter(size => size)
+
     return (
         <>
             <div className="relative">
@@ -51,7 +62,7 @@ function CartProductCard({ item, removeFromCart }) {
                                 <p className="font-semibold text-xs">{_.startCase(item?.product?.category?.name)}</p>
                                 <div className="flex py-1">
                                     <select ref={selectedSizeRef} className="border border-[#CFCBCB] text-xs rounded-md py-1 text-[#828282] px-2 flex items-center justify-center outline-none"
-                                        value={item.selectedSize}
+                                        value={item.selectedSize || 1}
                                         onClick={(e) => {
                                             e.preventDefault()
                                             e.stopPropagation()
@@ -62,7 +73,7 @@ function CartProductCard({ item, removeFromCart }) {
                                     >
                                         <option value="" disabled >Size</option>
                                         {
-                                            item?.product?.sizes.map((size) => (<option key={size} value={size}>{size}</option>))
+                                            sizes.map((size) => (<option key={size} value={size}>{size}</option>))
                                         }
                                     </select>
                                     <select ref={selectedQtyRef} className="ml-2 border border-[#CFCBCB] text-xs rounded-md py-1 text-[#828282] px-2 flex items-center justify-center outline-none"
@@ -76,10 +87,7 @@ function CartProductCard({ item, removeFromCart }) {
                                         }}
                                     >
                                         <option value="" disabled >Qty</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
+                                        {maxQtyOptions.map((option) => <option key={option}>{option}</option>)}
                                     </select>
                                 </div>
                                 <div className="flex w-full">
@@ -105,8 +113,8 @@ function CartProductCard({ item, removeFromCart }) {
 }
 
 CartProductCard.propTypes = {
-    item : PropTypes.object.isRequired,
-    removeFromCart : PropTypes.func.isRequired
+    item: PropTypes.object.isRequired,
+    removeFromCart: PropTypes.func.isRequired
 }
 
 export default CartProductCard

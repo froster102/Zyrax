@@ -9,7 +9,18 @@ const addProduct = async (req, res) => {
         // if (!categories.includes(req.body.Catergory)) {
         //     return res.status(400).json({ message: 'Bad request' })
         // }
-        const { name, description, category, price, discount, stock, sizes, gender } = req.body
+        const { name, description, category, price, discount, stock, gender } = req.body
+        function tranformStockData(stock) {
+            const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+            const transformed = []
+            validSizes.forEach(size => {
+                const quantity = stock[size] === '' ? 0 : Number(stock[size])
+                transformed.push({ size, quantity })
+            })
+
+            return transformed;
+        }
+        const transformedStockObj = tranformStockData(stock)
         const product = await Product.findOne({ name: name })
         if (product) return res.status(409).json({ message: 'Product already exists' })
         const images = req.files
@@ -31,8 +42,7 @@ const addProduct = async (req, res) => {
             category: category,
             price: price,
             discount: discount,
-            sizes: sizes,
-            stockQty: stock,
+            stock: transformedStockObj,
             gender: gender,
             imageUrls: imageUrls,
             status: 'active'
@@ -42,6 +52,13 @@ const addProduct = async (req, res) => {
         console.log(err)
         if (err?.errorResponse?.code === 11000) {
             return res.status(409).json({ message: 'Product already exists' })
+        }
+        if (e.name === 'ValidationError') {
+            const errMsg = []
+            for (let error in e.errors) {
+                errMsg.push(e.errors[error].properties.message)
+            }
+            return res.status(400).json({ errMsg })
         }
         return res.status(500).json({ message: 'Failed to add product an error occured' })
     }
@@ -85,7 +102,18 @@ const editProduct = async (req, res) => {
         // if (!categories.includes(req.body.Category)) {
         //     return res.status(400).json({ message: 'Bad request' })
         // }
-        const { name, description, category, price, discount, stock, sizes, gender } = req.body
+        const { name, description, category, price, discount, stock, gender } = req.body
+        function tranformStockData(stock) {
+            const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+            const transformed = []
+            validSizes.forEach(size => {
+                const quantity = stock[size] === '' ? 0 : Number(stock[size])
+                transformed.push({ size, quantity })
+            })
+
+            return transformed;
+        }
+        const transformedStockObj = tranformStockData(stock)
         const images = req.files
         const imageUrls = req.body?.images || []
         for (const image of images) {
@@ -106,8 +134,7 @@ const editProduct = async (req, res) => {
             category: category,
             price: price,
             discount: discount,
-            sizes: sizes,
-            stockQty: stock,
+            stock: transformedStockObj,
             gender: gender,
             imageUrls: imageUrls
         }, { new: true })

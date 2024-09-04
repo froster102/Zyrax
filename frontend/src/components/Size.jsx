@@ -1,8 +1,14 @@
-import React, { useState } from 'react'
 import Skeleton from 'react-loading-skeleton'
+import PropTypes from 'prop-types'
+
+const defaultSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
 
 function Size({ sizes, isLoading, selectedSize, setSelectedSize, setActiveItem }) {
-    const [defaultSizes, setDefaultSizes] = useState(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'])
+    const sizeQtyMap = sizes.reduce((acc, { size, quantity }) => {
+        acc[size] = quantity
+        return acc
+    }, {})
+
     return (
         <>
             {
@@ -11,7 +17,7 @@ function Size({ sizes, isLoading, selectedSize, setSelectedSize, setActiveItem }
                 })
                     :
                     defaultSizes.map((size) => (
-                        sizes.includes(size) ? (
+                        sizeQtyMap[size] > 0 ? (
                             <div key={size} onClick={() => {
                                 setSelectedSize(size)
                                 setActiveItem ? setActiveItem(false) : ''
@@ -27,6 +33,14 @@ function Size({ sizes, isLoading, selectedSize, setSelectedSize, setActiveItem }
             }
         </>
     )
+}
+
+Size.propTypes = {
+    sizes: PropTypes.array,
+    isLoading: PropTypes.bool,
+    selectedSize: PropTypes.string,
+    setSelectedSize: PropTypes.func,
+    setActiveItem: PropTypes.func
 }
 
 export default Size

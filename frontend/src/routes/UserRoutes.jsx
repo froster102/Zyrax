@@ -19,6 +19,7 @@ import ResetPassword from '../components/ResetPassword'
 import Checkout from '../pages/User/Checkout'
 import SelectDeliveryAddress from '../components/SelectDeliveryAddress'
 import OrderSucess from '../components/OrderSucess'
+import SelectGender from '../pages/User/SelectGender'
 
 function UserRoutes() {
     return (
@@ -33,6 +34,7 @@ function UserRoutes() {
             <Header></Header>
             <Navbar></Navbar>
             <Routes>
+                <Route path='/' element={<LayoutWithWidth><SelectGender /></LayoutWithWidth>} ></Route>
                 <Route path='/login' element={<LayoutWithWidth><Login /></LayoutWithWidth>} ></Route>
                 <Route path='/register' element={<LayoutWithWidth> <Register /></LayoutWithWidth>} ></Route>
                 <Route path='/men' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>

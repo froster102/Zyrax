@@ -47,7 +47,7 @@ function ProductDetails() {
     const gender = useSelector(selectActiveGender)
     const wishlistItems = useSelector(selectWishlistItems)
     const cartItems = useSelector(selectCartItems)
-    const { data: product, isError: isProductDeatilsError, isLoading: isProductLoading } = useGetProductDeatilsQuery(name)
+    const { data: product, isError: isProductDeatilsError, isLoading: isProductLoading, refetch: refetchProductDeatils } = useGetProductDeatilsQuery(name)
     const { data: similiarProducts, isError: isSimilarProductsError, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
     const [imageModal, setImageModal] = useState(false)
     const [productImgPrev, setProductImgPrev] = useState(product?.imageUrls[0])
@@ -67,7 +67,8 @@ function ProductDetails() {
         window.scrollTo({ top: 0, behavior: 'smooth' })
         setSelectedSize('')
         setError(false)
-    }, [pathname])
+        refetchProductDeatils()
+    }, [pathname, refetchProductDeatils])
 
     useEffect(() => {
         if (wishlistItems.length > 0 && !isProductLoading) {
@@ -113,6 +114,14 @@ function ProductDetails() {
                 ''
             }
         }
+    }
+
+    function checkOutOfStock() {
+        if (!isProductLoading) {
+            const totalQty = product?.stock.reduce((total, item) => total += item.quantity, 0)
+            return totalQty
+        }
+        return null
     }
 
     return (
@@ -164,7 +173,7 @@ function ProductDetails() {
                                 <p className='text-base font-semibold mt-4'>Please select a size.</p>
                                 <div className='mt-4 flex gap-2 '>
                                     <Size
-                                        sizes={product?.sizes || []}
+                                        sizes={product?.stock || []}
                                         isLoading={isProductLoading}
                                         selectedSize={selectedSize}
                                         setSelectedSize={setSelectedSize}
@@ -174,22 +183,9 @@ function ProductDetails() {
                                 {error && <div className='text-red-500 pt-2'>Please select a size</div>}
                             </div>
                             <div className='flex my-8 justify-center items-center w-fit'>
-                                <p>Quantity</p>
-                                <select
-                                    className='ml-2 border-none outline-none text-black w-[35px] h-[21px] border border-[#CFCBCB] bg-[#D9D9D9] rounded-md m-0 p-0' name="quantity" id=""
-                                    value={selectedQty}
-                                    onChange={(e) => {
-                                        setSelectedQty(e.target.value)
-                                        setActiveCartItem(false)
-                                    }}
-                                >
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                </select>
+
                             </div>
-                            {isProductDeatilsError ? <Unavailable /> : product?.stockQty === 0 ? < StockOut /> : <div>
+                            {isProductDeatilsError ? <Unavailable /> : checkOutOfStock() === 0 ? < StockOut /> : <div>
                                 <div className='sm:block hidden w-full'>
                                     {activeCartItem
                                         ? <Link to={'/cart'} >

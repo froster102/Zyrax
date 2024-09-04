@@ -96,7 +96,7 @@ const getProducts = async (req, res) => {
 const getProductDeatils = async (req, res) => {
     try {
         const { name } = req.params
-        const product = await Product.findOne({ name: name, status: 'active' }, { name: true, price: true, sizes: true, description: true, imageUrls: true, stockQty: true }).populate({
+        const product = await Product.findOne({ name: name, status: 'active' }, { name: true, price: true, stock: true, description: true, imageUrls: true, stockQty: true }).populate({
             path: 'category',
             select: 'name status'
         })

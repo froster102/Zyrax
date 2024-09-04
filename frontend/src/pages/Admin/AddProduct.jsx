@@ -6,16 +6,17 @@ import { useAddProductMutation, useEditProductMutation, useFetchProductQuery, us
 import { BeatLoader } from 'react-spinners'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, } from 'react-hook-form'
-import SizeSelector from '../../components/SizeSelector';
 import ImageSelector from '../../components/ImageSelector';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import PropTypes from 'prop-types'
 import addProductSchema from '../../../ValidationSchema/addProductSchema';
+import StockSelector from '../../components/StockSelector';
 
 function AddProduct({ mode }) {
     const [modalOpen, setModalOpen] = useState(false)
     const [preview, setPreview] = useState(null)
+    const navigate = useNavigate()
     const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery()
     const [addProduct, { isLoading: isUploading }] = useAddProductMutation()
     const [editProduct, { isLoading: isUpdating }] = useEditProductMutation()
@@ -30,13 +31,17 @@ function AddProduct({ mode }) {
 
     useEffect(() => {
         if (mode === 'edit' && product && !isProductLoading) {
+            const stockObj = product.stock.reduce((acc, { size, quantity }) => {
+                acc[size] = String(quantity)
+                return acc
+            }, {})
+            console.log(stockObj)
             reset({
                 name: product.name,
                 description: product.description,
-                sizes: product.sizes,
                 gender: product.gender,
                 price: String(product.price),
-                stock: String(product.stockQty),
+                stock: stockObj,
                 discount: product.discount,
                 category: product.category?._id,
                 images: product.imageUrls
@@ -44,7 +49,16 @@ function AddProduct({ mode }) {
         }
     }, [product, reset, isProductLoading, mode])
 
+    function getFirstStockError() {
+        const stockErros = errors?.stock
+        if (stockErros) {
+            return Object.values(stockErros).find(err => err.message)?.message
+        }
+        return null
+    }
+
     function onSubmit(data) {
+        console.log(data)
         uploadProduct(data)
     }
     function addImage(newImage) {
@@ -61,13 +75,13 @@ function AddProduct({ mode }) {
             }
             return null
         }).filter(image => image !== null)
+
         const productData = new FormData()
-        for (const key in data) {
-            if (key === 'sizes') {
-                if (Array.isArray(data[key])) {
-                    data[key].forEach((item) => {
-                        productData.append(`${key}[]`, item)
-                    })
+
+        for (const [key, value] of Object.entries(data)) {
+            if (key === 'stock') {
+                for (const [size, quantity] of Object.entries(value)) {
+                    productData.append(`stock[${size}]`, quantity)
                 }
             }
             else if (key !== 'images' && key !== 'sizes') productData.append(key, data[key])
@@ -89,6 +103,7 @@ function AddProduct({ mode }) {
             setPreview(null)
             toast(res?.message)
             setPreview(null)
+            navigate('/admin/dashboard/products')
         } catch (error) {
             console.log(error?.data?.message)
             toast(error?.data?.message)
@@ -154,10 +169,7 @@ function AddProduct({ mode }) {
                             </div>
                             <div className='flex justify-between'>
                                 <div className='mt-4'>
-                                    <h1 className='text-xl font-semibold'>Size</h1>
-                                    <p className='font-extralight'>Select available sizes</p>
-                                    <SizeSelector control={control} />
-                                    {errors.sizes && <span className='text-red-700 text-sm block'>{errors.sizes?.message}</span>}
+                                    
                                 </div>
                                 <div className='mt-4'>
                                     <h1 className='text-xl font-semibold'>Gender</h1>
@@ -180,30 +192,35 @@ function AddProduct({ mode }) {
                             <ImageSelector control={control} setPreview={setPreview} setModalOpen={setModalOpen} mode={mode} />
                             {errors.images && <span className='text-red-700 text-sm block'>{errors.images?.message}</span>}
                         </div>
-                        <div className='col-start-1 w-[649px] h-[264px] border shadow-md  rounded-md bg-white py-[10px] px-[40px]'>
+                        <div className='col-start-1 h-[264px] border shadow-md  rounded-md bg-white py-[10px] px-[40px]'>
                             <h1 className='text-xl font-semibold'>Add Pricing and Stock</h1>
-                            <div className='flex justify-between items-center'>
-                                <div className='mt-4'>
-                                    <p>Base Pricing</p>
-                                    <input {...register('price')} className='rounded-lg p-2 bg-[#D9D9D9] h-[42px] mt-2' type="number" />
-                                    {errors.price && <span className='text-red-700 text-sm block'>{errors.price?.message}</span>}
+                            <div className='flex flex-wrap'>
+                                <div>
+                                    <div className='mt-4'>
+                                        <p>Base Pricing</p>
+                                        <input {...register('price')} className='rounded-lg p-2 bg-[#D9D9D9] h-[42px] mt-2' type="number" />
+                                        {errors.price && <span className='text-red-700 text-sm block'>{errors.price?.message}</span>}
+                                    </div>
+                                    <div className='mt-4'>
+                                        <p>Discount</p>
+                                        <select {...register('discount')} className='rounded-lg bg-[#D9D9D9] h-[42px] mt-2 p-2 focus:border-none outline-none w-60' type="text">
+                                            <option value="">Select discount type</option>
+                                            <option value="Monsoon discount">Monsoon discount</option>
+                                            <option value="Monsoon discount">Monsoon discount</option>
+                                            <option value="Once in a while discount">Once in a while discount</option>
+                                        </select>
+                                        {errors.discount && <span className='text-red-700 text-sm block'>{errors.discount?.message}</span>}
+                                    </div>
                                 </div>
-                                <div className='mt-4'>
+                                <div className='mt-4 pl-20'>
                                     <p>Stock</p>
-                                    <input {...register('stock')} className='rounded-lg p-2 bg-[#D9D9D9] h-[42px] mt-2' type="number" />
-                                    {errors.stock && <span className='text-red-700 text-sm block'>{errors.stock?.message}</span>}
+                                    <StockSelector control={control} />
+                                    {errors.stock && <span className='text-red-700 text-sm block'>{getFirstStockError()}</span>}
+                                    {/* <input {...register('stock')} className='rounded-lg p-2 bg-[#D9D9D9] h-[42px] mt-2' type="number" />
+                                    {errors.stock && <span className='text-red-700 text-sm block'>{errors.stock?.message}</span>} */}
                                 </div>
                             </div>
-                            <div className='mt-4'>
-                                <p>Discount</p>
-                                <select {...register('discount')} className='rounded-lg bg-[#D9D9D9] h-[42px] mt-2 p-2 focus:border-none outline-none w-60' type="text">
-                                    <option value="">Select discount type</option>
-                                    <option value="Monsoon discount">Monsoon discount</option>
-                                    <option value="Monsoon discount">Monsoon discount</option>
-                                    <option value="Once in a while discount">Once in a while discount</option>
-                                </select>
-                                {errors.discount && <span className='text-red-700 text-sm block'>{errors.discount?.message}</span>}
-                            </div>
+
                         </div>
                         <div className='col-start-2 w-[649px] h-[264px] border shadow-md  rounded-md bg-white py-[10px] px-[40px]'>
                             <div className='flex justify-between items-center'>

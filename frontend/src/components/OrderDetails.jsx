@@ -49,9 +49,12 @@ function OrderDetails() {
                                         Product has been cancelled
                                     </div>
                             }
-
                         </div>
                     </div>
+                </div>
+                <div className="border border-stone-300"></div>
+                <div>
+                            
                 </div>
             </div>
         </>

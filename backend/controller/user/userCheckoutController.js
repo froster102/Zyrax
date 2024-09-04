@@ -44,6 +44,12 @@ const handleCheckOut = async (req, res) => {
                 }, {
                     $set: { items: [] }
                 }, { new: true })
+
+                for (const item of processedItems) {
+                    await Product.findOneAndUpdate(
+                        { _id: item.productId, 'stock.size': item.size },
+                        { $inc: { 'stock.$.quantity': -item.quantity } })
+                }
                 return res.status(200).json({ message: 'Order confirmed sucessfully' })
             }
         }

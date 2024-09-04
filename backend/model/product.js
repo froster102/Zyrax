@@ -1,6 +1,24 @@
 import mongoose from "mongoose";
 import { Category } from "./category.js";
 
+const stockSchema = new mongoose.Schema({
+    size: {
+        type: String,
+        enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+        required: [true, 'Size is required']
+    },
+    quantity: {
+        type: Number,
+        // required: [true, 'Quantity is required'],
+        // min: [5, 'Minimun 5 quantity should be available for the product']
+        validate: {
+            validator: (v) => v > 0,
+            message: 'Quantity must be a positive number greater than 0'
+        },
+        default: 0
+    }
+})
+
 const ProductSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -17,14 +35,6 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: [true, 'Product description is required']
-    },
-    sizes: {
-        type: [String],
-        enum: {
-            values: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-            message: 'Size not valid'
-        },
-        default: []
     },
     gender: {
         type: String,
@@ -46,14 +56,7 @@ const ProductSchema = new mongoose.Schema({
         }
     },
     discount: { type: String },
-    stockQty: {
-        type: Number,
-        required: [true, 'Stock is required'],
-        validate: {
-            validator: v => v >= 5,
-            message: 'Stock must be at least 5 in quantity'
-        }
-    },
+    stock: [stockSchema],
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',

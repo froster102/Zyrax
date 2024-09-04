@@ -57,7 +57,7 @@ const OrderSchema = new mongoose.Schema({
             type: String,
             required: [true, 'Payment status is required'],
             enum: {
-                values: ['sucess', 'pending', 'failed'],
+                values: ['success', 'pending', 'failed'],
                 message: 'Enter a valid payment status'
             }
         },
@@ -124,7 +124,10 @@ const OrderSchema = new mongoose.Schema({
                     default: 'pending'
                 },
                 required: [true, 'Product order status is required']
-            }
+            },
+            cancelledDate: {
+                type: Date,
+            },
         }
     ]
 }, { timestamps: true })

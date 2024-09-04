@@ -1,4 +1,5 @@
 import { Order } from "../../model/order.js"
+import { Product } from "../../model/product.js"
 
 const getUserOrders = async (req, res) => {
     try {
@@ -31,10 +32,30 @@ const cancelOrder = async (req, res) => {
         const order = await Order.findOneAndUpdate({
             _id: orderId,
             'products.productId': productId
-        }, { $set: { 'products.$.status': 'cancelled' } }, { new: true, runValidators: true })
-        if (order) return res.status(200).json({ message: 'Order cancelled sucessfully' })
+        }, {
+            $set: {
+                'products.$.status': 'cancelled',
+                'products.$.cancelledDate': new Date()
+            }
+        }, { new: true, runValidators: true })
+        if (order) {
+            const cancelledProduct = order.products.find(product => product.productId.toString() === productId)
+            if (cancelOrder) {
+                const { size, quantity } = cancelledProduct
+                await Product.findOneAndUpdate({
+                    _id: productId,
+                    'stock.size': size
+                },
+                    {
+                        $inc: {
+                            'stock.$.quantity': Number(quantity)
+                        }
+                    }
+                )
+            }
+            return res.status(200).json({ message: 'Order cancelled sucessfully' })
+        }
     } catch (e) {
-        console.log(e)
         if (e.name === 'ValidationError') {
             const errMsg = []
             for (let error in e.errors) {
