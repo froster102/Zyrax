@@ -12,6 +12,7 @@ import { validateEmail, validateGetProducts, validatePassword, validateResetPass
 import { addAddress, deleteAddress, updateAddress } from '../controller/user/userAddressController.js'
 import { cancelOrder, getUserOrders } from '../controller/user/userOrderController.js'
 import { handleCheckOut } from '../controller/user/userCheckoutController.js'
+import { searchProducts } from '../controller/userSearchController.js'
 
 const router = express.Router()
 
@@ -37,6 +38,8 @@ router.get('/products', validateGetProducts, getProducts)
 router.get('/products/:name', getProductDeatils)
 
 router.get('/categories', getAllCategories)
+
+router.get('/search', searchProducts)
 
 router.use(userAuth)
 

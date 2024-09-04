@@ -8,6 +8,8 @@ import { MdBlock } from "react-icons/md";
 import { RotatingLines } from 'react-loader-spinner'
 import { IoSearchOutline } from 'react-icons/io5'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
+import StatusChip from './StatusChip'
 
 function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCategory, handleDelete, setAddCategoryModal }) {
     const [editCategory, setEditCategory] = useState('')
@@ -26,11 +28,8 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                 <button onClick={() => { setAddCategoryModal(true) }} className='bg-black px-4 py-2 rounded-full text-white font-medium'>Add category</button>
             </div>
             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                <thead className="text-xs text-black uppercase bg-neutral-200">
+                <thead className="text-xs text-black uppercase bg-neutral-300">
                     <tr>
-                        <th className="px-6 py-3">
-                            category ID
-                        </th>
                         <th className="px-6 py-3">
                             Name
                         </th>
@@ -51,14 +50,11 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                         }).map((category, i) => {
                             return (
                                 <tr key={i} className="border-b ">
-                                    <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
-                                        {category._id}
-                                    </th>
-                                    <td className="px-6 py-4">
-                                        {category.name}
+                                    <td className="px-6 py-4 ">
+                                        <p className='text-stone-900 font-medium text-base'>{_.startCase(category.name)}</p>
                                     </td>
                                     <td className="px-6 py-4">
-                                        {category.status}
+                                        <StatusChip status={category.status} />
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex gap-2">

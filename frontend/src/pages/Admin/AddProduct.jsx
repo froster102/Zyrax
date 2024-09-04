@@ -101,9 +101,9 @@ function AddProduct({ mode }) {
             reset()
             refetch()
             setPreview(null)
+            navigate('/admin/dashboard/products')
             toast(res?.message)
             setPreview(null)
-            navigate('/admin/dashboard/products')
         } catch (error) {
             console.log(error?.data?.message)
             toast(error?.data?.message)

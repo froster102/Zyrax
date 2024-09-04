@@ -9,6 +9,7 @@ import { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import PropTypes, { object } from 'prop-types'
 import _ from "lodash";
+import StatusChip from "./StatusChip";
 
 
 function ProductTable({ products, refetch }) {
@@ -104,7 +105,7 @@ function ProductTable({ products, refetch }) {
                                                 {product.stockQty}
                                             </td>
                                             <td className="px-6 py-4">
-                                                {product.status}
+                                                <StatusChip status={product.status} />
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex gap-2">

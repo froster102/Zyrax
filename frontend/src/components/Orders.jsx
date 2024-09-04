@@ -24,7 +24,7 @@ function Orders() {
               <p className="text-xs">{order.createdAt.split(':')[0].split('T')[0].split('-').reverse().join('-')}</p>
             </div>
             {
-              order?.products?.map((product, i) => (
+              order.products.map((product, i) => (
                 <div key={i} className="px-4">
                   <div onClick={() => navigate(`/account/orders/details/${product.productId._id}`, { state: { product: product, orderId: order._id, orderDate: order.createdAt.split(':')[0].split('T')[0].split('-').reverse().join('-') } })} className="border border-stone-300 bg-stone-200 w-full min-h-[124px] rounded-md p-4 mt-4">
                     <div className="flex">

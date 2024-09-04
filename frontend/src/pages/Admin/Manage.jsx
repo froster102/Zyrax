@@ -11,10 +11,12 @@ function Manage() {
                 <div className='flex'>
                     <ManageNav></ManageNav>
                     <div className='h-96 bg-[#CFCBCB] w-[1px] ml-10' ></div>
-                    <Routes>
-                        <Route path='category' element={<Category/>} ></Route>
-                        <Route path='discount' element={<Discount />} ></Route>
-                    </Routes>
+                    <div className='w-full px-4'>
+                        <Routes>
+                            <Route path='category' element={<Category />} ></Route>
+                            <Route path='discount' element={<Discount />} ></Route>
+                        </Routes>
+                    </div>
 
                 </div>
             </div>

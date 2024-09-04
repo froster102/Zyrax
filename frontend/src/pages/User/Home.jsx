@@ -12,8 +12,8 @@ function Home() {
   const { pathname } = useLocation()
   const activeGender = useSelector(selectActiveGender)
   const gender = pathname.replace(/\//g, '')
-  const { data: topwears, isLoading: isTopwearsLoading } = useGetProductsQuery({ category: 'topwears', gender })
-  const { data: bottomwears, isLoading: isBottomwearsLoading } = useGetProductsQuery({ category: 'bottomwears', gender })
+  const { data: topwears, isError: isTopwearsError, isLoading: isTopwearsLoading } = useGetProductsQuery({ category: 'topwears', gender })
+  const { data: bottomwears, isError: isBottomwearsError, isLoading: isBottomwearsLoading } = useGetProductsQuery({ category: 'bottomwears', gender })
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -31,8 +31,8 @@ function Home() {
         <p className="mt-2">Catelogs</p>
         <p className="text-center lg:text-4xl md:text-3xl text-2xl uppercase font-medium">Fresh and trending collections</p>
         <TrendingRow></TrendingRow>
-        {<Row title='All New Topwears' products={topwears} isLoading={isTopwearsLoading} ></Row>}
-        {<Row title='All New Bottomwears' products={bottomwears} isLoading={isBottomwearsLoading}></Row>}
+        {!isTopwearsError && <Row title='All New Topwears' products={topwears} isLoading={isTopwearsLoading} ></Row>}
+        {!isBottomwearsError && <Row title='All New Bottomwears' products={bottomwears} isLoading={isBottomwearsLoading}></Row>}
         <Newsletter></Newsletter>
       </div>
     </>

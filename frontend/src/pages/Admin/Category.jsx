@@ -48,7 +48,7 @@ function Category() {
                     <FaListUl size={30} />
                     <p className='text-2xl font-medium ml-4'>Category</p>
                 </div>
-                <div className='bg-neutral-300 rounded-lg shadow-2xl mt-4'>
+                <div className='bg-neutral-200 rounded-lg shadow-xl mt-4 w-full'>
                     <CategoryTable
                         categories={categories}
                         isCategoriesLoading={isCategoriesLoading}
