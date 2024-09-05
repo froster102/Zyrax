@@ -3,11 +3,12 @@ import PropTypes from 'prop-types'
 function StatusChip({ status }) {
 
   const statusColorMap = {
-    'active': 'bg-green-300'
+    'active': 'bg-green-500/20 text-green-900',
+    'blocked' : 'bg-red-500/20 text-red-900'
   }
 
   return (
-    <div className={`px-2 py-1 ${statusColorMap[status]} w-fit text-black rounded-lg bg-opacity-50 text-sm`} >
+    <div className={`px-2 py-1 ${statusColorMap[status]} font-semibold select-none whitespace-nowrap uppercase w-fit rounded-full text-xs`} >
       {status}
     </div>
   )

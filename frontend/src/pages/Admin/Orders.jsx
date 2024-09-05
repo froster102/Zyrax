@@ -8,7 +8,7 @@ function Orders() {
 
   async function changeOrderStatus({ orderId, productId, status }) {
     try {
-      const res = await changeUserOrderStatus({ orderId,productId, status }).unwrap()
+      const res = await changeUserOrderStatus({ orderId, productId, status }).unwrap()
       refetch()
       toast(res?.message)
     } catch (error) {

@@ -37,9 +37,11 @@ const adminAuth = (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: 'Forbidden token expired' })
         } else if (decoded.role !== 'admin') {
+            console.log(decoded)
             return res.status(401).json({ message: 'Unauthorized' })
         }
         req.userId = decoded.userId
+        req.role = decoded?.role
         next()
     })
 }

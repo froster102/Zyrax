@@ -100,7 +100,6 @@ const adminApiSlice = apiSlice.injectEndpoints({
         }),
         changeOrderStatus: builder.mutation({
             query: ({ orderId, productId, status }) => {
-                console.log(productId)
                 return {
                     url: `/admin/orders/${orderId}/products/${productId}/status`,
                     method: 'PATCH',

@@ -70,7 +70,7 @@ const getProducts = async (req, res) => {
         if (!products) {
             return res.status(404).json({ message: 'No products found' })
         }
-        return res.status(200).json({ products })
+        return res.status(200).json(products)
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: 'Failed to get products    ' })
@@ -127,7 +127,6 @@ const editProduct = async (req, res) => {
                 console.log(err)
             }
         }
-        // console.log(Catergory)
         const product = await Product.findByIdAndUpdate(id, {
             name: name,
             description: description,

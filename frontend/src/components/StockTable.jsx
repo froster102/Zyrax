@@ -7,12 +7,12 @@ function StockTable({ stock }) {
             <table>
                 <thead className='bg-neutral-300-300'>
                     <tr className='border-b border-stone-400'>
-                        {stock.map(({ size }) => <th className='px-2 text-center' key={size}><p>{size}</p></th>)}
+                        {stock.map(({ size },i) => <th className='px-2 text-center' key={i}><p>{size}</p></th>)}
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        {stock.map(({ quantity }) => <td className='px-2 text-center' key={quantity}>{quantity}</td>)}
+                        {stock.map(({ quantity },i) => <td className='px-2 text-center' key={i}>{quantity}</td>)}
                     </tr>
                 </tbody>
             </table>

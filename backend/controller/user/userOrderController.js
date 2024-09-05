@@ -7,11 +7,11 @@ const getUserOrders = async (req, res) => {
         return res.status(200).json(orders)
     } catch (e) {
         if (e.name === 'ValidationError') {
-            const errMsg = []
+            const message = []
             for (let error in e.errors) {
-                errMsg.push(e.errors[error].properties.message)
+                message.push(e.errors[error].properties.message)
             }
-            return res.status(400).json({ errMsg })
+            return res.status(400).json({ message })
         }
         return res.status(500).json({ message: 'Failed to get orders' })
     }
@@ -28,8 +28,13 @@ const processOrder = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
     const { orderId, productId } = req.params
+    if (!orderId || !productId) return res.status(400).json({ message: 'Order ID and product ID required' })
     try {
-        const order = await Order.findOneAndUpdate({
+        const order = await Order.findOne({ _id: orderId })
+        const product = await Order.findOne({ _id: orderId, 'products.productId': productId })
+        if (!order) return res.status(404).json({ message: `Order with ${orderId} not found` })
+        if (!product) return res.status(404).json({ message: `Product ID ${productId} not found in order ${orderId}` })
+        await Order.findOneAndUpdate({
             _id: orderId,
             'products.productId': productId
         }, {
@@ -56,12 +61,15 @@ const cancelOrder = async (req, res) => {
             return res.status(200).json({ message: 'Order cancelled sucessfully' })
         }
     } catch (e) {
+        if (e.name === 'CastError') {
+            return res.status(400).json({ message: `Invalid ${e.path === 'productId' ? 'product ID' : 'order ID'}` })
+        }
         if (e.name === 'ValidationError') {
-            const errMsg = []
+            const message = []
             for (let error in e.errors) {
-                errMsg.push(e.errors[error].properties.message)
+                message.push(e.errors[error].properties.message)
             }
-            return res.status(400).json({ errMsg })
+            return res.status(400).json({ message })
         }
         return res.status(500).json({ message: 'Failed to cancel orders' })
     }

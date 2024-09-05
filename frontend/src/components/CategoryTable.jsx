@@ -10,12 +10,24 @@ import { IoSearchOutline } from 'react-icons/io5'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import StatusChip from './StatusChip'
+import ConfirmationModal from './ConfirmationModal'
 
 function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCategory, handleDelete, setAddCategoryModal }) {
     const [editCategory, setEditCategory] = useState('')
     const [viewCategory, setViewCategory] = useState('')
     const [editModal, setEditModal] = useState(false)
     const [viewModal, setViewModal] = useState(false)
+    const [confirmModalState, setConfirmModalState] = useState({
+        show: false,
+        action: '',
+        onConfirm: () => { },
+        message: '',
+        onCancel: () => setConfirmModalState(prev => ({
+            ...prev,
+            show: false
+        }))
+
+    })
     const [search, setSearch] = useState('')
 
     return (
@@ -42,6 +54,15 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                     </tr>
                 </thead>
                 <tbody>
+                    {
+                        isCategoriesLoading && <tr className='w-full'>
+                            <td colSpan={7} className='w-full'>
+                                <div className='flex w-full justify-center items-center'>
+                                    <RotatingLines visible={isCategoriesLoading} strokeColor='black' strokeWidth='3' />
+                                </div>
+                            </td>
+                        </tr>
+                    }
                     {!isCategoriesLoading &&
                         categories.filter((category) => {
                             return search.toLowerCase() === ''
@@ -70,13 +91,28 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                                             }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
                                                 <FaEdit size={20} />
                                             </div>
-                                            <div onClick={() => {
-                                                handleBlockCategory(category._id)
-                                            }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                            <div
+                                                onClick={() => {
+                                                    setConfirmModalState(prev => ({
+                                                        ...prev,
+                                                        show: true,
+                                                        action: `${category.status === 'blocked' ? 'unblock' : 'block'}`,
+                                                        onConfirm: () => handleBlockCategory(category._id),
+                                                        message: `Are you sure you want to ${category.status === 'active' ? 'block' : 'unblock'} the category ${category.name} ?`
+                                                    }))
+                                                }}
+                                                className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in"
+                                            >
                                                 <MdBlock size={20} />
                                             </div>
                                             <div onClick={() => {
-                                                handleDelete(category._id)
+                                                setConfirmModalState(prev => ({
+                                                    ...prev,
+                                                    show: true,
+                                                    action: 'delete',
+                                                    onConfirm: () => handleDelete(category._id),
+                                                    message: `Are you sure you want to delete category ${category.name} ?`
+                                                }))
                                             }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
                                                 <MdDelete size={20} />
                                             </div>
@@ -87,7 +123,13 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                         })}
                 </tbody>
             </table>
-            <RotatingLines className='absolute top-20 left-1/2 transform -translate-x-1/2' visible={isCategoriesLoading} strokeColor='black' strokeWidth='3' />
+            <ConfirmationModal
+                show={confirmModalState.show}
+                action={confirmModalState.action}
+                onCancel={confirmModalState.onCancel}
+                onConfirm={confirmModalState.onConfirm}
+                message={confirmModalState.message}
+            />
             {editModal && <CategoryEditModal category={editCategory} categories={categories} closeModal={() => { setEditModal(false) }} refetch={refetch}></CategoryEditModal>}
             {viewModal && <ViewModal category={viewCategory} closeModal={() => { setViewModal(false) }}></ViewModal>}
         </>

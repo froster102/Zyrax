@@ -4,7 +4,7 @@ import { User } from '../../model/user.js'
 const getUsers = async (req, res) => {
     try {
         const users = await User.find({}, { password: false })
-        return res.status(200).json({ users: users })
+        return res.status(200).json(users)
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: 'Failed to get users an error occured' })

@@ -3,7 +3,7 @@ import { useBlockUserMutation, useFetchUsersQuery, useUnblockUserMutation } from
 import toast, { Toaster } from "react-hot-toast";
 
 function Users() {
-    const { data, error, isLoading, refetch } = useFetchUsersQuery()
+    const { data: users, isLoading: isUsersLoading, refetch } = useFetchUsersQuery()
     const [blockUser] = useBlockUserMutation()
     const [unblockUser] = useUnblockUserMutation()
 
@@ -42,13 +42,12 @@ function Users() {
             <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-neutral-50 shadow-inner pt-[40px] px-[20px]'>
                 <h1 className='text-3xl font-semibold'>Users</h1>
                 <div className="relative overflow-x-auto shadow-xl mt-4 bg-neutral-200 rounded-lg">
-                    {
-                        data?.users && <UserTable
-                            blockUserById={blockUserById}
-                            unblockUserById={unblockUserById}
-                            users={data.users}
-                        />
-                    }
+                    <UserTable
+                        blockUserById={blockUserById}
+                        unblockUserById={unblockUserById}
+                        isUserLoading={isUsersLoading}
+                        users={users}
+                    />
                 </div>
             </div>
         </>
