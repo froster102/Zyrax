@@ -1,12 +1,9 @@
 import { Wishlist } from "../../model/wishlist.js"
 
 const addWishlistItems = async (req, res) => {
-    const { items } = req.body
+    const { productId } = req.body
     try {
-        if (!Array.isArray(items) || items.length) {
-            return res.status(400).json({ message: 'Invalid items field or items does not contain items to add to wishlist' })
-        }
-        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: { $each: items } } }, { new: true, upsert: true, runValidators: true })
+        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: productId } }, { new: true, upsert: true, runValidators: true })
         return res.status(201).json({ message: 'Products added to wishlist' })
     } catch (e) {
         const message = []

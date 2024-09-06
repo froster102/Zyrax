@@ -78,10 +78,10 @@ const userApiSlice = apiSlice.injectEndpoints({
             query: () => '/users/wishlist'
         }),
         addItemsToUserWishlist: builder.mutation({
-            query: ({ items }) => ({
+            query: ({ productId }) => ({
                 url: '/users/wishlist',
                 method: 'POST',
-                body: { items }
+                body: { productId }
             })
         }),
         removeItemFromUserWishlist: builder.mutation({
@@ -119,7 +119,7 @@ const userApiSlice = apiSlice.injectEndpoints({
         cancelOrder: builder.mutation({
             query: ({ orderId, productId }) => ({
                 url: `/users/orders/${orderId}/products/${productId}/cancel`,
-                method : 'PATCH',
+                method: 'PATCH',
             })
         }),
         logoutUser: builder.mutation({

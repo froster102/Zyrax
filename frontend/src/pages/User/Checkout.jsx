@@ -3,14 +3,15 @@ import CardToatalCard from '../../components/CartToatalCard'
 import { useEffect, useState } from 'react'
 import { useChekoutMutation } from '../../features/userApiSlice'
 import toast from 'react-hot-toast'
-import { useDispatch } from 'react-redux'
-import { resetCart } from '../../features/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { removeFromCart, resetCart, selectActiveGender } from '../../features/userSlice'
 import { RotatingLines } from 'react-loader-spinner'
 
 function Checkout() {
     const location = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const activeGender = useSelector(selectActiveGender)
     const [pageLoading, setPageLoading] = useState(true)
     const { cartItems, totalCartAmount, selectedAddress } = location.state || ''
     const [paymentMethod, setPaymentMethod] = useState('')
@@ -36,6 +37,10 @@ function Checkout() {
             navigate('/order-sucess', { state: { orderSucess: true }, replace: true })
         } catch (error) {
             toast(error?.data?.message)
+            if (error?.data?.type === 'stockError') {
+                dispatch(removeFromCart({ productId: error?.data?.itemId }))
+                navigate(`/${activeGender}`)
+            }
         }
     }
 

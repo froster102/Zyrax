@@ -1,7 +1,7 @@
-import React from 'react'
 import _ from 'lodash'
 import { Link } from 'react-router-dom';
 import { IoMdClose } from 'react-icons/io';
+import PropTypes from 'prop-types'
 
 function WishlistProductCard({ product, removeItemFromWishlist, moveItemToCart }) {
     return (
@@ -29,6 +29,12 @@ function WishlistProductCard({ product, removeItemFromWishlist, moveItemToCart }
             </div>
         </>
     )
+}
+
+WishlistProductCard.propTypes = {
+    product: PropTypes.object.isRequired,
+    removeItemFromWishlist: PropTypes.func.isRequired,
+    moveItemToCart: PropTypes.func.isRequired,
 }
 
 export default WishlistProductCard

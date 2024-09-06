@@ -17,7 +17,7 @@ function StockSelector({ control }) {
                                 return (
                                     <input
                                         {...field}
-                                        type='number'
+                                        type='text'
                                         className='rounded-md w-16 h-full border border-stone-300 focus:outline-none p-1 mt-2'
                                         placeholder={`Stock for ${size}`}
                                     />

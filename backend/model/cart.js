@@ -1,10 +1,18 @@
 import mongoose from "mongoose";
+import { Product } from "./product.js";
 
 const CartItemSchema = {
     productId: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Product',
-        required: [true, 'Product id is required']
+        required: [true, 'Product id is required'],
+        validate: {
+            validator: async (v) => {
+                const product = await Product.findById(v)
+                return !!product
+            },
+            message: `Product with ID not found`
+        }
     },
     selectedSize: {
         type: String,

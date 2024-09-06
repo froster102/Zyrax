@@ -100,8 +100,8 @@ function Profile() {
                 {errors.phoneNumber && <span className='text-red-700 text-sm'>{errors.phoneNumber?.message}</span>}
                 <label className='flex justify-between items-center pt-8' htmlFor="">Default Address<Link to={'/account/profile-address'} ><span className='text-sm hover:underline'>Add/Edit</span></Link></label>
                 <textarea
-                 value={`${profileData?.addresses[0]?.firstName} ${profileData?.addresses[0]?.lastName}\n${profileData?.addresses[0]?.buildingName}\n${profileData?.addresses[0]?.street},${profileData?.addresses[0]?.city}\n${profileData?.addresses[0]?.state} ${profileData?.addresses[0]?.pincode}`}
-                 disabled className='w-full min-h-[100px] block p-2 border border-[#CFCBCB] focus:outline-none rounded-md bg-stone-300 text-sm' type="text" />
+                  value={`${profileData?.addresses[0]?.firstName || ''} ${profileData?.addresses[0]?.lastName || ''}\n${profileData?.addresses[0]?.buildingName || ''}\n${profileData?.addresses[0]?.street || ''},${profileData?.addresses[0]?.city || ''}\n${profileData?.addresses[0]?.state || ''} ${profileData?.addresses[0]?.pincode || ''}`}
+                  disabled className='w-full min-h-[100px] block p-2 border border-[#CFCBCB] focus:outline-none rounded-md bg-stone-300 text-sm' type="text" />
               </div>
             </div>
           </div>

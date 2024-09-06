@@ -12,7 +12,10 @@ const stockSchema = new mongoose.Schema({
         // required: [true, 'Quantity is required'],
         // min: [5, 'Minimun 5 quantity should be available for the product']
         validate: {
-            validator: (v) => v > 0,
+            validator: (v) => {
+                console.log(v)
+                return v > 0
+            },
             message: 'Quantity must be a positive number greater than 0'
         },
         default: 0

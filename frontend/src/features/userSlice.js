@@ -30,17 +30,12 @@ const userSlice = createSlice({
             saveToLocalStorage(state)
         },
         addToWishlist: (state, action) => {
-            const newItems = Array.isArray(action.payload) ? action.payload : [action.payload]
-            newItems.forEach(newItem => {
-                if (!state.wishlist.items.find(item => item._id === newItem._id)) {
-                    console.log(newItem)
-                    state.wishlist.items.push(newItem)
-                }
-            })
+            const { product } = action.payload
+            state.wishlist.items.push(product)
             saveToLocalStorage(state)
         },
         removeFromWishlist: (state, action) => {
-            state.wishlist.items = state.wishlist.items.filter((item) => item._id !== action.payload._id)
+            state.wishlist.items = state.wishlist.items.filter((item) => item._id !== action.payload.productId)
             saveToLocalStorage(state)
         },
         moveToCart: (state, action) => {

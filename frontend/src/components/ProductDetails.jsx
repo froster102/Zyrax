@@ -83,15 +83,14 @@ function ProductDetails() {
 
     async function handleWishlistItems(product) {
         if (!activeWishlistItem) {
-            dispatch(addToWishlist([product]))
             try {
-                userAuth && await addToUserWishlist({ items: [product._id] }).unwrap()
+                dispatch(addToWishlist({ product }))
+                userAuth && await addToUserWishlist({ productId: product._id }).unwrap()
             } catch (error) {
                 ''
             }
         } else {
-            console.log(product)
-            dispatch(removeFromWishlist(product))
+            dispatch(removeFromWishlist({ productId: product._id }))
             setActiveWishlistItem(false)
             try {
                 userAuth && await removeFromUserWishlist({ item: product._id }).unwrap()

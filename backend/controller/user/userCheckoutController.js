@@ -12,6 +12,18 @@ const handleCheckOut = async (req, res) => {
         for (let item of cartItems) {
             const product = await Product.findById(item.product._id)
             if (!product) return res.status(404).json({ message: `Product with ${item.product._id} not found` })
+            const sizeQtyMap = product.stock.reduce((acc, { size, quantity }) => {
+                acc[size] = quantity
+                return acc
+            }, {})
+            // if (!item.selectedQty <= sizeQtyMap[item.selectedSize]) {
+            //     const response = await Cart.findOneAndUpdate({ user_id: req.userId, 'items.productId': item.product._id }, { $pull: { items: { productId: item.product._id } } }, { new: true, runValidators: true })
+            //     if (response) return res.status(400).json({
+            //         message: 'Requested product is currently out of stock',
+            //         type: 'stockError',
+            //         itemId: item.product._id
+            //     })
+            // }
             let itemTotalPrice = item?.product?.price * item?.selectedQty
             totalAmount += item?.product?.price
             processedItems.push({
@@ -48,7 +60,7 @@ const handleCheckOut = async (req, res) => {
                 for (const item of processedItems) {
                     await Product.findOneAndUpdate(
                         { _id: item.productId, 'stock.size': item.size },
-                        { $inc: { 'stock.$.quantity': -item.quantity } })
+                        { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true })
                 }
                 return res.status(200).json({ message: 'Order confirmed sucessfully' })
             }

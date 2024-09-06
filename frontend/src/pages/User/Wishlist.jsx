@@ -23,7 +23,7 @@ function Wishlist() {
     e.stopPropagation()
     try {
       userAuth && await removeUserWishlistItem({ itemId: product._id })
-      dispatch(removeFromWishlist(product))
+      dispatch(removeFromWishlist({ productId: product._id }))
       toast('Product removed from your wishlist')
     } catch (error) {
       ''

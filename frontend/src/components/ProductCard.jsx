@@ -7,7 +7,6 @@ import { useState } from 'react'
 
 function ProductCard({ product }) {
     const [imageLoading, setImageLoading] = useState(true)
-    console.log(imageLoading)
     return (
         <>
             <Link to={`/product/${product.name}`} >

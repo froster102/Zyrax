@@ -61,6 +61,7 @@ const cancelOrder = async (req, res) => {
             return res.status(200).json({ message: 'Order cancelled sucessfully' })
         }
     } catch (e) {
+        console.log(e)
         if (e.name === 'CastError') {
             return res.status(400).json({ message: `Invalid ${e.path === 'productId' ? 'product ID' : 'order ID'}` })
         }
