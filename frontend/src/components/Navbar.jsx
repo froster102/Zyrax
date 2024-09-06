@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../features/authSlice';
 import UserDropdown from './UserDropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { syncWishlist, syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender } from '../features/userSlice';
-import { useGetUserWishlistItemsQuery, useGetItemsFromUserCartQuery, useLogoutUserMutation, useGetAllCategoriesQuery } from '../features/userApiSlice';
+import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender } from '../features/userSlice';
+import { useGetItemsFromUserCartQuery, useLogoutUserMutation, useGetAllCategoriesQuery } from '../features/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
 import { IoMenu } from "react-icons/io5";
@@ -29,7 +29,6 @@ function Navbar() {
   const localWishlistItems = useSelector(selectWishlistItems)
   const [userSignOut] = useLogoutUserMutation()
   const { data: categories, isLoading: isCategoriesLoading } = useGetAllCategoriesQuery()
-  const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchWishlist } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
   const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
   const navigate = useNavigate()
 
@@ -54,10 +53,6 @@ function Navbar() {
   }, [])
 
   useEffect(() => {
-    if (!isUserWishlistItemsLoading && userAuth && userWishlistItems) {
-      dispatch(syncWishlist(userWishlistItems?.items))
-      refetchWishlist()
-    }
     if (!isUserCartItemsLoading && userAuth && userCartItems) {
       const dispatchCartState = userCartItems?.items.map(item => {
         return {
@@ -69,7 +64,7 @@ function Navbar() {
       dispatch(syncCart(dispatchCartState))
       refetchCart()
     }
-  }, [userWishlistItems, isUserWishlistItemsLoading, dispatch, userAuth, refetchWishlist, userCartItems, isUserCartItemsLoading, refetchCart])
+  }, [dispatch, userAuth, userCartItems, isUserCartItemsLoading, refetchCart])
 
 
   async function logoutUser() {

@@ -24,15 +24,20 @@ const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        syncWishlist: (state, action) => {
-            const dbItems = Array.isArray(action.payload) ? action.payload : [action.payload]
-            state.wishlist.items = dbItems
-            saveToLocalStorage(state)
-        },
         addToWishlist: (state, action) => {
-            const { product } = action.payload
-            state.wishlist.items.push(product)
-            saveToLocalStorage(state)
+            const { product, sync = false, items = [] } = action.payload
+            if (sync) {
+                const itemMap = new Map(state.wishlist.items.map(item => [item._id, item]))
+                for (const item of items) {
+                    if (!itemMap.has(item._id)) {
+                        state.wishlist.items.push(item)
+                    }
+                }
+                saveToLocalStorage(state)
+            } else {
+                state.wishlist.items.push(product)
+                saveToLocalStorage(state)
+            }
         },
         removeFromWishlist: (state, action) => {
             state.wishlist.items = state.wishlist.items.filter((item) => item._id !== action.payload.productId)
@@ -94,7 +99,6 @@ const userSlice = createSlice({
 })
 
 export const {
-    syncWishlist,
     addToWishlist,
     removeFromWishlist,
     moveToCart,

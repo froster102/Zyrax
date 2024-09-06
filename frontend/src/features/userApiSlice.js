@@ -78,10 +78,10 @@ const userApiSlice = apiSlice.injectEndpoints({
             query: () => '/users/wishlist'
         }),
         addItemsToUserWishlist: builder.mutation({
-            query: ({ productId }) => ({
+            query: ({ productId, action = '', productIds = [] }) => ({
                 url: '/users/wishlist',
                 method: 'POST',
-                body: { productId }
+                body: { productId, action, productIds }
             })
         }),
         removeItemFromUserWishlist: builder.mutation({

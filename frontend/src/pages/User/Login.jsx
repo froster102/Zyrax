@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom';
-import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery, useSigninMutation } from '../../features/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useSigninMutation } from '../../features/userApiSlice';
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { selectUserToken, setUserCredentials } from '../../features/authSlice';
 import { FaGoogle } from 'react-icons/fa6';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { selectActiveGender, selectCartItems, selectWishlistItems } from '../../features/userSlice';
+import { addToWishlist, selectActiveGender, selectCartItems, selectWishlistItems } from '../../features/userSlice';
 import { loginSchema } from '../../../ValidationSchema/loginSchema';
 import toast from 'react-hot-toast'
 import { RotatingLines } from 'react-loader-spinner'
@@ -24,8 +24,7 @@ function Login() {
     const localCartItems = useSelector(selectCartItems)
     const [addItemsToUserWislist] = useAddItemsToUserWishlistMutation()
     const [addItemsToUserCart] = useAddItemsToUserCartMutation()
-    const { refetch: refetchWishlist } = useGetUserWishlistItemsQuery(undefined,{skip:!user})
-    const { refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined,{skip:!user})
+    const { refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !user })
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(loginSchema)
     })
@@ -33,11 +32,9 @@ function Login() {
     useEffect(() => {
         const syncUserData = async () => {
             try {
-                if (localWishlistItems.length > 0) {
-                    const items = localWishlistItems.map((item => item?._id))
-                    await addItemsToUserWislist({ items: items }).unwrap()
-                    refetchWishlist()
-                }
+                    const productIds = localWishlistItems.map((item => item?._id))
+                    const items = await addItemsToUserWislist({ productIds, action: 'sync' }).unwrap()
+                    dispatch(addToWishlist({ sync: true, items }))
                 if (localCartItems.length > 0) {
                     const items = localCartItems.map(item => (
                         {

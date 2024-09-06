@@ -1,8 +1,15 @@
 import { Wishlist } from "../../model/wishlist.js"
 
 const addWishlistItems = async (req, res) => {
-    const { productId } = req.body
+    const { productId, action, productIds } = req.body
+
     try {
+        if (action === 'sync') {
+            const wishlist = await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: { $each: productIds } } }, { new: true, runValidators: true }).populate({
+                path: 'items'
+            })
+            return res.status(201).json(wishlist.items)
+        }
         await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: productId } }, { new: true, upsert: true, runValidators: true })
         return res.status(201).json({ message: 'Products added to wishlist' })
     } catch (e) {
@@ -23,10 +30,10 @@ const addWishlistItems = async (req, res) => {
 
 const getWishlistItems = async (req, res) => {
     try {
-        const items = await Wishlist.findOne({ user_id: req.userId }, { items: true, _id: false }).populate({
+        const wishlist = await Wishlist.findOne({ user_id: req.userId }, { items: true, _id: false }).populate({
             path: 'items',
         })
-        return res.status(200).json(items)
+        return res.status(200).json(wishlist.items)
     } catch (error) {
         return res.status(500).json({ message: 'Failed to get products' })
     }
