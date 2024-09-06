@@ -8,7 +8,6 @@ const getAllOrders = async (req, res) => {
 const changeProductOrderStatus = async (req, res) => {
     const { orderId, productId } = req.params
     const { status } = req.body
-    console.log(status)
     const validStatuses = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
     if (!validStatuses.includes(status)) return res.status(400).json({ message: 'Invalid status' })
     try {

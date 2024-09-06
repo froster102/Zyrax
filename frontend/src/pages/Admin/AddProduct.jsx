@@ -96,14 +96,22 @@ function AddProduct({ mode }) {
             }
         })
         try {
-            let res = ''
-            mode === 'edit' ? res = await editProduct({ id: product._id, productData }).unwrap() : res = await addProduct(productData).unwrap()
-            reset()
-            refetch()
-            setPreview(null)
-            navigate('/admin/dashboard/products')
-            toast(res?.message)
-            setPreview(null)
+            if (mode === 'edit') {
+                const res = await editProduct({ id: product._id, productData }).unwrap()
+                navigate('/admin/dashboard/products')
+                toast(res?.message)
+                // setTimeout(()=>navigate('/admin/dashboard/products'))
+                refetch()
+            }else {
+                const res = await addProduct(productData).unwrap()
+                navigate('/admin/dashboard/products')
+                toast(res?.message)
+                // setTimeout(()=>navigate('/admin/dashboard/products'))
+                refetch()
+                reset()
+                setPreview(null)
+                setPreview(null)
+            }
         } catch (error) {
             console.log(error?.data?.message)
             toast(error?.data?.message)
@@ -169,7 +177,7 @@ function AddProduct({ mode }) {
                             </div>
                             <div className='flex justify-between'>
                                 <div className='mt-4'>
-                                    
+
                                 </div>
                                 <div className='mt-4'>
                                     <h1 className='text-xl font-semibold'>Gender</h1>

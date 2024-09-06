@@ -11,6 +11,7 @@ import PropTypes, { object } from 'prop-types'
 import _ from "lodash";
 import StatusChip from "./StatusChip";
 import StockTable from "./StockTable";
+import ConfirmationModal from './ConfirmationModal'
 import { RotatingLines } from "react-loader-spinner";
 
 
@@ -19,11 +20,22 @@ function ProductTable({ products, isProductsLoading, refetch }) {
     const navigate = useNavigate()
     const [blockProduct] = useBlockProductMutation()
     const [deleteProduct] = useDeleteProductMutation()
+    const [confirmModalState, setConfirmModalState] = useState({
+        show: false,
+        action: '',
+        message: '',
+        onConfirm: () => { },
+        onCancel: () => {
+            setConfirmModalState(prev => ({
+                ...prev,
+                show: false
+            }))
+        }
+    })
 
     async function handleBlockProduct(id) {
         try {
             const res = await blockProduct(id).unwrap()
-            console.log(res)
             toast(res?.message)
             refetch()
         } catch (error) {
@@ -127,12 +139,24 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                                                     <FaEdit size={20} />
                                                 </div>
                                                 <div onClick={() => {
-                                                    handleBlockProduct({ id: product._id })
+                                                    setConfirmModalState(prev => ({
+                                                        ...prev,
+                                                        show: true,
+                                                        action: `${product.status === 'active' ? 'block' : 'unblock'}`,
+                                                        message: `Are you sure to ${product.status === 'active' ? 'block' : 'unblock'} product ${product.name} ?`,
+                                                        onConfirm: () => handleBlockProduct({ id: product._id })
+                                                    }))
                                                 }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
                                                     {product.status === 'active' ? <TbBarrierBlock size={20} /> : <TbBarrierBlockOff size={20} />}
                                                 </div>
                                                 <div onClick={() => {
-                                                    handleDelete({ id: product._id })
+                                                    setConfirmModalState(prev => ({
+                                                        ...prev,
+                                                        show: true,
+                                                        action: `delete`,
+                                                        message: `Are you sure you want to delete product ${product.name} ?`,
+                                                        onConfirm: () => handleDelete({ id: product._id })
+                                                    }))
                                                 }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
                                                     <MdDelete size={20} />
                                                 </div>
@@ -145,6 +169,13 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                     </table>
                 </div>
             </div>
+            <ConfirmationModal
+                show={confirmModalState.show}
+                action={confirmModalState.action}
+                onCancel={confirmModalState.onCancel}
+                onConfirm={confirmModalState.onConfirm}
+                message={confirmModalState.message}
+            />
         </>
     )
 }

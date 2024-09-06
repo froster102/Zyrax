@@ -137,14 +137,14 @@ function OrderTable({ orders, changeOrderStatus }) {
                                                                                     <select
                                                                                         className='px-2 py-1 rounded-md text-white bg-stone-800'
                                                                                         value={product.status} onChange={(e) => {
+                                                                                            const status = e.target.value
                                                                                             setConfirmModalState(prev => ({
                                                                                                 ...prev,
                                                                                                 show: true,
-                                                                                                action : 'Change',
+                                                                                                action: 'Change',
                                                                                                 message: `Are you sure you want to change status from ${product.status} to ${e.target.value}`,
-                                                                                                onConfirm: () => changeOrderStatus({ orderId: order._id, productId: product.productId._id, status: e.target.value })
+                                                                                                onConfirm: () => changeOrderStatus({ orderId: order._id, productId: product.productId._id, status: status })
                                                                                             }))
-                                                                                            // changeOrderStatus({ orderId: order._id, productId: product.productId._id, status: e.target.value })
                                                                                         }}>
                                                                                         <option value="pending">Pending</option>
                                                                                         <option value="confirmed">Confirmed</option>
