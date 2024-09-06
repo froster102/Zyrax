@@ -16,7 +16,6 @@ function ProductLists() {
     const { data: products, isLoading: isProductsLoading, refetch, isError } = useGetProductsQuery({ category, gender, sort })
 
     useEffect(() => {
-        console.log(sort)
         refetch()
     }, [category, gender, sort, refetch])
 

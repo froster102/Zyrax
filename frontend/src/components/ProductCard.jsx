@@ -1,13 +1,28 @@
 import _ from 'lodash'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+import { useState } from 'react'
 
 function ProductCard({ product }) {
+    const [imageLoading, setImageLoading] = useState(true)
+    console.log(imageLoading)
     return (
         <>
             <Link to={`/product/${product.name}`} >
-                <div className="lg:w-[280px] md:w-[200px] sm:w-[150px] w-[155px] border rounded-lg border-[#CFCBCB] relative inline-block lg:ml-4p md:ml-4 ml-2">
-                    <img src={product?.imageUrls?.[0]} loading="lazy" className="w-full h-full rounded-lg object-cover" alt="" />
+
+                <div className="lg:w-[280px] md:w-[200px] sm:w-[150px] w-[155px]  border rounded-lg border-[#CFCBCB] relative inline-block lg:ml-4p md:ml-4 ml-2">
+                    {
+                        imageLoading ? <Skeleton className='lg:w-[280px] lg:h-[370px] md:w-[200px] md:h-[264px] sm:w-[150px] sm:h-[197px] w-[155px] h-[204px] rounded-lg' />
+                            : null
+                    }
+                    <img
+                        src={product?.imageUrls?.[0]}
+                        className="w-full h-full rounded-lg object-cover"
+                        alt="product image"
+                        onLoad={() => setImageLoading(false)}
+                    />
                     <div className="absolute w-full bottom-2 lg:px-4 md:px-2 px-1">
                         <div className="bg-stone-400 bg-opacity-70 backdrop-blur-md rounded-[12px] group p-2">
                             <div className="flex justify-between items-center">
