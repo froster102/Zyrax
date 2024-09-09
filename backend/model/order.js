@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Product } from './product.js'
 import { User } from "./user.js";
+import { Address } from './address.js'
 
 const OrderSchema = new mongoose.Schema({
     userId: {
@@ -34,7 +35,14 @@ const OrderSchema = new mongoose.Schema({
     shipping: {
         addressId: {
             type: mongoose.SchemaTypes.ObjectId,
-            required: [true, 'Shipping address id is required']
+            required: [true, 'Shipping address id is required'],
+            validate: {
+                validator: async (v) => {
+                    const address = await Address.findOne({ _id: v })
+                    return !!address
+                },
+                message: "Address not found"
+            }
         }
     },
     payment: {

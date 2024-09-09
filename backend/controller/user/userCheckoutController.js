@@ -69,15 +69,18 @@ const handleCheckOut = async (req, res) => {
             }
         }
     } catch (e) {
-        console.log(e)
         if (e.name === 'ValidationError') {
-            const errMsg = []
+            const message = []
             for (let error in e.errors) {
-                errMsg.push(e.errors[error].properties.message)
+                if (e.errors[error].name === 'CastError') {
+                    message.push('Invalid object Id found in the ids')
+                } else {
+                    message.push(e.errors[error].properties.message)
+                }
             }
-            return res.status(400).json({ errMsg })
+            return res.status(400).json({ message })
         }
-        return res.status(500).json({ message: 'Order confirmation failed' })
+        return res.status(500).json({ message: 'Failed to confirm order' })
     }
 
 }
