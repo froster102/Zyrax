@@ -1,6 +1,6 @@
-import React from 'react'
 import Size from './Size'
 import { IoMdClose } from 'react-icons/io'
+import PropTypes from 'prop-types'
 
 function PickSizeModal({ closeModal, selectedSize, setSelectedSize, sizes, proceed }) {
     return (
@@ -32,6 +32,14 @@ function PickSizeModal({ closeModal, selectedSize, setSelectedSize, sizes, proce
             </div>
         </div>
     )
+}
+
+PickSizeModal.propTypes = {
+    closeModal: PropTypes.func,
+    selectedSize: PropTypes.string,
+    setSelectedSize: PropTypes.func,
+    sizes: PropTypes.array,
+    proceed: PropTypes.func
 }
 
 export default PickSizeModal

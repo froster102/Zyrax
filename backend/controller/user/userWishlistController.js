@@ -2,21 +2,36 @@ import { Wishlist } from "../../model/wishlist.js"
 
 const addWishlistItems = async (req, res) => {
     const { productId, action, productIds } = req.body
-
     try {
         if (action === 'sync') {
-            const wishlist = await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: { $each: productIds } } }, { new: true, runValidators: true }).populate({
-                path: 'items'
-            })
-            return res.status(201).json(wishlist.items)
+            if (!productIds) return res.status(400).json({ message: 'Products IDs not found for sync action' })
+            if (!Array.isArray(productIds)) {
+                return res.status(400).json({ message: 'Invalid array given for sync action' })
+            }
         }
-        await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $addToSet: { items: productId } }, { new: true, upsert: true, runValidators: true })
+        let wishlist = await Wishlist.findOne({ user_id: req.userId })
+        if (!wishlist) {
+            wishlist = new Wishlist({ user_id: req.userId, items: [] })
+        }
+        if (action === 'sync') {
+            wishlist.items = [...new Set([...wishlist.items, ...productIds])]
+            await wishlist.save()
+            const newWishlist = await Wishlist.findOne({ user_id: req.userId }).populate('items')
+            return res.status(201).json(newWishlist.items)
+        } else {
+            wishlist.items = [...new Set([...wishlist.items, productId])]
+            await wishlist.save()
+        }
         return res.status(201).json({ message: 'Products added to wishlist' })
     } catch (e) {
         const message = []
         if (e.name === 'ValidationError') {
             for (let error in e.errors) {
-                message.push(e.errors[error].properties.message)
+                if (e.errors[error].name === 'CastError') {
+                    message.push('Invalid object Id found in the ids')
+                } else {
+                    message.push(e.errors[error].properties.message)
+                }
             }
             return res.status(400).json(message)
         }
@@ -41,6 +56,7 @@ const getWishlistItems = async (req, res) => {
 
 const removeWishlistItem = async (req, res) => {
     const { itemId } = req.params
+    if (!itemId) return res.status(400).json({ message: 'Item ID is required' })
     try {
         const response = await Wishlist.findOneAndUpdate({ user_id: req.userId }, { $pull: { items: itemId } }, { upsert: true }, { new: true })
         if (!response.items.includes(itemId)) {

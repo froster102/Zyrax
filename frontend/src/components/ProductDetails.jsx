@@ -5,7 +5,7 @@ import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import Row from './Row';
 import Ratings from './Ratings';
-import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetProductDeatilsQuery, useGetProductsQuery, useRemoveItemFromUserWishlistMutation } from '../features/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetProductDeatilsQuery, useGetProductsQuery, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from '../features/userApiSlice';
 import { useEffect, useState } from 'react';
 import ProductImageModal from './ProductImageModal';
 import BreadCrumbs from './BreadCrumbs';
@@ -49,6 +49,7 @@ function ProductDetails() {
     const cartItems = useSelector(selectCartItems)
     const { data: product, isError: isProductDeatilsError, isLoading: isProductLoading, refetch: refetchProductDeatils } = useGetProductDeatilsQuery(name)
     const { data: similiarProducts, isError: isSimilarProductsError, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
+    const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchUserWishlistItems } = useGetUserWishlistItemsQuery()
     const [imageModal, setImageModal] = useState(false)
     const [productImgPrev, setProductImgPrev] = useState(product?.imageUrls[0])
     const [activeWishlistItem, setActiveWishlistItem] = useState(false)
@@ -71,32 +72,35 @@ function ProductDetails() {
     }, [pathname, refetchProductDeatils])
 
     useEffect(() => {
-        if (wishlistItems.length > 0 && !isProductLoading) {
-            const wishlistItemIds = wishlistItems.map(item => item?._id)
-            wishlistItemIds.includes(product._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
+        let wishlistItemIds = []
+        if (userAuth && !isUserWishlistItemsLoading && !isProductLoading) {
+            wishlistItemIds = userWishlistItems.map(item => item?._id)
+        } else {
+            if (wishlistItems.length > 0 && !isProductLoading) {
+                wishlistItemIds = wishlistItems.map(item => item?._id)
+            }
         }
+        wishlistItemIds.includes(product?._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
         if (cartItems.length > 0 && !isProductLoading) {
             const cartItemIds = cartItems.map(item => item?.product?._id)
             cartItemIds.includes(product?._id) ? setActiveCartItem(true) : setActiveCartItem(false)
         }
-    }, [product, wishlistItems, isProductLoading, cartItems])
+    }, [product, wishlistItems, isProductLoading, cartItems, isUserWishlistItemsLoading, userAuth, userWishlistItems])
 
     async function handleWishlistItems(product) {
         if (!activeWishlistItem) {
             try {
-                dispatch(addToWishlist({ product }))
                 userAuth && await addToUserWishlist({ productId: product._id }).unwrap()
+                userAuth && refetchUserWishlistItems()
+                dispatch(addToWishlist({ product }))
             } catch (error) {
                 ''
             }
         } else {
+            userAuth && await removeFromUserWishlist({ itemId: product._id }).unwrap()
             dispatch(removeFromWishlist({ productId: product._id }))
+            userAuth && refetchUserWishlistItems()
             setActiveWishlistItem(false)
-            try {
-                userAuth && await removeFromUserWishlist({ item: product._id }).unwrap()
-            } catch (error) {
-                ''
-            }
         }
     }
 

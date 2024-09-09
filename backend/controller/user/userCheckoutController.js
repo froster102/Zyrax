@@ -16,14 +16,17 @@ const handleCheckOut = async (req, res) => {
                 acc[size] = quantity
                 return acc
             }, {})
-            // if (!item.selectedQty <= sizeQtyMap[item.selectedSize]) {
-            //     const response = await Cart.findOneAndUpdate({ user_id: req.userId, 'items.productId': item.product._id }, { $pull: { items: { productId: item.product._id } } }, { new: true, runValidators: true })
-            //     if (response) return res.status(400).json({
-            //         message: 'Requested product is currently out of stock',
-            //         type: 'stockError',
-            //         itemId: item.product._id
-            //     })
-            // }
+            if (item.selectedQty < 1 || item.selectedQty > sizeQtyMap[item.selectedSize]) {
+                const response = await Cart.findOneAndUpdate(
+                    { user_id: req.userId, 'items.productId': item.product._id },
+                    { $pull: { items: { productId: item.product._id } } },
+                    { new: true, runValidators: true })
+                if (response) return res.status(400).json({
+                    message: `Requested product ${product.name} is currently out of stock`,
+                    type: 'stockError',
+                    itemId: item.product._id
+                })
+            }
             let itemTotalPrice = item?.product?.price * item?.selectedQty
             totalAmount += item?.product?.price
             processedItems.push({
@@ -66,6 +69,7 @@ const handleCheckOut = async (req, res) => {
             }
         }
     } catch (e) {
+        console.log(e)
         if (e.name === 'ValidationError') {
             const errMsg = []
             for (let error in e.errors) {

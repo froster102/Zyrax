@@ -45,7 +45,7 @@ const cancelOrder = async (req, res) => {
         }, { new: true, runValidators: true })
         if (order) {
             const cancelledProduct = order.products.find(product => product.productId.toString() === productId)
-            if (cancelOrder) {
+            if (cancelledProduct) {
                 const { size, quantity } = cancelledProduct
                 await Product.findOneAndUpdate({
                     _id: productId,
@@ -61,7 +61,6 @@ const cancelOrder = async (req, res) => {
             return res.status(200).json({ message: 'Order cancelled sucessfully' })
         }
     } catch (e) {
-        console.log(e)
         if (e.name === 'CastError') {
             return res.status(400).json({ message: `Invalid ${e.path === 'productId' ? 'product ID' : 'order ID'}` })
         }

@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "../../components/CartProductCard"
-import { removeFromCart, selectCartItems } from "../../features/userSlice";
+import { moveToWishlist, removeFromCart, selectCartItems } from "../../features/userSlice";
 import EmptyCart from "../../components/EmptyCart";
-import { useRemoveItemFromUserCartMutation } from "../../features/userApiSlice";
+import { useAddItemsToUserWishlistMutation, useRemoveItemFromUserCartMutation } from "../../features/userApiSlice";
 import { selectUserToken } from "../../features/authSlice";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast'
@@ -13,6 +13,7 @@ function Cart() {
   const cartItems = useSelector(selectCartItems)
   const dispatch = useDispatch()
   const [removeUserCartItem] = useRemoveItemFromUserCartMutation()
+  const [addToUserWishlist] = useAddItemsToUserWishlistMutation()
   const userAuth = useSelector(selectUserToken)
   const [totalCartAmount, setTotalCartAmount] = useState(0)
   const navigate = useNavigate()
@@ -38,6 +39,17 @@ function Cart() {
     }
   }
 
+  async function moveItemToWishlist(item) {
+    try {
+      userAuth && await removeUserCartItem({ itemId: item?.product?._id })
+      userAuth && await addToUserWishlist({ productId: item?.product._id }).unwrap()
+      dispatch(moveToWishlist({ itemToMove: item.product }))
+      toast('Product added to your wishlist')
+    } catch (error) {
+      ''
+    }
+  }
+
   return (
     <>
       <Toaster
@@ -54,7 +66,12 @@ function Cart() {
         <div className="md:flex w-full mt-8 m-auto gap-10 px-4">
           <div className="w-full">
             {cartItems.length === 0 && <EmptyCart />}
-            {cartItems.map((item, i) => (<CartProductCard key={i} item={item} removeFromCart={removeItemFromCart} />))}
+            {cartItems.map((item, i) => (<CartProductCard
+              key={i} item={item}
+              removeFromCart={removeItemFromCart}
+              moveItemToWishlist={moveItemToWishlist}
+            />))
+            }
             {cartItems.length > 0 && <div>
             </div>}
           </div>

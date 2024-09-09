@@ -1,31 +1,18 @@
 import _ from "lodash"
 import { useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation } from "../features/userApiSlice"
+import { useAddItemsToUserCartMutation } from "../features/userApiSlice"
 import { selectUserToken } from "../features/authSlice"
-import { addToCart, moveToWishlist } from "../features/userSlice"
+import { addToCart } from "../features/userSlice"
 import { Link } from "react-router-dom"
-import toast from "react-hot-toast"
 import PropTypes from 'prop-types'
 
-function CartProductCard({ item, removeFromCart }) {
+function CartProductCard({ item, removeFromCart, moveItemToWishlist }) {
     const dispatch = useDispatch()
-    const [addToUserWishlist] = useAddItemsToUserWishlistMutation()
     const [addToUserCart] = useAddItemsToUserCartMutation()
     const userAuth = useSelector(selectUserToken)
     const selectedSizeRef = useRef(null)
     const selectedQtyRef = useRef(null)
-
-    async function moveItemToWishlist(item) {
-        dispatch(moveToWishlist({ itemToMove: item.product }))
-        try {
-            userAuth && await removeFromCart({ productId: item?.product?._id, moveToCart: true })
-            userAuth && await addToUserWishlist({ items: [item.product._id] }).unwrap()
-            toast('Product added to your wishlist')
-        } catch (error) {
-            ''
-        }
-    }
 
     async function handleChange() {
         const selectedSize = selectedSizeRef.current.value
@@ -114,7 +101,8 @@ function CartProductCard({ item, removeFromCart }) {
 
 CartProductCard.propTypes = {
     item: PropTypes.object.isRequired,
-    removeFromCart: PropTypes.func.isRequired
+    removeFromCart: PropTypes.func.isRequired,
+    moveItemToWishlist: PropTypes.func.isRequired
 }
 
 export default CartProductCard

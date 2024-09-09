@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../features/authSlice';
 import UserDropdown from './UserDropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender } from '../features/userSlice';
-import { useGetItemsFromUserCartQuery, useLogoutUserMutation, useGetAllCategoriesQuery } from '../features/userApiSlice';
+import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender, addToWishlist } from '../features/userSlice';
+import { useGetItemsFromUserCartQuery, useLogoutUserMutation, useGetAllCategoriesQuery, useGetUserWishlistItemsQuery } from '../features/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
 import { IoMenu } from "react-icons/io5";
@@ -30,6 +30,7 @@ function Navbar() {
   const [userSignOut] = useLogoutUserMutation()
   const { data: categories, isLoading: isCategoriesLoading } = useGetAllCategoriesQuery()
   const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
+  const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchUserWishlistItems } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -53,6 +54,9 @@ function Navbar() {
   }, [])
 
   useEffect(() => {
+    if (!isUserCartItemsLoading && userAuth && userWishlistItems) {
+      dispatch(addToWishlist({ sync: true, items: userWishlistItems }))
+    }
     if (!isUserCartItemsLoading && userAuth && userCartItems) {
       const dispatchCartState = userCartItems?.items.map(item => {
         return {
@@ -64,7 +68,7 @@ function Navbar() {
       dispatch(syncCart(dispatchCartState))
       refetchCart()
     }
-  }, [dispatch, userAuth, userCartItems, isUserCartItemsLoading, refetchCart])
+  }, [dispatch, userAuth, userCartItems, isUserCartItemsLoading, userWishlistItems, isUserWishlistItemsLoading, refetchCart, refetchUserWishlistItems])
 
 
   async function logoutUser() {
@@ -106,7 +110,11 @@ function Navbar() {
                 <FaShoppingCart size={20} />
               </div></Link>
               <Link to={'/wishlist'} ><div className='w-fit p-2 rounded-full h-fit flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in relative'>
-                {localWishlistItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localWishlistItems.length}</div>}
+                {
+                  localWishlistItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>
+                    {localWishlistItems.length}
+                  </div>
+                }
                 <BiHeart size={25} />
               </div></Link>
             </div>
@@ -125,11 +133,15 @@ function Navbar() {
                   </div>
                 </Link>
                 <Link to={'/cart'}><div className='w-[35px] h-[35px] flex items-center justify-items-center relative'>
-                  {localCartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localCartItems?.length}</div>}
+                  {localCartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localCartItems.length}</div>}
                   <FaShoppingCart size={20} />
                 </div></Link>
                 <Link to={'/wishlist'}><div className='w-[35px] h-[35px] flex items-center justify-items-center relative'>
-                  {localWishlistItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localWishlistItems.length}</div>}
+                  {
+                    localWishlistItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>
+                      {localWishlistItems.length}
+                    </div>
+                  }
                   <BiHeart size={20} />
                 </div></Link>
               </div>
@@ -152,7 +164,6 @@ function Navbar() {
                 {
                   !userAuth ? <button className='ml-2 py-1 px-2 text-sm border border-stone-900 rounded-lg'>Login/Register</button> : <p></p>
                 }
-
               </div>
             </div>
             <div className='flex gap-2 w-full justify-center items-center mt-2'>

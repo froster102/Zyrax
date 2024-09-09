@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import WishlistProductCard from "../../components/WishlistProductCard"
 import { moveToCart, removeFromWishlist, selectWishlistItems } from "../../features/userSlice"
-import { useAddItemsToUserCartMutation, useRemoveItemFromUserWishlistMutation } from "../../features/userApiSlice"
+import { useAddItemsToUserCartMutation, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from "../../features/userApiSlice"
 import PickSizeModal from "../../components/PickSizeModal"
 import { selectUserToken } from "../../features/authSlice"
 import EmptyCart from "../../components/EmptyCart"
@@ -16,6 +16,7 @@ function Wishlist() {
   const [openSelectSizeModal, setOpenSelectSizeModal] = useState(false)
   const [removeUserWishlistItem] = useRemoveItemFromUserWishlistMutation()
   const [addToUserCart] = useAddItemsToUserCartMutation()
+  const { refetch: refetchUserWishlistItems } = useGetUserWishlistItemsQuery()
   const [productToMove, setProductToMove] = useState(null)
 
   async function removeItemFromWishlist({ e, product }) {
@@ -24,6 +25,7 @@ function Wishlist() {
     try {
       userAuth && await removeUserWishlistItem({ itemId: product._id })
       dispatch(removeFromWishlist({ productId: product._id }))
+      userAuth && refetchUserWishlistItems()
       toast('Product removed from your wishlist')
     } catch (error) {
       ''
@@ -34,6 +36,7 @@ function Wishlist() {
     if (!selectedSize) {
       setProductToMove(product)
       setOpenSelectSizeModal(true)
+      console.log(selectedSize)
       return
     }
     try {
@@ -65,7 +68,7 @@ function Wishlist() {
           {items.map((item, i) => <WishlistProductCard key={i} product={item} removeItemFromWishlist={removeItemFromWishlist} moveItemToCart={moveItemToCart}></WishlistProductCard>)}
         </div>
         {openSelectSizeModal && <PickSizeModal
-          sizes={productToMove?.sizes}
+          sizes={productToMove?.stock || []}
           selectedSize={selectedSize}
           setSelectedSize={setSelectedSize}
           closeModal={() => { setOpenSelectSizeModal(false) }}

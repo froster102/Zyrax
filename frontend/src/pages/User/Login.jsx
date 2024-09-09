@@ -32,9 +32,10 @@ function Login() {
     useEffect(() => {
         const syncUserData = async () => {
             try {
-                    const productIds = localWishlistItems.map((item => item?._id))
-                    const items = await addItemsToUserWislist({ productIds, action: 'sync' }).unwrap()
-                    dispatch(addToWishlist({ sync: true, items }))
+                const productIds = localWishlistItems.map((item => item?._id))
+                const items = await addItemsToUserWislist({ productIds, action: 'sync' }).unwrap()
+                dispatch(addToWishlist({ sync: true, items }))
+
                 if (localCartItems.length > 0) {
                     const items = localCartItems.map(item => (
                         {
