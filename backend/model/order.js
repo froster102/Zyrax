@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Product } from './product.js'
 import { User } from "./user.js";
 import { Address } from './address.js'
+import { date, string } from "zod";
 
 const OrderSchema = new mongoose.Schema({
     userId: {
@@ -25,6 +26,7 @@ const OrderSchema = new mongoose.Schema({
     //     },
     //     required: [true, 'Order status is required']
     // },
+    order_id: { type: String },
     totalAmount: {
         type: Number,
         validate: {
@@ -52,10 +54,8 @@ const OrderSchema = new mongoose.Schema({
             enum: {
                 values: [
                     'cash on delivery',
-                    'card',
-                    'wallet',
-                    'netbanking',
-                    'upi',
+                    'razorpay',
+                    'zyraxWallet',
                     'paypal',
                 ],
                 message: 'Enter a valid payment method'
@@ -71,7 +71,8 @@ const OrderSchema = new mongoose.Schema({
         },
         transactionId: {
             type: String
-        }
+        },
+        date: { type: mongoose.SchemaTypes.Date }
     },
     products: [
         {

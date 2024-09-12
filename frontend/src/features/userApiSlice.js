@@ -110,16 +110,34 @@ const userApiSlice = apiSlice.injectEndpoints({
             query: () => '/users/orders'
         }),
         chekout: builder.mutation({
-            query: ({ cartItems, paymentMethod, shippingAddressId }) => ({
-                url: '/users/checkout',
-                method: 'POST',
-                body: { cartItems, paymentMethod, shippingAddressId }
-            })
+            query: ({ paymentMethod, shippingAddressId, cardDetails }) => {
+                return {
+                    url: '/users/checkout',
+                    method: 'POST',
+                    body: { paymentMethod, shippingAddressId, cardDetails }
+                }
+            }
         }),
         cancelOrder: builder.mutation({
             query: ({ orderId, productId }) => ({
                 url: `/users/orders/${orderId}/products/${productId}/cancel`,
                 method: 'PATCH',
+            })
+        }),
+        getWalletDetails: builder.query({
+            query: () => '/users/wallets'
+        }),
+        createWallet: builder.mutation({
+            query: () => ({
+                url: '/users/wallets',
+                method: 'POST'
+            })
+        }),
+        topUpWallet: builder.mutation({
+            query: ({ amount }) => ({
+                url: '/users/wallets',
+                method: 'PUT',
+                body: {amount}
             })
         }),
         logoutUser: builder.mutation({
@@ -152,6 +170,9 @@ export const {
     useAddItemsToUserCartMutation,
     useRemoveItemFromUserCartMutation,
     useChekoutMutation,
+    useCreateWalletMutation,
+    useGetWalletDetailsQuery,
+    useTopUpWalletMutation,
     useCancelOrderMutation,
     useFetchUserOrdersQuery
 } = userApiSlice

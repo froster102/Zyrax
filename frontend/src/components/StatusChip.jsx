@@ -4,7 +4,9 @@ function StatusChip({ status }) {
 
   const statusColorMap = {
     'active': 'bg-green-500/20 text-green-900',
-    'blocked' : 'bg-red-500/20 text-red-900'
+    'blocked' : 'bg-red-500/20 text-red-900',
+    'pending':'bg-yellow-500/20 text-yellow-900',
+    'success': 'bg-green-500/20 text-green-900'
   }
 
   return (

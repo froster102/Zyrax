@@ -49,8 +49,8 @@ function UserRoutes() {
                     <Route path='/account/*' element={<LayoutWithWidth><Account /></LayoutWithWidth>} ></Route>
                     <Route path='/checkout' element={<Checkout></Checkout>} ></Route>
                     <Route path='/select-address' element={<LayoutWithWidth><SelectDeliveryAddress /></LayoutWithWidth>} ></Route>
+                    <Route path='/order-sucess' element={<OrderSucess />} ></Route>
                 </Route>
-                <Route path='/order-sucess' element={<OrderSucess />} ></Route>
                 <Route path='*' element={<NotFound></NotFound>} ></Route>
             </Routes>
             <Footer></Footer>

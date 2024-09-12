@@ -21,10 +21,12 @@ mongoose.connect(process.env.ATLAS_URI).then(() => {
 
 const app = express()
 
-app.use(cors({
-    origin: ['http://localhost:5173', 'https://1p4tj84j-5173.inc1.devtunnels.ms'],
+const corsOptions = {
+    origin: ['http://localhost:5173', 'https://1p4tj84j-5173.inc1.devtunnels.ms',],
     credentials: true
-}))
+}
+
+app.use(cors(corsOptions))
 app.use(cookieParser())
 app.use(session({
     secret: process.env.SECRET,
@@ -32,6 +34,7 @@ app.use(session({
     saveUninitialized: false
 }))
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use('/api/v1/users/', userRoutes)
 app.use('/api/v1/admin/', adminRoutes)
 app.get('/api/v1/auth/refresh', refresh)

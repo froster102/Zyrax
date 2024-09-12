@@ -8,13 +8,13 @@ function OrderDetails() {
     const { product, orderDate, orderId } = location.state
     const navigate = useNavigate()
     const [cancelUserOrder] = useCancelOrderMutation()
+    console.log(product)
 
     async function cancelOrder({ orderId, productId }) {
         try {
             const res = await cancelUserOrder({ orderId, productId }).unwrap()
             navigate('/account/orders')
             toast(res?.message)
-
         } catch (error) {
             toast('Failed to canel order please try after some time')
         }
@@ -49,12 +49,20 @@ function OrderDetails() {
                                         Product has been cancelled
                                     </div>
                             }
+                            {
+                                product.status === 'cancelled' && <button
+                                    onClick={() => {
+
+                                    }}
+                                    className="mt-4 px-2 py-1 border border-stone-500 rounded-md text-sm hover:bg-stone-900 hover:text-white transition ease-in" >Return order
+                                </button>
+                            }
                         </div>
                     </div>
                 </div>
                 <div className="border border-stone-300"></div>
                 <div>
-                            
+
                 </div>
             </div>
         </>

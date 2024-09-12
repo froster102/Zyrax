@@ -13,6 +13,9 @@ import { addAddress, deleteAddress, updateAddress } from '../controller/user/use
 import { cancelOrder, getUserOrders } from '../controller/user/userOrderController.js'
 import { handleCheckOut } from '../controller/user/userCheckoutController.js'
 import { searchProducts } from '../controller/userSearchController.js'
+import { verifyPayment } from '../controller/user/verifyPaymentController.js'
+import { verifyWalletPayment } from '../controller/user/verifyWalletPaymentController.js'
+import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/userWalletController.js'
 
 const router = express.Router()
 
@@ -41,6 +44,9 @@ router.get('/categories', getAllCategories)
 
 router.get('/search', searchProducts)
 
+router.post('/verify-payment', verifyPayment)
+router.post('/verify-wallet-payment', verifyWalletPayment)
+
 router.use(userAuth)
 
 router.get('/wishlist', getWishlistItems)
@@ -59,9 +65,12 @@ router.post('/addresses', addAddress)
 router.put('/addresses/:id', updateAddress)
 router.delete('/addresses/:id', deleteAddress)
 
-router.post('/verify-payment')
-
 router.post('/checkout', handleCheckOut)
+
+router.get('/wallets', getWalletDetails)
+router.post('/wallets', createWallet)
+router.put('/wallets', topUpWallet)
+
 
 router.get('/orders', getUserOrders)
 router.patch('/orders/:orderId/products/:productId/cancel', cancelOrder)

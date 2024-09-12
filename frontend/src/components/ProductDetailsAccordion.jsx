@@ -16,14 +16,15 @@ function ProductDetailsAccordion({ title, description }) {
                 </div>
                 <div className='w-full h-[1px] bg-[#CFCBCB] mt-2'></div>
                 <div className={`grid overflow-hidden transition-all ease-in-out duration-300 ${accordionOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-                    {useCase === 'details' && <>  <div>
-                        <p className='font-semibold'>Material & Care:</p>
-                        <div className='my-2 font-light'>
-                            <p>100% Cotton</p>
-                            <p>Machine Wash</p>
+                    {useCase === 'details' && <>
+                        <div>
+                            <p className='font-semibold'>Material & Care:</p>
+                            <div className='my-2 font-light'>
+                                <p>100% Cotton</p>
+                                <p>Machine Wash</p>
+                            </div>
+                            <p className='font-semibold'>Country of origin: <span className='font-light'>India</span> </p>
                         </div>
-                        <p className='font-semibold'>Country of origin: <span className='font-light'>India</span> </p>
-                    </div>
                         <p className='font-semibold my-4'>Manufactured & Sold by:</p>
                         <p className='w-[176px] text-wrap font-light'>
                             Zyrax Store Pvt. Ltd.

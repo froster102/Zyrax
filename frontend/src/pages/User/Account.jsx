@@ -8,6 +8,7 @@ import toast from "react-hot-toast"
 import { resetCartAndWishlist } from "../../features/userSlice"
 import Address from "../../components/Address"
 import OrderDetails from "../../components/OrderDetails"
+import Wallet from "../../components/Wallet"
 
 function Account() {
   const [logoutUser] = useLogoutUserMutation()
@@ -30,7 +31,7 @@ function Account() {
         <div className="w-full bg-stone-50 rounded-md border border-[#CFCBCB]">
           <ul className="font-semibold">
             <Link to={'orders'} ><li className="border-b border-b-[#CFCBCB] px-4 py-2">Orders</li></Link>
-            <li className="border-b border-b-[#CFCBCB] px-4 py-2">Wallet</li>
+            <Link to={'wallet'} ><li className="border-b border-b-[#CFCBCB] px-4 py-2">Wallet</li></Link>
             <Link to={'profile'} ><li className="border-b border-b-[#CFCBCB] px-4 py-2">Profile</li></Link>
             <li className="px-4 py-2"> {'FAQs'} </li>
           </ul>
@@ -44,6 +45,7 @@ function Account() {
           <Route path="orders/details/:productId" element={<OrderDetails />} ></Route>
           <Route path="profile" element={<Profile />}></Route>
           <Route path="profile-address" element={<Address />}></Route>
+          <Route path="wallet" element={<Wallet />}></Route>
         </Routes>
       </div>
     </div>
