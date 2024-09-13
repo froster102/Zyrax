@@ -124,6 +124,13 @@ const userApiSlice = apiSlice.injectEndpoints({
                 method: 'PATCH',
             })
         }),
+        returnOrder: builder.mutation({
+            query: ({ orderId, productId, additionalRemarks, reason }) => ({
+                url: `/users/orders/${orderId}/products/${productId}/refund`,
+                method: 'POST',
+                body: { additionalRemarks, reason }
+            })
+        }),
         getWalletDetails: builder.query({
             query: () => '/users/wallets'
         }),
@@ -137,7 +144,7 @@ const userApiSlice = apiSlice.injectEndpoints({
             query: ({ amount }) => ({
                 url: '/users/wallets',
                 method: 'PUT',
-                body: {amount}
+                body: { amount }
             })
         }),
         logoutUser: builder.mutation({
@@ -174,5 +181,6 @@ export const {
     useGetWalletDetailsQuery,
     useTopUpWalletMutation,
     useCancelOrderMutation,
+    useReturnOrderMutation,
     useFetchUserOrdersQuery
 } = userApiSlice

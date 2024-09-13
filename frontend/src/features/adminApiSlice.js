@@ -98,6 +98,16 @@ const adminApiSlice = apiSlice.injectEndpoints({
         fetchOrders: builder.query({
             query: () => '/admin/orders'
         }),
+        getAllReturns: builder.query({
+            query: () => '/admin/returns'
+        }),
+        approveReturn: builder.mutation({
+            query: ({ productId, orderId }) => ({
+                url: '/admin/returns/',
+                method: 'PUT',
+                body: { productId, orderId }
+            })
+        }),
         changeOrderStatus: builder.mutation({
             query: ({ orderId, productId, status }) => {
                 return {
@@ -131,4 +141,6 @@ export const {
     useDeleteCategoryMutation,
     useFetchOrdersQuery,
     useChangeOrderStatusMutation,
+    useGetAllReturnsQuery,
+    useApproveReturnMutation,
 } = adminApiSlice

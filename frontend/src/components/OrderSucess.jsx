@@ -8,11 +8,11 @@ function OrderSucess() {
     const location = useLocation()
     const activeGender = useSelector(selectActiveGender)
 
-    useEffect(() => {
-        if (!location?.state?.orderSucess) {
-            navigate(`/${activeGender}`)
-        }
-    }, [navigate, activeGender, location])
+    // useEffect(() => {
+    //     if (!location?.state?.orderSucess) {
+    //         navigate(`/${activeGender}`)
+    //     }
+    // }, [navigate, activeGender, location])
 
     return (
         <>

@@ -151,6 +151,7 @@ function OrderTable({ orders, changeOrderStatus }) {
                                                                                         <option value="shipped">Shipped</option>
                                                                                         <option value="delivered">Delivered</option>
                                                                                         <option value="cancelled">Cancelled</option>
+                                                                                        <option value="return requested">Return requested</option>
                                                                                     </select>
                                                                                 </td>
                                                                             </tr>

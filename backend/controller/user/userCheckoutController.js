@@ -154,7 +154,6 @@ const handleCheckOut = async (req, res) => {
             }   
         }
     } catch (e) {
-        console.log(e)
         if (e.name === 'ValidationError') {
             const message = []
             for (let error in e.errors) {

@@ -20,7 +20,7 @@ const stockSchema = new mongoose.Schema({
         },
         default: 0
     }
-})
+}, { _id: false })
 
 const ProductSchema = new mongoose.Schema({
     name: {

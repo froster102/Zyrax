@@ -16,6 +16,7 @@ import { searchProducts } from '../controller/userSearchController.js'
 import { verifyPayment } from '../controller/user/verifyPaymentController.js'
 import { verifyWalletPayment } from '../controller/user/verifyWalletPaymentController.js'
 import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/userWalletController.js'
+import { returnOrder } from '../controller/user/userProductReturnController.js'
 
 const router = express.Router()
 
@@ -74,6 +75,7 @@ router.put('/wallets', topUpWallet)
 
 router.get('/orders', getUserOrders)
 router.patch('/orders/:orderId/products/:productId/cancel', cancelOrder)
+router.post('/orders/:orderId/products/:productId/refund', returnOrder)
 
 router.get('/auth/logout', logout)
 

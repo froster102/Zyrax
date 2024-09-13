@@ -6,6 +6,7 @@ import { adminAuth } from '../middlewares/authMiddleware.js'
 import multer from 'multer'
 import { addCategory, blockCategory, deleteCategory, editCategory, getCategories } from '../controller/admin/AdminCategoryController.js'
 import { changeProductOrderStatus, getAllOrders } from '../controller/admin/adminOrderController.js'
+import { approveReturn, getAllReturns } from '../controller/admin/adminReturnController.js'
 
 const router = express.Router()
 
@@ -32,6 +33,9 @@ router.delete('/products/:id', deleteProduct)
 
 router.get('/orders/', getAllOrders)
 router.patch('/orders/:orderId/products/:productId/status', changeProductOrderStatus)
+
+router.get('/returns', getAllReturns)
+router.put('/returns', approveReturn)
 
 router.get('/categories', getCategories)
 router.post('/categories', addCategory)

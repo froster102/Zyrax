@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { Product } from './product.js'
 import { User } from "./user.js";
 import { Address } from './address.js'
-import { date, string } from "zod";
 
 const OrderSchema = new mongoose.Schema({
     userId: {
@@ -128,7 +127,7 @@ const OrderSchema = new mongoose.Schema({
             status: {
                 type: String,
                 enum: {
-                    values: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+                    values: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned', 'return requested'],
                     message: 'Status not valid',
                     default: 'pending'
                 },
