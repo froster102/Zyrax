@@ -2,117 +2,83 @@ import { apiSlice } from "./apiSlice";
 
 const userApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        signin: builder.mutation({
-            query: (credentials) => ({
-                url: '/users/auth/signin',
-                method: 'POST',
-                body: credentials
-            })
-        }),
-        signup: (builder).mutation({
-            query: (credentials) => ({
-                url: '/users/auth/signup',
-                method: 'POST',
-                body: credentials
-            })
-        }),
-        forgotPassword: (builder).mutation({
-            query: ({ email }) => ({
-                url: '/users/auth/forgot-password',
-                method: 'POST',
-                body: { email }
-            })
-        }),
-        resetPassword: (builder).mutation({
-            query: ({ token, password }) => ({
-                url: '/users/auth/reset-password',
-                method: 'POST',
-                body: { token, password }
-            })
-        }),
-        getAllCategories: builder.query({
-            query: () => `/users/categories`
-        }),
-        getProducts: builder.query({
-            query: ({ category, exclude, latest, gender, sort }) => {
-                if (latest && category) return `/users/products?latest=${latest}&category=${category}&gender=${gender}`
-                if (category && exclude) return `/users/products?category=${category}&exclude=${exclude}&gender=${gender}`
-                if (sort) return `users/products?category=${category}&gender=${gender}&sort=${sort}`
-                if (category) return `/users/products?category=${category}&gender=${gender}`
-            }
-        }),
-        getProductDeatils: builder.query({
-            query: (name) => `/users/products/${name}`
-        }),
         getProfile: builder.query({
-            query: () => '/users/profile'
+            query: () => '/user/profile'
         }),
         updateProfile: builder.mutation({
             query: ({ profileData }) => ({
-                url: '/users/profile',
+                url: '/user/profile',
                 method: 'PUT',
                 body: profileData
             })
         }),
         addAddress: builder.mutation({
             query: ({ address }) => ({
-                url: '/users/addresses/',
+                url: '/user/addresses/',
                 method: 'POST',
                 body: address
             })
         }),
         updateAddress: builder.mutation({
             query: ({ id, address }) => ({
-                url: `/users/addresses/${id}`,
+                url: `/user/addresses/${id}`,
                 method: 'PUT',
                 body: address
             })
         }),
         deleteAddress: builder.mutation({
             query: ({ id }) => ({
-                url: `/users/addresses/${id}`,
+                url: `/user/addresses/${id}`,
                 method: 'DELETE',
             })
         }),
-        getUserWishlistItems: builder.query({
-            query: () => '/users/wishlist'
-        }),
         addItemsToUserWishlist: builder.mutation({
             query: ({ productId, action = '', productIds = [] }) => ({
-                url: '/users/wishlist',
+                url: '/user/wishlist/items',
                 method: 'POST',
                 body: { productId, action, productIds }
             })
         }),
+        getUserWishlistItems: builder.query({
+            query: () => '/user/wishlist'
+        }),
         removeItemFromUserWishlist: builder.mutation({
             query: ({ itemId }) => ({
-                url: `/users/wishlist/${itemId}`,
+                url: `/user/wishlist/items/${itemId}`,
                 method: 'DELETE'
             })
         }),
         getItemsFromUserCart: builder.query({
-            query: () => '/users/cart'
+            query: () => '/user/cart'
         }),
         addItemsToUserCart: builder.mutation({
             query: ({ items }) => ({
-                url: '/users/cart',
+                url: '/user/cart/items',
                 method: 'POST',
                 body: { items }
             })
         }),
+        updateUserCartItems: builder.mutation({
+            query: ({ itemId, selectedSize, selectedQty }) => ({
+                url: `/user/cart/items/${itemId}`,
+                method: 'PUT',
+                body: { selectedQty, selectedSize }
+            })
+        }),
         removeItemFromUserCart: builder.mutation({
-            query: ({ itemId }) => ({
-                url: `/users/cart/${itemId}`,
-                method: 'DELETE'
+            query: ({ itemId, selectedSize }) => ({
+                url: `/user/cart/items/${itemId}`,
+                method: 'DELETE',
+                body: { selectedSize }
             })
         }),
         fetchUserOrders: builder.query({
-            query: () => '/users/orders'
+            query: () => '/user/orders'
         }),
         chekout: builder.mutation({
             query: ({ paymentMethod, shippingAddressId, cardDetails }) => {
                 return {
-                    url: '/users/checkout',
+                    url: '/user/checkout',
                     method: 'POST',
                     body: { paymentMethod, shippingAddressId, cardDetails }
                 }
@@ -120,51 +86,37 @@ const userApiSlice = apiSlice.injectEndpoints({
         }),
         cancelOrder: builder.mutation({
             query: ({ orderId, productId }) => ({
-                url: `/users/orders/${orderId}/products/${productId}/cancel`,
+                url: `/user/orders/${orderId}/products/${productId}/cancel`,
                 method: 'PATCH',
             })
         }),
         returnOrder: builder.mutation({
             query: ({ orderId, productId, additionalRemarks, reason }) => ({
-                url: `/users/orders/${orderId}/products/${productId}/refund`,
+                url: `/user/orders/${orderId}/products/${productId}/refund`,
                 method: 'POST',
                 body: { additionalRemarks, reason }
             })
         }),
         getWalletDetails: builder.query({
-            query: () => '/users/wallets'
+            query: () => '/user/wallet'
         }),
         createWallet: builder.mutation({
             query: () => ({
-                url: '/users/wallets',
+                url: '/user/wallet',
                 method: 'POST'
             })
         }),
         topUpWallet: builder.mutation({
             query: ({ amount }) => ({
-                url: '/users/wallets',
+                url: '/user/wallet',
                 method: 'PUT',
                 body: { amount }
-            })
-        }),
-        logoutUser: builder.mutation({
-            query: () => ({
-                url: '/auth/logout',
-                method: 'GET'
             })
         })
     })
 })
 
 export const {
-    useSigninMutation,
-    useSignupMutation,
-    useLogoutUserMutation,
-    useForgotPasswordMutation,
-    useResetPasswordMutation,
-    useGetAllCategoriesQuery,
-    useGetProductsQuery,
-    useGetProductDeatilsQuery,
     useGetProfileQuery,
     useUpdateProfileMutation,
     useAddAddressMutation,
@@ -175,6 +127,7 @@ export const {
     useRemoveItemFromUserWishlistMutation,
     useGetItemsFromUserCartQuery,
     useAddItemsToUserCartMutation,
+    useUpdateUserCartItemsMutation,
     useRemoveItemFromUserCartMutation,
     useChekoutMutation,
     useCreateWalletMutation,

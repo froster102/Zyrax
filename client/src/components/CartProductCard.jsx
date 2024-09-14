@@ -1,29 +1,16 @@
 import _ from "lodash"
 import { useRef } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { useAddItemsToUserCartMutation } from "../features/userApiSlice"
-import { selectUserToken } from "../features/authSlice"
-import { addToCart } from "../features/userSlice"
 import { Link } from "react-router-dom"
 import PropTypes from 'prop-types'
 
-function CartProductCard({ item, removeFromCart, moveItemToWishlist }) {
-    const dispatch = useDispatch()
-    const [addToUserCart] = useAddItemsToUserCartMutation()
-    const userAuth = useSelector(selectUserToken)
+function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartItem }) {
     const selectedSizeRef = useRef(null)
     const selectedQtyRef = useRef(null)
 
     async function handleChange() {
         const selectedSize = selectedSizeRef.current.value
         const selectedQty = selectedQtyRef.current.value
-        console.log(selectedSize, selectedQty)
-        dispatch(addToCart({ product: item.product, selectedSize, selectedQty }))
-        try {
-            userAuth && await addToUserCart({ items: [{ productId: item.product._id, selectedSize, selectedQty }] }).unwrap()
-        } catch (error) {
-            ''
-        }
+        updateCartItem({ itemId: item?.product?._id, selectedQty, selectedSize })
     }
 
     const itemQtyMap = item.product.stock.reduce((acc, { size, quantity }) => {
@@ -81,7 +68,7 @@ function CartProductCard({ item, removeFromCart, moveItemToWishlist }) {
                                     <button onClick={(e) => {
                                         e.preventDefault()
                                         e.stopPropagation()
-                                        removeFromCart({ productId: item?.product?._id })
+                                        removeFromCart({ productId: item?.product?._id, selectedSize: item.selectedSize })
                                     }} className="md:px-2 p-[2px] text-nowrap bg-stone-100 rounded-md border border-stone-300 hover:bg-black hover:text-white transition ease-in duration-200 md:text-sm text-xs font-medium z-10" >Remove</button>
                                     <button onClick={(e) => {
                                         e.preventDefault()
@@ -102,7 +89,8 @@ function CartProductCard({ item, removeFromCart, moveItemToWishlist }) {
 CartProductCard.propTypes = {
     item: PropTypes.object.isRequired,
     removeFromCart: PropTypes.func.isRequired,
-    moveItemToWishlist: PropTypes.func.isRequired
+    moveItemToWishlist: PropTypes.func.isRequired,
+    updateCartItem: PropTypes.func.isRequired
 }
 
 export default CartProductCard

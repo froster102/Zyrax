@@ -6,7 +6,8 @@ import { selectUserToken, userLogout } from '../features/authSlice';
 import UserDropdown from './UserDropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender, addToWishlist } from '../features/userSlice';
-import { useGetItemsFromUserCartQuery, useLogoutUserMutation, useGetAllCategoriesQuery, useGetUserWishlistItemsQuery } from '../features/userApiSlice';
+import { useGetAllCategoriesQuery } from '../features/productApiSlice';
+import { useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery } from '../features/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
 import { IoMenu } from "react-icons/io5";
@@ -15,6 +16,7 @@ import { motion } from 'framer-motion';
 import Zyrax_icon from '../assets/options-list.png'
 import SidebarAccordion from './SidebarAccordion';
 import _ from 'lodash';
+import { useLogoutUserMutation } from '../features/authApiSlice';
 
 function Navbar() {
   const [sticky, setSticky] = useState(false)

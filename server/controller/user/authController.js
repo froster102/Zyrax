@@ -3,7 +3,10 @@ import bcrypt from 'bcryptjs'
 import { generateAccessToken, generateRefreshToken, sendResetEmail, sendVerifyEmail } from '../../utils/utils.js'
 import jwt from 'jsonwebtoken'
 
-const googleSigninCallback = async (req, res) => {
+// @desc Get token after sucessfull google verification
+// @route GET api/v1/user/auth/google/callback
+// @access Private
+export const googleSigninCallback = async (req, res) => {
     const user = await User.findOne({ googleId: req.user.id })
     if (user.status === 'blocked') {
         return res.send(`
@@ -36,7 +39,10 @@ const googleSigninCallback = async (req, res) => {
         </script>`)
 }
 
-const signin = async (req, res) => {
+// @desc Signin user
+// @route POST api/v1/user/auth/signin
+// @access Public
+export const signin = async (req, res) => {
     try {
         const { email, password } = req.body
         const user = await User.findOne({ email: email })
@@ -68,7 +74,10 @@ const signin = async (req, res) => {
     }
 }
 
-const signUp = async (req, res) => {
+// @desc Signup user
+// @routes POST /api/v1/user/auth/signup
+// @access Public
+export const signUp = async (req, res) => {
     try {
         const { firstName, lastName, email, password } = req.body
         const user = await User.findOne({ email: email })
@@ -107,7 +116,10 @@ const signUp = async (req, res) => {
     }
 }
 
-const forgotPassword = async (req, res) => {
+// @desc Send forgot password request of user
+// @routes POST /api/v1/user/auth/forgot-password
+// @access Public
+export const forgotPassword = async (req, res) => {
     const { email } = req.body
     const user = await User.findOne({ email: email })
     if (!user || user.verification_status === false) return res.status(404).json({ message: 'User not found' })
@@ -116,7 +128,10 @@ const forgotPassword = async (req, res) => {
     if (response) return res.status(200).json({ message: 'An email has been sent to your mail follow the email to reset the password' })
 }
 
-const resetPassword = async (req, res) => {
+// @desc Reset user password
+// @routes POST /api/v1/user/auth/reset-password
+// @access Public
+export const resetPassword = async (req, res) => {
     const { token, password } = req.body
     jwt.verify(token, process.env.SECRET, async (err, decoded) => {
         if (err) {
@@ -133,8 +148,12 @@ const resetPassword = async (req, res) => {
 
 }
 
-const verifyEmail = async (req, res) => {
+// @desc Verify user emailexport 
+// @routes GET /api/v1/user/auth/verify-email
+// @access Public
+export const verifyEmail = async (req, res) => {
     const { token } = req.query
+    if (!token) return res.status(400).json({ message: 'Token not found' })
     jwt.verify(token, process.env.SECRET, async (err, decoded) => {
         if (err) {
             return res.send('Invalid link or the link has expired please register once more to continue')
@@ -153,19 +172,15 @@ const verifyEmail = async (req, res) => {
     })
 }
 
-const logout = (req, res) => {
-    if (req.session) req.session.destroy()
-    req.clearCookies('connect.sid', { httpOnly: true, secure: false })
-    req.clearCookies('admin_jwt', { httpOnly: true, secure: false })
-    return res.status(200).json({ message: 'User Logged out successfully' })
+// @desc Verify user email
+// @routes POST /api/v1/user/auth/reset-password
+// @access Public
+export const logout = (req, res) => {
+    const token = req.cookies.jwt
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorised Access' })
+    }
+    res.clearCookie('jwt', { httpOnly: true, secure: false })
+    return res.status(200).json({ message: 'Logged out sucessfully' })
 }
 
-export {
-    googleSigninCallback,
-    signin,
-    signUp,
-    forgotPassword,
-    resetPassword,
-    verifyEmail,
-    logout
-}

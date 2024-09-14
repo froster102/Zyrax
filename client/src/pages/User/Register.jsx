@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { useSignupMutation } from '../../features/userApiSlice'
 import { selectUserToken, setUserCredentials } from '../../features/authSlice'
 import { FaGoogle } from "react-icons/fa6";
 import { useForm } from 'react-hook-form'
@@ -10,6 +9,7 @@ import registerSchema from '../../../ValidationSchema/registerSchema'
 import toast from 'react-hot-toast'
 import { selectActiveGender } from '../../features/userSlice'
 import { RotatingLines } from 'react-loader-spinner'
+import { useSignupMutation } from '../../features/authApiSlice';
 
 function Register() {
   const dispatch = useDispatch()

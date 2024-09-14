@@ -26,6 +26,7 @@ const userSlice = createSlice({
     reducers: {
         addToWishlist: (state, action) => {
             const { product, sync = false, items = [] } = action.payload
+            console.log(product)
             if (sync) {
                 const itemMap = new Map(state.wishlist.items.map(item => [item._id, item]))
                 for (const item of items) {
@@ -56,18 +57,28 @@ const userSlice = createSlice({
         },
         addToCart: (state, action) => {
             const newItems = Array.isArray(action.payload) ? action.payload : [action.payload]
-            const itemMap = new Map(state.cart.items.map(item => [item?.product?._id, item]))
+            const itemMap = new Map(state.cart.items.map(item => [`${item?.product?._id}-${item?.selectedSize}`, item]))
             newItems.forEach(newItem => {
-                if (newItem?.product?._id) {
-                    itemMap.set(newItem?.product?._id, newItem)
+                const itemKey = `${newItem?.product?._id}-${newItem?.selectedSize}`
+                if (itemMap.has(itemKey)) {
+                    const existingItem = itemMap.get(itemKey)
+                    existingItem.selectedQty += newItem.selectedQty || 1
+                    itemMap.set(itemKey, existingItem)
+                }
+                else {
+                    itemMap.set(itemKey, newItem)
                 }
             })
             state.cart.items = Array.from(itemMap.values())
             saveToLocalStorage(state)
         },
+        updateCartItems: (state, action) => {
+            const { itemId, selectedQty, selectedSize } = action.payload
+            console.log(selectedQty, selectedSize, itemId)
+        },
         removeFromCart: (state, action) => {
-            const { productId } = action.payload
-            state.cart.items = state.cart.items.filter((item) => item?.product._id !== productId)
+            const { productId, selectedSize } = action.payload
+            state.cart.items = state.cart.items.filter((item) => !(item?.product._id === productId && item?.selectedSize === selectedSize))
             saveToLocalStorage(state)
         },
         resetCart: (state) => {
@@ -104,6 +115,7 @@ export const {
     moveToCart,
     syncCart,
     addToCart,
+    updateCartItems,
     removeFromCart,
     moveToWishlist,
     resetCart,

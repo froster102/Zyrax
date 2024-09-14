@@ -27,7 +27,7 @@ const CartItemSchema = {
         // required: [true, 'Quantity is required for the selected product'],
         default: 1,
         validate: {
-            validator: v => v > 0 && v <= 4,
+            validator: v => v > 0 && v <= 5,
             message: "Quantity must be a number greater than 0 and less than or equal to 4"
         }
     }

@@ -5,7 +5,7 @@ import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import Row from './Row';
 import Ratings from './Ratings';
-import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetProductDeatilsQuery, useGetProductsQuery, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from '../features/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from '../features/userApiSlice';
 import { useEffect, useState } from 'react';
 import ProductImageModal from './ProductImageModal';
 import BreadCrumbs from './BreadCrumbs';
@@ -20,6 +20,7 @@ import { IoCart, IoCartOutline } from "react-icons/io5";
 import Unavailable from './Unavailable';
 import StockOut from './StockOut';
 import { AnimatePresence } from 'framer-motion';
+import { useGetProductDeatilsQuery, useGetProductsQuery } from '../features/productApiSlice';
 
 
 const RATINGS = [
@@ -40,7 +41,6 @@ const CUSTOMER_IMAGES = []
 
 function ProductDetails() {
     const [selectedSize, setSelectedSize] = useState('')
-    const [selectedQty, setSelectedQty] = useState(1)
     const [error, setError] = useState(false)
     const { name } = useParams()
     const { pathname } = useLocation()
@@ -48,8 +48,8 @@ function ProductDetails() {
     const wishlistItems = useSelector(selectWishlistItems)
     const cartItems = useSelector(selectCartItems)
     const { data: product, isError: isProductDeatilsError, isLoading: isProductLoading, refetch: refetchProductDeatils } = useGetProductDeatilsQuery(name)
-    const { data: similiarProducts, isError: isSimilarProductsError, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
-    const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchUserWishlistItems } = useGetUserWishlistItemsQuery()
+    const { data: similiarProducts, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
+    const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading } = useGetUserWishlistItemsQuery()
     const [imageModal, setImageModal] = useState(false)
     const [productImgPrev, setProductImgPrev] = useState(product?.imageUrls[0])
     const [activeWishlistItem, setActiveWishlistItem] = useState(false)
@@ -73,13 +73,7 @@ function ProductDetails() {
 
     useEffect(() => {
         let wishlistItemIds = []
-        if (userAuth && !isUserWishlistItemsLoading && !isProductLoading) {
-            wishlistItemIds = userWishlistItems.map(item => item?._id)
-        } else {
-            if (wishlistItems.length > 0 && !isProductLoading) {
-                wishlistItemIds = wishlistItems.map(item => item?._id)
-            }
-        }
+        wishlistItemIds = wishlistItems.map(item => item?._id)
         wishlistItemIds.includes(product?._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
         if (cartItems.length > 0 && !isProductLoading) {
             const cartItemIds = cartItems.map(item => item?.product?._id)
@@ -91,7 +85,6 @@ function ProductDetails() {
         if (!activeWishlistItem) {
             try {
                 userAuth && await addToUserWishlist({ productId: product._id }).unwrap()
-                userAuth && refetchUserWishlistItems()
                 dispatch(addToWishlist({ product }))
             } catch (error) {
                 ''
@@ -99,7 +92,6 @@ function ProductDetails() {
         } else {
             userAuth && await removeFromUserWishlist({ itemId: product._id }).unwrap()
             dispatch(removeFromWishlist({ productId: product._id }))
-            userAuth && refetchUserWishlistItems()
             setActiveWishlistItem(false)
         }
     }
@@ -109,10 +101,12 @@ function ProductDetails() {
             setError(true)
             return
         }
+        // const currItemQty = cartItems.find(item => item.product._id === product._id)?.selectedQty
+        // console.log(currItemQty)
         if (!activeCartItem) {
-            dispatch(addToCart({ product, selectedSize, selectedQty }))
             try {
-                userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize, selectedQty }] }).unwrap()
+                userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize }] }).unwrap()
+                dispatch(addToCart({ product, selectedSize, selectedQty: 1 }))
             } catch (error) {
                 ''
             }

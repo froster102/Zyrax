@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import TrendingCard from './TrendingCard'
-import { useGetProductsQuery } from '../features/userApiSlice'
+import { useGetProductsQuery } from '../features/productApiSlice'
 import TrendingRowSkeleton from './TrendingRowSkeleton'
 import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 import { Link, useLocation } from 'react-router-dom'

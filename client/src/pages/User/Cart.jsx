@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "../../components/CartProductCard"
 import { moveToWishlist, removeFromCart, selectCartItems } from "../../features/userSlice";
 import EmptyCart from "../../components/EmptyCart";
-import { useAddItemsToUserWishlistMutation, useRemoveItemFromUserCartMutation } from "../../features/userApiSlice";
+import { useAddItemsToUserWishlistMutation, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../features/userApiSlice";
 import { selectUserToken } from "../../features/authSlice";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast'
@@ -14,6 +14,7 @@ function Cart() {
   const dispatch = useDispatch()
   const [removeUserCartItem] = useRemoveItemFromUserCartMutation()
   const [addToUserWishlist] = useAddItemsToUserWishlistMutation()
+  const [updateUserCartItem] = useUpdateUserCartItemsMutation()
   const userAuth = useSelector(selectUserToken)
   const [totalCartAmount, setTotalCartAmount] = useState(0)
   const navigate = useNavigate()
@@ -29,24 +30,33 @@ function Cart() {
     calculateCartTotal()
   }, [cartItems])
 
-  async function removeItemFromCart({ productId, moveToCart }) {
+  async function removeItemFromCart({ productId, moveToCart, selectedSize }) {
     try {
-      userAuth && await removeUserCartItem({ itemId: productId }).unwrap()
+      userAuth && await removeUserCartItem({ itemId: productId, selectedSize }).unwrap()
       !moveToCart && toast('Product removed from cart sucessfully')
-      dispatch(removeFromCart({ productId }))
+      dispatch(removeFromCart({ productId, selectedSize }))
     } catch (error) {
-      ''
+      toast(error?.data?.message)
     }
   }
 
   async function moveItemToWishlist(item) {
     try {
-      userAuth && await removeUserCartItem({ itemId: item?.product?._id })
+      userAuth && await removeUserCartItem({ itemId: item?.product?._id, selectedSize: item.selectedSize })
       userAuth && await addToUserWishlist({ productId: item?.product._id }).unwrap()
       dispatch(moveToWishlist({ itemToMove: item.product }))
       toast('Product added to your wishlist')
     } catch (error) {
       ''
+    }
+  }
+
+  async function updateCartItem({ itemId, selectedSize, selectedQty }) {
+    try {
+      userAuth && await updateUserCartItem({ itemId, selectedSize, selectedQty }).unwrap()
+      dispatch({ itemId, selectedSize, selectedQty })
+    } catch (error) {
+      toast(error?.data?.message)
     }
   }
 
@@ -70,6 +80,7 @@ function Cart() {
               key={i} item={item}
               removeFromCart={removeItemFromCart}
               moveItemToWishlist={moveItemToWishlist}
+              updateCartItem={updateCartItem}
             />))
             }
             {cartItems.length > 0 && <div>

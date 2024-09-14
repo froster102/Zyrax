@@ -1,5 +1,4 @@
 import { useForm } from 'react-hook-form'
-import { useResetPasswordMutation } from '../features/userApiSlice'
 import { RotatingLines } from 'react-loader-spinner'
 import toast from 'react-hot-toast'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -9,6 +8,7 @@ import { useSelector } from 'react-redux'
 import { selectUserToken } from '../features/authSlice'
 import { selectActiveGender } from '../features/userSlice'
 import { useEffect } from 'react'
+import { useResetPasswordMutation } from '../features/authApiSlice'
 
 const schema = z.object({
     password: z.string().min(6, 'Must be minimum of 6 characters').regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{6,}$/, 'Must contain a letter,number,a special character'),

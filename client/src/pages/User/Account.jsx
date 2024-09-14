@@ -1,5 +1,4 @@
 import { Routes, Route, Link } from "react-router-dom"
-import { useLogoutUserMutation } from "../../features/userApiSlice"
 import { userLogout } from '../../features/authSlice'
 import Orders from "../../components/Orders"
 import Profile from '../../components/Profile'
@@ -9,6 +8,7 @@ import { resetCartAndWishlist } from "../../features/userSlice"
 import Address from "../../components/Address"
 import OrderDetails from "../../components/OrderDetails"
 import Wallet from "../../components/Wallet"
+import { useLogoutUserMutation } from "../../features/authApiSlice"
 
 function Account() {
   const [logoutUser] = useLogoutUserMutation()

@@ -1,22 +1,19 @@
 import express from 'express'
 import { passport } from '../middlewares/passport-config.js'
-import { signin, googleSigninCallback, signUp, forgotPassword, resetPassword } from '../controller/user/userAuthController.js'
+import { signin, googleSigninCallback, signUp, forgotPassword, resetPassword, verifyEmail } from '../controller/user/authController.js'
 import { logout } from '../controller/logoutController.js'
-import { getProductDeatils, getProducts } from '../controller/user/userProductController.js'
-import { getProfile, updateProfile } from '../controller/user/userProfileController.js'
+import { getProfile, updateProfile } from '../controller/user/profileController.js'
 import { userAuth } from '../middlewares/authMiddleware.js'
-import { addWishlistItems, getWishlistItems, removeWishlistItem } from '../controller/user/userWishlistController.js'
-import { addCartItems, getCartItems, removeCartItem } from '../controller/user/userCartController.js'
-import { getAllCategories } from '../controller/user/userCategoryiesController.js'
-import { validateEmail, validateGetProducts, validatePassword, validateResetPassword, validateSignin, validateObjectId } from '../middlewares/validationMiddleware.js'
-import { addAddress, deleteAddress, updateAddress } from '../controller/user/userAddressController.js'
-import { cancelOrder, getUserOrders } from '../controller/user/userOrderController.js'
-import { handleCheckOut } from '../controller/user/userCheckoutController.js'
-import { searchProducts } from '../controller/userSearchController.js'
+import * as wishlistController from '../controller/user/wishlistController.js'
+import * as cartController from '../controller/user/cartController.js'
+import { validateEmail, validatePassword, validateResetPassword, validateSignin, validateObjectId } from '../middlewares/validationMiddleware.js'
+import { addAddress, deleteAddress, updateAddress } from '../controller/user/addressController.js'
+import { cancelOrder, getUserOrders } from '../controller/user/orderController.js'
+import { handleCheckOut } from '../controller/user/checkoutController.js'
 import { verifyPayment } from '../controller/user/verifyPaymentController.js'
 import { verifyWalletPayment } from '../controller/user/verifyWalletPaymentController.js'
-import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/userWalletController.js'
-import { returnOrder } from '../controller/user/userProductReturnController.js'
+import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/walletController.js'
+import { returnOrder } from '../controller/user/returnController.js'
 
 const router = express.Router()
 
@@ -37,26 +34,21 @@ router.post('/auth/signin', validateSignin, signin)
 router.post('/auth/signup', validatePassword, signUp)
 router.post('/auth/forgot-password', validateEmail, forgotPassword)
 router.post('/auth/reset-password', validateResetPassword, resetPassword)
-
-router.get('/products', validateGetProducts, getProducts)
-router.get('/products/:name', getProductDeatils)
-
-router.get('/categories', getAllCategories)
-
-router.get('/search', searchProducts)
+router.get('/auth/verify-email', verifyEmail)
 
 router.post('/verify-payment', verifyPayment)
 router.post('/verify-wallet-payment', verifyWalletPayment)
 
 router.use(userAuth)
 
-router.get('/wishlist', getWishlistItems)
-router.post('/wishlist', addWishlistItems)
-router.delete('/wishlist/:itemId', validateObjectId, removeWishlistItem)
+router.post('/wishlist/items', wishlistController.addWishlistItems)
+router.get('/wishlist', wishlistController.getWishlistItems)
+router.delete('/wishlist/items/:itemId', validateObjectId, wishlistController.removeWishlistItem)
 
-router.get('/cart', getCartItems)
-router.post('/cart', addCartItems)
-router.delete('/cart/:itemId', validateObjectId, removeCartItem)
+router.post('/cart/items', cartController.addCartItems)
+router.get('/cart', cartController.getCartItems)
+router.put('/cart/items/:itemId', cartController.updateCartItems)
+router.delete('/cart/items/:itemId', validateObjectId, cartController.removeCartItem)
 
 router.get('/profile', getProfile)
 router.put('/profile', updateProfile)
@@ -68,9 +60,9 @@ router.delete('/addresses/:id', deleteAddress)
 
 router.post('/checkout', handleCheckOut)
 
-router.get('/wallets', getWalletDetails)
-router.post('/wallets', createWallet)
-router.put('/wallets', topUpWallet)
+router.get('/wallet', getWalletDetails)
+router.post('/wallet', createWallet)
+router.put('/wallet', topUpWallet)
 
 
 router.get('/orders', getUserOrders)
