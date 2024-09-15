@@ -1,7 +1,7 @@
 import { Cart } from "../../model/cart.js"
 import { Order } from "../../model/order.js"
 import { Product } from "../../model/product.js"
-import Razorpay from 'razorpay'
+import razorpay from "../../config/razorpayConfig.js"
 import { User } from "../../model/user.js"
 import { Wallet } from "../../model/wallet.js"
 import { nanoid } from "nanoid"
@@ -81,10 +81,6 @@ const handleCheckOut = async (req, res) => {
                 return res.status(200).json({ message: 'Order placed sucessfully' })
             }
         } else if (paymentMethod === 'razorpay') {
-            const razorpay = new Razorpay({
-                key_id: process.env.RAZORPAY_KEY,
-                key_secret: process.env.RAZORPAY_SECRET
-            })
             const paymentOrder = await razorpay.orders.create({
                 amount: totalAmount * 100,
                 currency: 'INR',
@@ -99,7 +95,6 @@ const handleCheckOut = async (req, res) => {
                     addressId: shippingAddressId
                 },
                 payment: {
-                    method: 'razorpay',
                     status: 'pending',
                     transactionId: crypto.randomUUID(),
                 },

@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import { Order } from '../../model/order.js'
 import { Product } from '../../model/product.js'
+import razorpay from '../../config/razorpayConfig.js'
 
 const verifyPayment = async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body
@@ -13,10 +14,12 @@ const verifyPayment = async (req, res) => {
                 { _id: item.productId, 'stock.size': item.size },
                 { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true })
         }
+        const payment = await razorpay.payments.fetch(razorpay_payment_id)
         order.payment.status = 'success'
+        order.payment.method = payment.method
         await order.save()
-    }else {
-        return res.status(400).json({message : 'Unauthorised'})
+    } else {
+        return res.status(400).json({ message: 'Unauthorised' })
     }
     return res.redirect('http://localhost:5173/order-sucess')
 

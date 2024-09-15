@@ -49,13 +49,17 @@ const OrderSchema = new mongoose.Schema({
     payment: {
         method: {
             type: String,
-            required: [true, 'Payment method is required'],
+            // required: [true, 'Payment method is required'],
             enum: {
                 values: [
                     'cash on delivery',
-                    'razorpay',
+                    'card',
+                    'upi',
+                    'wallet',
+                    'netbanking',
                     'zyraxWallet',
                     'paypal',
+
                 ],
                 message: 'Enter a valid payment method'
             }

@@ -1,6 +1,6 @@
 import { Product } from '../../model/product.js'
 import { Category } from '../../model/category.js'
-import { storage } from '../../firebaseConfig.js'
+import { storage } from '../../config/firebaseConfig.js'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 
 const addProduct = async (req, res) => {
