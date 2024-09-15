@@ -56,7 +56,7 @@ function Checkout() {
             if (paymentMethod === 'cash on delivery' || paymentMethod === 'zyraxWallet') {
                 dispatch(resetCart())
                 toast(res.message)
-                navigate('/order-sucess', { state: { orderSucess: true }, replace: true })
+                navigate(`/order-sucess?order_id=${res.orderId}`)
             }
             if (paymentMethod === 'razorpay') {
                 dispatch(resetCart())

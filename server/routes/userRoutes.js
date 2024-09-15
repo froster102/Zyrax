@@ -8,12 +8,11 @@ import * as wishlistController from '../controller/user/wishlistController.js'
 import * as cartController from '../controller/user/cartController.js'
 import { validateEmail, validatePassword, validateResetPassword, validateSignin, validateObjectId } from '../middlewares/validationMiddleware.js'
 import { addAddress, deleteAddress, updateAddress } from '../controller/user/addressController.js'
-import { cancelOrder, getUserOrders } from '../controller/user/orderController.js'
+import * as orderController from '../controller/user/orderController.js'
 import { handleCheckOut } from '../controller/user/checkoutController.js'
 import { verifyPayment } from '../controller/user/verifyPaymentController.js'
 import { verifyWalletPayment } from '../controller/user/verifyWalletPaymentController.js'
 import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/walletController.js'
-import { returnOrder } from '../controller/user/returnController.js'
 
 const router = express.Router()
 
@@ -65,9 +64,10 @@ router.post('/wallet', createWallet)
 router.put('/wallet', topUpWallet)
 
 
-router.get('/orders', getUserOrders)
-router.patch('/orders/:orderId/products/:productId/cancel', cancelOrder)
-router.post('/orders/:orderId/products/:productId/refund', returnOrder)
+router.get('/orders', orderController.getUserOrders)
+router.get('/orders/:orderId/products/:productId', orderController.getOrderDetails)
+router.patch('/orders/:orderId/products/:productId/cancel', orderController.cancelOrder)
+router.post('/orders/:orderId/products/:productId/return', orderController.returnOrder)
 
 router.get('/auth/logout', logout)
 

@@ -42,7 +42,7 @@ function Account() {
       <div className="w-full font-medium">
         <Routes>
           <Route path="orders" element={<Orders />} ></Route>
-          <Route path="orders/details/:productId" element={<OrderDetails />} ></Route>
+          <Route path="orders/:orderId/products/:productId" element={<OrderDetails />} ></Route>
           <Route path="profile" element={<Profile />}></Route>
           <Route path="profile-address" element={<Address />}></Route>
           <Route path="wallet" element={<Wallet />}></Route>

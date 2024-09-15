@@ -20,13 +20,13 @@ function Orders() {
         : orders.map((order, i) => (
           <div key={i} className="border border-stone-300 max-w-[824px]  pb-4 rounded-md mt-4">
             <div className="bg-stone-200 rounded-t-md p-2 flex justify-between">
-              <p className="text-xs">Order ID: {order._id}</p>
+              <p className="text-xs">Order ID: {order.orderId}</p>
               <p className="text-xs">{order.createdAt.split(':')[0].split('T')[0].split('-').reverse().join('-')}</p>
             </div>
             {
               order.products.map((product, i) => (
                 <div key={i} className="px-4">
-                  <div onClick={() => navigate(`/account/orders/details/${product.productId._id}`, { state: { product: product, orderId: order._id, orderDate: order.createdAt.split(':')[0].split('T')[0].split('-').reverse().join('-') } })} className="border border-stone-300 bg-stone-200 w-full min-h-[124px] rounded-md p-4 mt-4">
+                  <div onClick={() => navigate(`/account/orders/${order.orderId}/products/${product.productId._id}`)} className="border border-stone-300 bg-stone-200 w-full min-h-[124px] rounded-md p-4 mt-4">
                     <div className="flex">
                       <img className="w-20" src={product.productId.imageUrls[0]} alt="" />
                       <div className="pl-4">

@@ -7,7 +7,7 @@ function OrderSucess() {
     const navigate = useNavigate()
     const location = useLocation()
     const activeGender = useSelector(selectActiveGender)
-
+    console.log(location.search)
     // useEffect(() => {
     //     if (!location?.state?.orderSucess) {
     //         navigate(`/${activeGender}`)

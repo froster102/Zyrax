@@ -54,6 +54,7 @@ const handleCheckOut = async (req, res) => {
         if (paymentMethod === 'cash on delivery') {
             const order = await Order.create({
                 userId: req.userId,
+                orderId: nanoid(6),
                 status: 'confirmed',
                 totalAmount,
                 shipping: {
@@ -78,7 +79,7 @@ const handleCheckOut = async (req, res) => {
                         { _id: item.productId, 'stock.size': item.size },
                         { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true })
                 }
-                return res.status(200).json({ message: 'Order placed sucessfully' })
+                return res.status(200).json({ message: 'Order placed sucessfully', orderId: order.orderId })
             }
         } else if (paymentMethod === 'razorpay') {
             const paymentOrder = await razorpay.orders.create({

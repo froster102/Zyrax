@@ -25,6 +25,7 @@ const OrderSchema = new mongoose.Schema({
     //     },
     //     required: [true, 'Order status is required']
     // },
+    orderId: { type: String },
     order_id: { type: String },
     totalAmount: {
         type: Number,

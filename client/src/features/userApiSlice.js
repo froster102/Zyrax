@@ -72,9 +72,6 @@ const userApiSlice = apiSlice.injectEndpoints({
                 body: { selectedSize }
             })
         }),
-        fetchUserOrders: builder.query({
-            query: () => '/user/orders'
-        }),
         chekout: builder.mutation({
             query: ({ paymentMethod, shippingAddressId, cardDetails }) => {
                 return {
@@ -84,6 +81,12 @@ const userApiSlice = apiSlice.injectEndpoints({
                 }
             }
         }),
+        fetchUserOrders: builder.query({
+            query: () => '/user/orders'
+        }),
+        getUserOrderDetails: builder.query({
+            query: ({ orderId,productId }) => `/user/orders/${orderId}/products/${productId}`
+        }),
         cancelOrder: builder.mutation({
             query: ({ orderId, productId }) => ({
                 url: `/user/orders/${orderId}/products/${productId}/cancel`,
@@ -92,7 +95,7 @@ const userApiSlice = apiSlice.injectEndpoints({
         }),
         returnOrder: builder.mutation({
             query: ({ orderId, productId, additionalRemarks, reason }) => ({
-                url: `/user/orders/${orderId}/products/${productId}/refund`,
+                url: `/user/orders/${orderId}/products/${productId}/return`,
                 method: 'POST',
                 body: { additionalRemarks, reason }
             })
@@ -133,7 +136,8 @@ export const {
     useCreateWalletMutation,
     useGetWalletDetailsQuery,
     useTopUpWalletMutation,
+    useFetchUserOrdersQuery,
+    useGetUserOrderDetailsQuery,
     useCancelOrderMutation,
     useReturnOrderMutation,
-    useFetchUserOrdersQuery
 } = userApiSlice
