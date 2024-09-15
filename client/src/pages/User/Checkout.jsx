@@ -59,6 +59,7 @@ function Checkout() {
                 navigate('/order-sucess', { state: { orderSucess: true }, replace: true })
             }
             if (paymentMethod === 'razorpay') {
+                dispatch(resetCart())
                 loadRazorpayCheckout(res)
             }
 

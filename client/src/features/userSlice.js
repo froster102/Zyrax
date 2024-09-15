@@ -26,7 +26,6 @@ const userSlice = createSlice({
     reducers: {
         addToWishlist: (state, action) => {
             const { product, sync = false, items = [] } = action.payload
-            console.log(product)
             if (sync) {
                 const itemMap = new Map(state.wishlist.items.map(item => [item._id, item]))
                 for (const item of items) {
@@ -64,17 +63,26 @@ const userSlice = createSlice({
                     const existingItem = itemMap.get(itemKey)
                     existingItem.selectedQty += newItem.selectedQty || 1
                     itemMap.set(itemKey, existingItem)
-                }
-                else {
-                    itemMap.set(itemKey, newItem)
+                }else {
+                    itemMap.set(itemKey, { ...newItem, uniqueKey: itemKey })
                 }
             })
             state.cart.items = Array.from(itemMap.values())
             saveToLocalStorage(state)
         },
         updateCartItems: (state, action) => {
-            const { itemId, selectedQty, selectedSize } = action.payload
-            console.log(selectedQty, selectedSize, itemId)
+            const { itemId, selectedQty, selectedSize, index } = action.payload
+            const existingItemIndex = state.cart.items.findIndex(item => item.product._id === itemId && item.selectedSize === selectedSize)
+            if (existingItemIndex !== -1) {
+                state.cart.items[existingItemIndex].selectedQty = selectedQty
+                if (existingItemIndex !== index) {
+                    state.cart.items.splice(index, 1)
+                }
+            } else {
+                state.cart.items[index].selectedQty = selectedQty
+                state.cart.items[index].selectedSize = selectedSize
+            }
+            saveToLocalStorage(state)
         },
         removeFromCart: (state, action) => {
             const { productId, selectedSize } = action.payload

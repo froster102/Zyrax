@@ -92,8 +92,8 @@ const OrderSchema = new mongoose.Schema({
                 required: [true, 'Product quantity is required'],
                 default: 0,
                 validate: {
-                    validator: (v) => v > 0 && v <= 4,
-                    message: 'Minimum order quantity for a product is  4 per product',
+                    validator: (v) => v > 0 && v <= 5,
+                    message: 'Minimum order quantity for a product is 5 per product',
                 }
             },
             size: {

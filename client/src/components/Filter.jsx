@@ -34,7 +34,7 @@ function Filter() {
                                 value={priceRange}
                                 defaultValue={[0, 100]}
                                 onInput={setPriceRange}
-                                onThumbDragEnd={() => { console.log('end') }}
+                                onThumbDragEnd={() => {  }}
                             />
                             <p className="text-sm font-normal">{`₹${priceRange[0]} - ₹${priceRange[1]}`}</p>
                         </div>

@@ -20,6 +20,7 @@ const handleCheckOut = async (req, res) => {
         })
         const cartItems = cart.items
         let totalAmount = 0
+        let itemTotalPrice = 0
         const processedItems = []
         for (let item of cartItems) {
             const product = await Product.findById(item.productId)
@@ -39,8 +40,8 @@ const handleCheckOut = async (req, res) => {
                     itemId: item.productId
                 })
             }
-            let itemTotalPrice = item?.productId?.price * item?.selectedQty
-            totalAmount += item?.productId?.price
+            itemTotalPrice = item?.productId?.price * item?.selectedQty
+            totalAmount += itemTotalPrice
             processedItems.push({
                 productId: item?.productId?._id,
                 quantity: item?.selectedQty,
@@ -151,9 +152,10 @@ const handleCheckOut = async (req, res) => {
                         { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true })
                 }
                 return res.status(200).json({ message: 'Order placed sucessfully' })
-            }   
+            }
         }
     } catch (e) {
+        console.log(e)
         if (e.name === 'ValidationError') {
             const message = []
             for (let error in e.errors) {

@@ -18,7 +18,7 @@ export const addCartItems = async (req, res) => {
                     cart.items = Array.from((itemMap.values()))
                 }
                 else {
-                    cart.items.push(item)
+                    cart.items.push({ ...item, uniqueKey: itemKey })
                 }
             })
             await cart.save()
@@ -32,7 +32,6 @@ export const addCartItems = async (req, res) => {
         }
         return res.status(201).json({ message: 'Product added to cart' })
     } catch (e) {
-        // console.log(e)
         const message = []
         if (e.name === 'ValidationError') {
             for (let error in e.errors) {
@@ -71,33 +70,28 @@ export const getCartItems = async (req, res) => {
 // @access Private
 export const updateCartItems = async (req, res) => {
     const { itemId } = req.params
-    const { selectedSize, selectedQty } = req.body
+    const { selectedSize, selectedQty, index } = req.body
+    console.log(index)
+    if (!selectedQty || !selectedSize) return res.status(400).json({ message: 'Quantity , Size are required' })
+    if (isNaN(index) || index < 0) return res.status(400).json({ message: 'Index must be a positive integer' })
     try {
         const cart = await Cart.findOne({ user_id: req.userId })
         if (!cart) return res.status(404).json({ message: 'Cart not found for the user' })
-        const itemMap = new Map(cart.items.map(item => [`${item.productId}-${item.selectedSize}`, item]))
-        const key = `${itemId}-${selectedSize}`
-        if (itemMap.has(key)) { 
-            const existingItem = itemMap.get(key)
-            console.log(existingItem)
-            itemMap.delete(key)
-            itemMap.set(key, {
-                productId: existingItem.productId,
-                selectedSize: existingItem.selectedSize,
-                selectedQty: existingItem.selectedQty + 5 > 5 ? 5 : existingItem.selectedQty + Number(selectedQty)
-            })
+        const existingItemIndex = cart.items.findIndex(item => item.productId.toString() === itemId && item.selectedSize === selectedSize)
+        if (existingItemIndex !== -1) {
+            cart.items[existingItemIndex].selectedQty = selectedQty
+            if (existingItemIndex !== index) {
+                cart.items.splice(index, 1)
+            }
         } else {
-            console.log('item not found')
-            itemMap.set(key, {
-                productId: itemId,
-                selectedQty,
-                selectedSize
-            })
+            cart.items[index].selectedQty = selectedQty
+            cart.items[index].selectedSize = selectedSize
         }
-        console.log(itemMap)
+        await cart.save()
         return res.status(200).json({ message: 'Cart updated sucessfully' })
     } catch (error) {
-
+        console.log(error)
+        return res.status(500).json({ message: 'Failed to update cart' })
     }
 }
 

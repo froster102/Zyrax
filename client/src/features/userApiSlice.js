@@ -59,10 +59,10 @@ const userApiSlice = apiSlice.injectEndpoints({
             })
         }),
         updateUserCartItems: builder.mutation({
-            query: ({ itemId, selectedSize, selectedQty }) => ({
+            query: ({ itemId, selectedSize, selectedQty, index }) => ({
                 url: `/user/cart/items/${itemId}`,
                 method: 'PUT',
-                body: { selectedQty, selectedSize }
+                body: { selectedQty, selectedSize, index }
             })
         }),
         removeItemFromUserCart: builder.mutation({

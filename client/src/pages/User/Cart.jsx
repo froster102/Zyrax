@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "../../components/CartProductCard"
-import { moveToWishlist, removeFromCart, selectCartItems } from "../../features/userSlice";
+import { moveToWishlist, removeFromCart, selectCartItems, updateCartItems } from "../../features/userSlice";
 import EmptyCart from "../../components/EmptyCart";
 import { useAddItemsToUserWishlistMutation, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../features/userApiSlice";
 import { selectUserToken } from "../../features/authSlice";
@@ -23,7 +23,7 @@ function Cart() {
     function calculateCartTotal() {
       let total = 0
       for (let item of cartItems) {
-        total += Number(item.product.price)
+        total += Number(item.product.price) * item.selectedQty
       }
       setTotalCartAmount(total)
     }
@@ -47,14 +47,14 @@ function Cart() {
       dispatch(moveToWishlist({ itemToMove: item.product }))
       toast('Product added to your wishlist')
     } catch (error) {
-      ''
+      toast(error?.data?.message)
     }
   }
 
-  async function updateCartItem({ itemId, selectedSize, selectedQty }) {
+  async function updateCartItem({ itemId, selectedSize, selectedQty, index }) {
     try {
-      userAuth && await updateUserCartItem({ itemId, selectedSize, selectedQty }).unwrap()
-      dispatch({ itemId, selectedSize, selectedQty })
+      userAuth && await updateUserCartItem({ itemId, selectedSize, selectedQty, index }).unwrap()
+      dispatch(updateCartItems({ itemId, selectedSize, selectedQty, index }))
     } catch (error) {
       toast(error?.data?.message)
     }
@@ -81,6 +81,7 @@ function Cart() {
               removeFromCart={removeItemFromCart}
               moveItemToWishlist={moveItemToWishlist}
               updateCartItem={updateCartItem}
+              index={i}
             />))
             }
             {cartItems.length > 0 && <div>

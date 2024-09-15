@@ -3,14 +3,14 @@ import { useRef } from "react"
 import { Link } from "react-router-dom"
 import PropTypes from 'prop-types'
 
-function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartItem }) {
+function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartItem, index }) {
     const selectedSizeRef = useRef(null)
     const selectedQtyRef = useRef(null)
-
+    
     async function handleChange() {
         const selectedSize = selectedSizeRef.current.value
         const selectedQty = selectedQtyRef.current.value
-        updateCartItem({ itemId: item?.product?._id, selectedQty, selectedSize })
+        updateCartItem({ item, itemId: item?.product?._id, selectedQty, selectedSize, index })
     }
 
     const itemQtyMap = item.product.stock.reduce((acc, { size, quantity }) => {
@@ -36,14 +36,12 @@ function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartI
                                 <p className="font-semibold text-xs">{_.startCase(item?.product?.category?.name)}</p>
                                 <div className="flex py-1">
                                     <select ref={selectedSizeRef} className="border border-[#CFCBCB] text-xs rounded-md py-1 text-[#828282] px-2 flex items-center justify-center outline-none"
-                                        value={item.selectedSize || 1}
+                                        value={item.selectedSize}
                                         onClick={(e) => {
                                             e.preventDefault()
                                             e.stopPropagation()
                                         }}
-                                        onChange={() => {
-                                            handleChange()
-                                        }}
+                                        onChange={handleChange}
                                     >
                                         <option value="" disabled >Size</option>
                                         {
@@ -56,9 +54,7 @@ function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartI
                                             e.preventDefault()
                                             e.stopPropagation()
                                         }}
-                                        onChange={() => {
-                                            handleChange()
-                                        }}
+                                        onChange={handleChange}
                                     >
                                         <option value="" disabled >Qty</option>
                                         {maxQtyOptions.map((option) => <option key={option}>{option}</option>)}
@@ -90,7 +86,8 @@ CartProductCard.propTypes = {
     item: PropTypes.object.isRequired,
     removeFromCart: PropTypes.func.isRequired,
     moveItemToWishlist: PropTypes.func.isRequired,
-    updateCartItem: PropTypes.func.isRequired
+    updateCartItem: PropTypes.func.isRequired,
+    index: PropTypes.number.isRequired
 }
 
 export default CartProductCard

@@ -8,10 +8,10 @@ const CartItemSchema = {
         required: [true, 'Product id is required'],
         validate: {
             validator: async (v) => {
-                const product = await Product.findById(v)
+                const product = await Product.findOne({ _id: v, status: 'active' })
                 return !!product
             },
-            message: `Product with ID not found`
+            message: `Product with ID not found or product is currently blocked`
         }
     },
     selectedSize: {

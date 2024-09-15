@@ -64,7 +64,8 @@ function Navbar() {
         return {
           product: item.productId,
           selectedSize: item.selectedSize,
-          selectedQty: item.selectedQty
+          selectedQty: item.selectedQty,
+          uniqueKey: item.uniqueKey
         }
       })
       dispatch(syncCart(dispatchCartState))
