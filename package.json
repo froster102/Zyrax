@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "query-string": "^9.1.0"
   },
   "name": "zyrax",
   "version": "1.0.0",
