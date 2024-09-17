@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import LookingEmoji from '../assets/lookingEmoji.png'
 import { useSelector } from 'react-redux'
-import { selectActiveGender } from '../features/userSlice'
+import { selectActiveGender } from '../store/slices/userSlice'
 
 function EmptyCart() {
     const activeGender = useSelector(selectActiveGender)

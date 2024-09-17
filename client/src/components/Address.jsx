@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import AddAddressModal from "./AddAddressModal";
-import { useAddAddressMutation, useDeleteAddressMutation, useGetProfileQuery, useUpdateAddressMutation } from "../features/userApiSlice";
+import { useAddAddressMutation, useDeleteAddressMutation, useGetProfileQuery, useUpdateAddressMutation } from "../store/api/userApiSlice";
 import { CiEdit } from "react-icons/ci";
 import { LuDelete } from "react-icons/lu";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { addAddress } from "../features/userSlice";
+import { addAddress } from "../store/slices/userSlice";
 import PropsTypes from 'prop-types'
 import _ from "lodash";
 

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useGetProfileQuery, useUpdateProfileMutation } from '../features/userApiSlice'
+import { useGetProfileQuery, useUpdateProfileMutation } from '../store/api/userApiSlice'
 import { useForm } from 'react-hook-form'
 import _ from 'lodash'
 import toast from 'react-hot-toast'

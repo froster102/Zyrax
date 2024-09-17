@@ -1,5 +1,5 @@
 import UserTable from "../../components/UserTable";
-import { useBlockUserMutation, useFetchUsersQuery, useUnblockUserMutation } from "../../features/adminApiSlice";
+import { useBlockUserMutation, useFetchUsersQuery, useUnblockUserMutation } from "../../store/api/adminApiSlice";
 import toast, { Toaster } from "react-hot-toast";
 
 function Users() {

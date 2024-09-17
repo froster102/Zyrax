@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { useLocation, useNavigate } from "react-router-dom"
-import { useCancelOrderMutation, useGetUserOrderDetailsQuery, useGetWalletDetailsQuery, useReturnOrderMutation } from "../features/userApiSlice"
+import { useCancelOrderMutation, useGetUserOrderDetailsQuery, useGetWalletDetailsQuery, useReturnOrderMutation } from "../store/api/userApiSlice"
 import toast from "react-hot-toast"
 import { useState } from "react"
 import ReturnRequestModal from "./ReturnRequestModal"

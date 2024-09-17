@@ -2,7 +2,7 @@ import { IoMdClose } from "react-icons/io"
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import _ from "lodash"
-import { useGetProfileQuery } from "../features/userApiSlice"
+import { useGetProfileQuery } from "../store/api/userApiSlice"
 import { useEffect } from "react"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { addAddressSchema } from "../../ValidationSchema/addAddressSchema"

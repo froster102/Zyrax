@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { selectUserToken, seleUserRole } from "../features/authSlice"
+import { selectUserToken, seleUserRole } from "../store/slices/authSlice"
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 
 function RequireAdminAuth() {

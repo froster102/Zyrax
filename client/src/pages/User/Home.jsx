@@ -2,11 +2,11 @@ import { useEffect } from "react"
 import Banner from "../../components/Banner"
 import Newsletter from "../../components/Newsletter"
 import Row from "../../components/Row"
-import { useGetProductsQuery } from "../../features/productApiSlice"
+import { useGetProductsQuery } from "../../store/api/productApiSlice"
 import TrendingRow from "../../components/TrendingRow"
 import { Link, useLocation } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
-import { selectActiveGender, selectGender } from "../../features/userSlice"
+import { selectActiveGender, selectGender } from "../../store/slices/userSlice"
 
 function Home() {
   const { pathname } = useLocation()

@@ -1,5 +1,5 @@
 import toast, { Toaster } from "react-hot-toast"
-import { useChangeOrderStatusMutation, useFetchOrdersQuery } from "../../features/adminApiSlice"
+import { useChangeOrderStatusMutation, useFetchOrdersQuery } from "../../store/api/adminApiSlice"
 import OrderTable from "../../components/OrderTable"
 
 function Orders() {

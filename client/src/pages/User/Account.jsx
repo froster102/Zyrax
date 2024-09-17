@@ -1,14 +1,14 @@
 import { Routes, Route, Link } from "react-router-dom"
-import { userLogout } from '../../features/authSlice'
+import { userLogout } from '../../store/slices/authSlice'
 import Orders from "../../components/Orders"
 import Profile from '../../components/Profile'
 import { useDispatch } from "react-redux"
 import toast from "react-hot-toast"
-import { resetCartAndWishlist } from "../../features/userSlice"
+import { resetCartAndWishlist } from "../../store/slices/userSlice"
 import Address from "../../components/Address"
 import OrderDetails from "../../components/OrderDetails"
 import Wallet from "../../components/Wallet"
-import { useLogoutUserMutation } from "../../features/authApiSlice"
+import { useLogoutUserMutation } from "../../store/api/authApiSlice"
 
 function Account() {
   const [logoutUser] = useLogoutUserMutation()

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import CategoryTable from '../../components/CategoryTable'
 import { FaListUl } from 'react-icons/fa'
 import AddCategoryModal from '../../components/AddCategoryModal'
-import { useBlockCategoryMutation, useDeleteCategoryMutation, useGetCategoriesQuery } from '../../features/adminApiSlice'
+import { useBlockCategoryMutation, useDeleteCategoryMutation, useGetCategoriesQuery } from '../../store/api/adminApiSlice'
 import toast, { Toaster } from 'react-hot-toast'
 
 function Category() {

@@ -1,6 +1,6 @@
 import { Toaster } from "react-hot-toast";
 import ProductTable from "../../components/ProductTable";
-import { useFetchProductsQuery } from "../../features/adminApiSlice";
+import { useFetchProductsQuery } from "../../store/api/adminApiSlice";
 
 
 function Products() {

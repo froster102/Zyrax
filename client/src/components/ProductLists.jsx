@@ -1,13 +1,13 @@
 import { useParams } from "react-router-dom"
 import BreadCrumbs from "./BreadCrumbs"
 import { useSelector } from "react-redux"
-import { selectActiveGender } from "../features/userSlice"
+import { selectActiveGender } from "../store/slices/userSlice"
 import ProductCard from "./ProductCard"
 import { RotatingLines } from 'react-loader-spinner'
 import _ from "lodash"
 import Filter from "./Filter"
 import { useEffect, useState } from "react"
-import { useGetProductsQuery } from "../features/productApiSlice"
+import { useGetProductsQuery } from "../store/api/productApiSlice"
 
 function ProductLists() {
     const { category } = useParams()

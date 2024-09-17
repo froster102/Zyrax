@@ -2,7 +2,7 @@ import { MdDelete } from "react-icons/md";
 import { GrView } from "react-icons/gr";
 import { FaEdit } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useBlockProductMutation, useDeleteProductMutation } from "../features/adminApiSlice";
+import { useBlockProductMutation, useDeleteProductMutation } from "../store/api/adminApiSlice";
 import toast, { Toaster } from 'react-hot-toast'
 import { TbBarrierBlock, TbBarrierBlockOff } from "react-icons/tb";
 import { useState } from "react";

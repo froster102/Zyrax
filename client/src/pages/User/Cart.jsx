@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "../../components/CartProductCard"
-import { moveToWishlist, removeFromCart, selectCartItems, updateCartItems } from "../../features/userSlice";
+import { moveToWishlist, removeFromCart, selectCartItems, updateCartItems } from "../../store/slices/userSlice";
 import EmptyCart from "../../components/EmptyCart";
-import { useAddItemsToUserWishlistMutation, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../features/userApiSlice";
-import { selectUserToken } from "../../features/authSlice";
+import { useAddItemsToUserWishlistMutation, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../store/api/userApiSlice";
+import { selectUserToken } from "../../store/slices/authSlice";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";

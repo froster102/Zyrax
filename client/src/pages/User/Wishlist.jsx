@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import WishlistProductCard from "../../components/WishlistProductCard"
-import { moveToCart, removeFromWishlist, selectWishlistItems } from "../../features/userSlice"
-import { useAddItemsToUserCartMutation, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from "../../features/userApiSlice"
+import { moveToCart, removeFromWishlist, selectWishlistItems } from "../../store/slices/userSlice"
+import { useAddItemsToUserCartMutation, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from "../../store/api/userApiSlice"
 import PickSizeModal from "../../components/PickSizeModal"
-import { selectUserToken } from "../../features/authSlice"
+import { selectUserToken } from "../../store/slices/authSlice"
 import EmptyCart from "../../components/EmptyCart"
 import toast, { Toaster } from "react-hot-toast"
 

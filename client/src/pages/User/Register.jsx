@@ -1,15 +1,15 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectUserToken, setUserCredentials } from '../../features/authSlice'
+import { selectUserToken, setUserCredentials } from '../../store/slices/authSlice'
 import { FaGoogle } from "react-icons/fa6";
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import registerSchema from '../../../ValidationSchema/registerSchema'
 import toast from 'react-hot-toast'
-import { selectActiveGender } from '../../features/userSlice'
+import { selectActiveGender } from '../../store/slices/userSlice'
 import { RotatingLines } from 'react-loader-spinner'
-import { useSignupMutation } from '../../features/authApiSlice';
+import { useSignupMutation } from '../../store/api/authApiSlice';
 
 function Register() {
   const dispatch = useDispatch()

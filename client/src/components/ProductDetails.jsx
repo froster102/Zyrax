@@ -5,7 +5,7 @@ import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import Row from './Row';
 import Ratings from './Ratings';
-import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from '../features/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from '../store/api/userApiSlice';
 import { useEffect, useState } from 'react';
 import ProductImageModal from './ProductImageModal';
 import BreadCrumbs from './BreadCrumbs';
@@ -13,14 +13,14 @@ import _ from 'lodash'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, addToWishlist, removeFromWishlist, selectActiveGender, selectCartItems, selectWishlistItems } from '../features/userSlice';
-import { selectUserToken } from '../features/authSlice';
+import { addToCart, addToWishlist, removeFromWishlist, selectActiveGender, selectCartItems, selectWishlistItems } from '../store/slices/userSlice';
+import { selectUserToken } from '../store/slices/authSlice';
 import ProductDetailsAccordion from './ProductDetailsAccordion';
 import { IoCart, IoCartOutline } from "react-icons/io5";
 import Unavailable from './Unavailable';
 import StockOut from './StockOut';
 import { AnimatePresence } from 'framer-motion';
-import { useGetProductDeatilsQuery, useGetProductsQuery } from '../features/productApiSlice';
+import { useGetProductDeatilsQuery, useGetProductsQuery } from '../store/api/productApiSlice';
 
 
 const RATINGS = [

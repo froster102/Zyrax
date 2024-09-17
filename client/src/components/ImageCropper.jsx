@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { Flip, toast, ToastContainer } from 'react-toastify';
-import setCanvas from '../setCanvas';
+import setCanvas from '../utils/setCanvas';
 
 const FIXED_WIDTH = 683;
 const FIXED_HEIGHT = 911;

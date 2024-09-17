@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import CardToatalCard from '../../components/CartToatalCard'
 import { useEffect, useState } from 'react'
-import { useChekoutMutation } from '../../features/userApiSlice'
+import { useChekoutMutation } from '../../store/api/userApiSlice'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
-import { removeFromCart, resetCart, selectActiveGender } from '../../features/userSlice'
+import { removeFromCart, resetCart, selectActiveGender } from '../../store/slices/userSlice'
 import { RotatingLines } from 'react-loader-spinner'
 import { FaGooglePay, FaPaypal, FaWallet } from "react-icons/fa";
 import { SiPhonepe } from "react-icons/si";

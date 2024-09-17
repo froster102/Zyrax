@@ -1,6 +1,6 @@
 import { FaWallet } from "react-icons/fa";
 import { RotatingLines } from "react-loader-spinner"
-import { useCreateWalletMutation, useGetWalletDetailsQuery, useTopUpWalletMutation } from "../features/userApiSlice"
+import { useCreateWalletMutation, useGetWalletDetailsQuery, useTopUpWalletMutation } from "../store/api/userApiSlice"
 import toast from "react-hot-toast"
 import ConfirmationModal from "./ConfirmationModal"
 import { useState } from "react"

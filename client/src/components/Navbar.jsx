@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import Dropdown from './Dropdown'
 import SearchBar from './SearchBar'
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserToken, userLogout } from '../features/authSlice';
+import { selectUserToken, userLogout } from '../store/slices/authSlice';
 import UserDropdown from './UserDropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender, addToWishlist } from '../features/userSlice';
-import { useGetAllCategoriesQuery } from '../features/productApiSlice';
-import { useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery } from '../features/userApiSlice';
+import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender, addToWishlist } from '../store/slices/userSlice';
+import { useGetAllCategoriesQuery } from '../store/api/productApiSlice';
+import { useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery } from '../store/api/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
 import { IoMenu } from "react-icons/io5";
@@ -16,7 +16,7 @@ import { motion } from 'framer-motion';
 import Zyrax_icon from '../assets/options-list.png'
 import SidebarAccordion from './SidebarAccordion';
 import _ from 'lodash';
-import { useLogoutUserMutation } from '../features/authApiSlice';
+import { useLogoutUserMutation } from '../store/api/authApiSlice';
 
 function Navbar() {
   const [sticky, setSticky] = useState(false)

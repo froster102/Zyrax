@@ -1,5 +1,5 @@
 import { RotatingLines } from "react-loader-spinner"
-import { useFetchUserOrdersQuery } from "../features/userApiSlice"
+import { useFetchUserOrdersQuery } from "../store/api/userApiSlice"
 import _ from "lodash"
 import { useNavigate } from "react-router-dom"
 import { format, parseISO } from 'date-fns'

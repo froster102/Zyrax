@@ -3,10 +3,10 @@ import { RotatingLines } from 'react-loader-spinner'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { selectActiveGender } from '../features/userSlice'
+import { selectActiveGender } from '../store/slices/userSlice'
 import { useEffect } from 'react'
-import { selectUserToken } from '../features/authSlice'
-import { useForgotPasswordMutation } from '../features/authApiSlice'
+import { selectUserToken } from '../store/slices/authSlice'
+import { useForgotPasswordMutation } from '../store/api/authApiSlice'
 
 function ForgotPassword() {
     const [forgotPassword, { isLoading }] = useForgotPasswordMutation()

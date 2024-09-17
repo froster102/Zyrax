@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { selectActiveGender } from '../features/userSlice'
+import { selectActiveGender } from '../store/slices/userSlice'
 import queryString from 'query-string'
 import { MdLocalShipping } from "react-icons/md";
-import { useGetUserOrderDetailsQuery } from '../features/userApiSlice'
+import { useGetUserOrderDetailsQuery } from '../store/api/userApiSlice'
 import _ from 'lodash'
 import { format, parseISO, add } from 'date-fns'
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
-import { useAddCategoryMutation, useGetCategoriesQuery } from '../features/adminApiSlice'
+import { useAddCategoryMutation, useGetCategoriesQuery } from '../store/api/adminApiSlice'
 import toast, { Toaster } from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'

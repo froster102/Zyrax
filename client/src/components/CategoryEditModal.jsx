@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { IoMdClose } from "react-icons/io"
-import { useEditCategoryMutation } from "../features/adminApiSlice"
+import { useEditCategoryMutation } from "../store/api/adminApiSlice"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -40,6 +40,7 @@ function CategoryEditModal({ category, closeModal, refetch, categories }) {
             closeModal(false)
             toast(res?.message)
         } catch (error) {
+            toast(error?.data?.message)
         }
     }
 

@@ -1,5 +1,5 @@
 import { RotatingLines } from "react-loader-spinner"
-import { useGetAllReturnsQuery } from "../../features/adminApiSlice"
+import { useGetAllReturnsQuery } from "../../store/api/adminApiSlice"
 
 
 function Returns() {

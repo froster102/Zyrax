@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { RiStore3Fill } from "react-icons/ri";
 import { FaCheckCircle } from "react-icons/fa";
 import AddImageModal from '../../components/AddImageModal';
-import { useAddProductMutation, useEditProductMutation, useFetchProductQuery, useGetCategoriesQuery } from '../../features/adminApiSlice'
+import { useAddProductMutation, useEditProductMutation, useFetchProductQuery, useGetCategoriesQuery } from '../../store/api/adminApiSlice'
 import { BeatLoader } from 'react-spinners'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, } from 'react-hook-form'

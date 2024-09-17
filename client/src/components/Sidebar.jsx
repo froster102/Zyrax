@@ -10,8 +10,8 @@ import { IoNotifications } from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { userLogout } from "../features/authSlice";
-import { useAdminLogoutMutation } from "../features/adminApiSlice";
+import { userLogout } from "../store/slices/authSlice";
+import { useAdminLogoutMutation } from "../store/api/adminApiSlice";
 import { BeatLoader } from "react-spinners";
 
 
