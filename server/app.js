@@ -3,14 +3,12 @@ import { config } from 'dotenv'
 import { errorHandler, notFound } from './middlewares/errorMiddleware.js'
 import userRoutes from './routes/userRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
-import productRoutes from './routes/productRoutes.js'
+// import productRoutes from './routes/productRoutes.js'
 import session from 'express-session'
 import mongoose from 'mongoose'
 import cors from 'cors'
-import { verifyEmail } from './controller/user/authController.js'
 import cookieParser from 'cookie-parser'
 import { refresh } from './controller/refreshController.js'
-import { logout } from './controller/logoutController.js'
 
 config()
 
@@ -40,7 +38,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use('/api/v1/user/', userRoutes)
 app.use('/api/v1/admin/', adminRoutes)
-app.use('/api/v1/products/', productRoutes)
+// app.use('/api/v1/products/', productRoutes)
 app.get('/api/v1/auth/refresh', refresh)
 
 app.get('/', (req, res) => {

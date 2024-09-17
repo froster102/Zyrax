@@ -1,18 +1,22 @@
 import express from 'express'
 import { passport } from '../middlewares/passport-config.js'
+import * as wishlistController from '../controller/user/wishlistController.js'
+import * as cartController from '../controller/user/cartController.js'
+import * as orderController from '../controller/user/orderController.js'
 import { signin, googleSigninCallback, signUp, forgotPassword, resetPassword, verifyEmail } from '../controller/user/authController.js'
 import { logout } from '../controller/logoutController.js'
 import { getProfile, updateProfile } from '../controller/user/profileController.js'
 import { userAuth } from '../middlewares/authMiddleware.js'
-import * as wishlistController from '../controller/user/wishlistController.js'
-import * as cartController from '../controller/user/cartController.js'
 import { validateEmail, validatePassword, validateResetPassword, validateSignin, validateObjectId } from '../middlewares/validationMiddleware.js'
 import { addAddress, deleteAddress, updateAddress } from '../controller/user/addressController.js'
-import * as orderController from '../controller/user/orderController.js'
 import { handleCheckOut } from '../controller/user/checkoutController.js'
 import { verifyPayment } from '../controller/user/verifyPaymentController.js'
 import { verifyWalletPayment } from '../controller/user/verifyWalletPaymentController.js'
 import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/walletController.js'
+import { searchProducts } from '../controller/user/searchController.js'
+import { validateGetProducts } from '../middlewares/validationMiddleware.js'
+import { getProductDeatils, getProducts } from '../controller/user/productController.js'
+import { getAllCategories } from '../controller/user/categoryiesController.js'
 
 const router = express.Router()
 
@@ -34,6 +38,11 @@ router.post('/auth/signup', validatePassword, signUp)
 router.post('/auth/forgot-password', validateEmail, forgotPassword)
 router.post('/auth/reset-password', validateResetPassword, resetPassword)
 router.get('/auth/verify-email', verifyEmail)
+
+router.get('/products/search', searchProducts)
+router.get('/products', validateGetProducts, getProducts)
+router.get('/products/categories', getAllCategories)
+router.get('/products/:name', getProductDeatils)
 
 router.post('/verify-payment', verifyPayment)
 router.post('/verify-wallet-payment', verifyWalletPayment)
