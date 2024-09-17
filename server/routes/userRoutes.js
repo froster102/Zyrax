@@ -65,7 +65,7 @@ router.put('/wallet', topUpWallet)
 
 
 router.get('/orders', orderController.getUserOrders)
-router.get('/orders/:orderId/products/:productId', orderController.getOrderDetails)
+router.get('/orders/details/', orderController.getOrderDetails)
 router.patch('/orders/:orderId/products/:productId/cancel', orderController.cancelOrder)
 router.post('/orders/:orderId/products/:productId/return', orderController.returnOrder)
 

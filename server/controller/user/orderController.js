@@ -28,16 +28,23 @@ const processOrder = async (req, res) => {
 }
 
 const getOrderDetails = async (req, res) => {
-    const { orderId, productId } = req.params
+    const { orderId, productId } = req.query
     if (!orderId) return res.status(400).json({ message: 'Order id is required' })
-    if (!productId) return res.status(400).json({ message: 'Product id is required' })
     try {
-        const order = await Order.findOne({ orderId: orderId, 'products.productId': productId }, { _id: false }).populate({
+        const order = await Order.findOne({ orderId: orderId }, { _id: false }).populate({
             path: 'products.productId'
+        }).populate({
+            path: 'userId',
+            select: 'firstName email phoneNumber'
+        }).populate({
+            path: 'shipping.addressId'
         })
         if (!order) return res.status(404).json({ message: 'Order with id not found' })
-        const orderItem = order.products.find(product => productId === productId)
-        return res.status(200).json({ orderItem, order })
+        if (productId) {
+            const orderItem = order.products.find(product => product.productId._id.toString() === productId)
+            return res.status(200).json({ orderItem, order })
+        }
+        return res.status(200).json({ order })
     } catch (error) {
         return res.status(500).json({ message: 'Failed to get order details' })
     }

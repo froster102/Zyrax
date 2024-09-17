@@ -74,14 +74,11 @@ const adminApiSlice = apiSlice.injectEndpoints({
             })
         }),
         editCategory: builder.mutation({
-            query: ({ id, data }) => {
-                console.log(id, data)
-                return {
-                    url: `/admin/categories/${id}`,
-                    method: 'PUT',
-                    body: data
-                }
-            }
+            query: ({ id, data }) => ({
+                url: `/admin/categories/${id}`,
+                method: 'PUT',
+                body: data
+            })
         }),
         blockCategory: builder.mutation({
             query: (id) => ({
@@ -109,9 +106,9 @@ const adminApiSlice = apiSlice.injectEndpoints({
             })
         }),
         changeOrderStatus: builder.mutation({
-            query: ({ orderId, productId, status }) => {
+            query: ({ orderId, itemId, status }) => {
                 return {
-                    url: `/admin/orders/${orderId}/products/${productId}/status`,
+                    url: `/admin/orders/${orderId}/products/${itemId}/status`,
                     method: 'PATCH',
                     body: { status }
                 }

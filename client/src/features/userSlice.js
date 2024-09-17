@@ -63,8 +63,8 @@ const userSlice = createSlice({
                     const existingItem = itemMap.get(itemKey)
                     existingItem.selectedQty += newItem.selectedQty || 1
                     itemMap.set(itemKey, existingItem)
-                }else {
-                    itemMap.set(itemKey, { ...newItem, uniqueKey: itemKey })
+                } else {
+                    itemMap.set(itemKey, { ...newItem })
                 }
             })
             state.cart.items = Array.from(itemMap.values())

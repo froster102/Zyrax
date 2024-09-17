@@ -1,22 +1,27 @@
 import _ from "lodash"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useCancelOrderMutation, useGetUserOrderDetailsQuery, useGetWalletDetailsQuery, useReturnOrderMutation } from "../features/userApiSlice"
 import toast from "react-hot-toast"
 import { useState } from "react"
 import ReturnRequestModal from "./ReturnRequestModal"
 import { RotatingLines } from "react-loader-spinner"
+import { format, parseISO } from 'date-fns'
+import queryString from 'query-string'
+import { FaCheckCircle } from "react-icons/fa";
 
 function OrderDetails() {
-    const { orderId, productId } = useParams()
+    const location = useLocation()
     const [openReturnRequestModal, setOpenReturnRequestModal] = useState(false)
     const [returnReason, setReturnReason] = useState('')
     const [additionalRemark, setAdditionalRemark] = useState('')
     const navigate = useNavigate()
     const [cancelUserOrder] = useCancelOrderMutation()
     const [returnUserOrder] = useReturnOrderMutation()
+    const { orderId, productId } = queryString.parse(location.search)
+
     const { data: wallet, isLoading: isWalletLoading } = useGetWalletDetailsQuery()
     const { data: orderDetails, isLoading: isOrderDetailsLoading } = useGetUserOrderDetailsQuery({ orderId, productId })
-    
+
     async function cancelOrder({ orderId, productId }) {
         try {
             const res = await cancelUserOrder({ orderId, productId }).unwrap()
@@ -51,7 +56,7 @@ function OrderDetails() {
                         <div className="border border-stone-300 bg-stone-200 w-full h-full rounded-md mt-4">
                             <div className="bg-stone-300 rounded-t-md p-2 text-sm flex justify-between">
                                 <p>Order id: {orderDetails.order.orderId}</p>
-                                <p>{orderDetails.order.createdAt.split(':')[0].split('T')[0].split('-').reverse().join('-')}</p>
+                                <p>{format(parseISO(orderDetails.order.createdAt), 'dd MMM, yyy')}</p>
                             </div>
                             <div className="p-5">
                                 <div className="flex">
@@ -89,8 +94,45 @@ function OrderDetails() {
                                 </div>
                             </div>
                             {/* <hr className="border border-stone-300"/> */}
-                            <div>
+                            <div className="p-5">
+                                <div className="px-4">
+                                    <div className="flex gap-2 items-start">
+                                        <FaCheckCircle className="mt-1" />
+                                        <div>
+                                            <p>{format(parseISO(orderDetails.order.createdAt), 'dd MMM, yyy, h:mm a')}</p>
+                                            <p> Order Placed</p>
+                                        </div>
+                                    </div>
+                                    {
+                                        orderDetails.orderItem.shippingDate && <div className="flex gap-2 items-start mt-8">
+                                            <FaCheckCircle className="mt-1" />
+                                            <div>
+                                                <p>{format(parseISO(orderDetails.orderItem.shippingDate), 'dd MMM, yyy, h:mm a')}</p>
+                                                <p> Order cancelled</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {
+                                        orderDetails.orderItem.cancelledDate && <div className="flex gap-2 items-start mt-8">
+                                            <FaCheckCircle className="mt-1" />
+                                            <div>
+                                                <p>{format(parseISO(orderDetails.orderItem.cancelledDate), 'dd MMM, yyy, h:mm a')}</p>
+                                                <p> Order cancelled</p>
+                                            </div>
+                                        </div>
+                                    }
 
+                                </div>
+                            </div>
+                            <div className="p-5">
+                                <p>Shipping To</p>
+                                <div className="pl-2">
+                                    <p>{_.startCase(orderDetails.order.shipping.addressId.firstName + ' ' + orderDetails.order.shipping.addressId.lastName)}</p>
+                                    <p>{_.startCase(orderDetails.order.shipping.addressId.street)}</p>
+                                    <p>{_.startCase(orderDetails.order.shipping.addressId.city)}</p>
+                                    <p>{_.startCase(orderDetails.order.shipping.addressId.state)} {orderDetails.order.shipping.addressId.pincode}</p>
+                                    <p>{_.startCase(orderDetails.order.shipping.addressId?.phoneNumber)}</p>
+                                </div>
                             </div>
                         </div>
                         {openReturnRequestModal && <ReturnRequestModal

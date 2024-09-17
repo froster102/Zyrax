@@ -60,7 +60,6 @@ export const getCartItems = async (req, res) => {
         })
         return res.status(200).json(items)
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: 'Failed get cart items' })
     }
 }
@@ -71,7 +70,6 @@ export const getCartItems = async (req, res) => {
 export const updateCartItems = async (req, res) => {
     const { itemId } = req.params
     const { selectedSize, selectedQty, index } = req.body
-    console.log(index)
     if (!selectedQty || !selectedSize) return res.status(400).json({ message: 'Quantity , Size are required' })
     if (isNaN(index) || index < 0) return res.status(400).json({ message: 'Index must be a positive integer' })
     try {
@@ -90,7 +88,6 @@ export const updateCartItems = async (req, res) => {
         await cart.save()
         return res.status(200).json({ message: 'Cart updated sucessfully' })
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: 'Failed to update cart' })
     }
 }

@@ -64,8 +64,7 @@ function Navbar() {
         return {
           product: item.productId,
           selectedSize: item.selectedSize,
-          selectedQty: item.selectedQty,
-          uniqueKey: item.uniqueKey
+          selectedQty: item.selectedQty
         }
       })
       dispatch(syncCart(dispatchCartState))
@@ -81,7 +80,7 @@ function Navbar() {
       dispatch(resetCartAndWishlist())
       dispatch(userLogout())
     } catch (error) {
-      console.log(error)
+      toast(error?.data?.message)
     }
   }
 

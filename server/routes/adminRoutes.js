@@ -32,7 +32,7 @@ router.patch('/products/:id/block', blockProduct)
 router.delete('/products/:id', deleteProduct)
 
 router.get('/orders/', getAllOrders)
-router.patch('/orders/:orderId/products/:productId/status', changeProductOrderStatus)
+router.patch('/orders/:orderId/products/:itemId/status', changeProductOrderStatus)
 
 router.get('/returns', getAllReturns)
 router.put('/returns', approveReturn)

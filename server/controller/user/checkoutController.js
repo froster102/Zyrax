@@ -90,6 +90,7 @@ const handleCheckOut = async (req, res) => {
             const order = await Order.create({
                 userId: req.userId,
                 order_id: paymentOrder.id,
+                orderId: nanoid(6),
                 status: 'confirmed',
                 totalAmount,
                 shipping: {
@@ -123,6 +124,7 @@ const handleCheckOut = async (req, res) => {
             await wallet.save()
             const order = await Order.create({
                 userId: req.userId,
+                orderId: nanoid(6),
                 status: 'confirmed',
                 totalAmount,
                 shipping: {
@@ -147,11 +149,10 @@ const handleCheckOut = async (req, res) => {
                         { _id: item.productId, 'stock.size': item.size },
                         { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true })
                 }
-                return res.status(200).json({ message: 'Order placed sucessfully' })
+                return res.status(200).json({ message: 'Order placed sucessfully', orderId: order.orderId })
             }
         }
     } catch (e) {
-        console.log(e)
         if (e.name === 'ValidationError') {
             const message = []
             for (let error in e.errors) {

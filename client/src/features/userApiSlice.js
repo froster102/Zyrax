@@ -85,7 +85,10 @@ const userApiSlice = apiSlice.injectEndpoints({
             query: () => '/user/orders'
         }),
         getUserOrderDetails: builder.query({
-            query: ({ orderId,productId }) => `/user/orders/${orderId}/products/${productId}`
+            query: ({ orderId, productId }) => {
+                if (orderId && productId) return `/user/orders/details?orderId=${orderId}&productId=${productId}`
+                return `/user/orders/details?orderId=${orderId}`
+            }
         }),
         cancelOrder: builder.mutation({
             query: ({ orderId, productId }) => ({

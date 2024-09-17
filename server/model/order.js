@@ -37,6 +37,7 @@ const OrderSchema = new mongoose.Schema({
     shipping: {
         addressId: {
             type: mongoose.SchemaTypes.ObjectId,
+            ref: 'Address',
             required: [true, 'Shipping address id is required'],
             validate: {
                 validator: async (v) => {
@@ -137,6 +138,9 @@ const OrderSchema = new mongoose.Schema({
                     default: 'pending'
                 },
                 required: [true, 'Product order status is required']
+            },
+            shippingDate: {
+                type: Date,
             },
             cancelledDate: {
                 type: Date,
