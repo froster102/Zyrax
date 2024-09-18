@@ -5,25 +5,17 @@ import Overview from './Overview'
 import NotFound from '../User/NotFound'
 import AddProduct from './AddProduct'
 import Users from './Users'
-import { Flip, ToastContainer } from 'react-toastify'
-import Manage from './Manage'
 import Analytics from './Analytics'
 import Orders from './Orders'
 import Payments from './Payments'
-import Refunds from './Refunds'
 import Returns from './Returns'
-import Notification from './Notifications'
+import Category from './Category'
+import Offer from './Offer'
+import Coupons from './Coupons'
 
 function Dashboard() {
   return (
     <>
-      <ToastContainer className='mt-10 rounded-lg font-semibold text-center'
-        position='top-center'
-        autoClose={1000}
-        theme='dark'
-        hideProgressBar={true}
-        transition={Flip}
-      ></ToastContainer>
       <div className='p-[20px] bg-white flex w-full'>
         <Sidebar></Sidebar>
         <Routes>
@@ -34,8 +26,10 @@ function Dashboard() {
           <Route path='products/:id/edit' element={<AddProduct mode={'edit'}></AddProduct>} />
           <Route path='users' element={<Users></Users>} />
           <Route path='orders' element={<Orders></Orders>} />
-          <Route path='manage/*' element={<Manage></Manage>} />
-          <Route path='returns' element={<Returns  />} />
+          <Route path='category' element={<Category />} ></Route>
+          <Route path='offers' element={<Offer />} ></Route>
+          <Route path='coupons' element={<Coupons />} ></Route>
+          <Route path='returns' element={<Returns />} />
           <Route path='payments' element={<Payments></Payments>} />
           <Route path='*' element={<NotFound></NotFound>} />
         </Routes>

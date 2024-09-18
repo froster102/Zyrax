@@ -17,6 +17,7 @@ import { searchProducts } from '../controller/user/searchController.js'
 import { validateGetProducts } from '../middlewares/validationMiddleware.js'
 import { getProductDeatils, getProducts } from '../controller/user/productController.js'
 import { getAllCategories } from '../controller/user/categoryiesController.js'
+import * as couponController from '../controller/user/couponController.js'
 
 const router = express.Router()
 
@@ -57,6 +58,11 @@ router.post('/cart/items', cartController.addCartItems)
 router.get('/cart', cartController.getCartItems)
 router.put('/cart/items/:itemId', cartController.updateCartItems)
 router.delete('/cart/items/:itemId', validateObjectId, cartController.removeCartItem)
+
+router.get('/coupons', couponController.getCoupons)
+router.post('/coupons/validate', couponController.validateCoupon)
+router.post('/coupons/apply', couponController.applyCoupon)
+router.delete('/coupons/remove', couponController.removeCoupon)
 
 router.get('/profile', getProfile)
 router.put('/profile', updateProfile)

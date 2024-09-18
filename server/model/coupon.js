@@ -7,7 +7,7 @@ const CouponSchema = new mongoose.Schema({
         required: [true, 'Coupon code is required'],
         set: value => value.toUpperCase()
     },
-    dicount: {
+    discount: {
         type: Number,
         required: [true, 'Dicount is percentage is required'],
         min: [1, 'Dicount must be at least 1%'],

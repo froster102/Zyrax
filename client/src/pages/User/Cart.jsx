@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";
 import CartToatalCard from "../../components/CartToatalCard";
+import ApplyCoupon from "../../components/ApplyCoupon";
 
 function Cart() {
   const cartItems = useSelector(selectCartItems)
@@ -87,9 +88,15 @@ function Cart() {
             {cartItems.length > 0 && <div>
             </div>}
           </div>
-          {
-            cartItems.length !== 0 && <CartToatalCard cartTotal={totalCartAmount} navigateToSelectAddress={() => navigate('/select-address', { state: { cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })} />
-          }
+          <div>
+            {
+              cartItems.length !== 0 && <CartToatalCard
+                cartTotal={totalCartAmount}
+                navigateToSelectAddress={() => navigate('/select-address', { state: { cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })}
+              />
+            }
+            <ApplyCoupon />
+          </div>
         </div>
       </div>
     </>

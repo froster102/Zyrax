@@ -7,6 +7,7 @@ import * as orderController from '../controller/admin/orderController.js'
 import * as productController from '../controller/admin/productController.js'
 import * as categoryController from '../controller/admin/categoryController.js'
 import * as returnController from '../controller/admin/returnController.js'
+import * as couponController from '../controller/admin/couponController.js'
 
 const router = express.Router()
 
@@ -36,6 +37,10 @@ router.patch('/orders/:orderId/products/:itemId/status', orderController.changeP
 
 router.get('/returns', returnController.getAllReturns)
 router.put('/returns', returnController.approveReturn)
+
+router.get('/coupons', couponController.getCoupons)
+router.post('/coupons', couponController.addCoupon)
+router.delete('/coupons/:couponId', couponController.deleteCoupon)
 
 router.get('/categories', categoryController.getCategories)
 router.post('/categories', categoryController.addCategory)

@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import ApplyCoupon from './ApplyCoupon'
 import { RotatingLines } from 'react-loader-spinner'
 
 function CartToatalCard({ cartTotal, navigateToSelectAddress, proceedToCheckout, checkoutLoading }) {
@@ -17,8 +16,6 @@ function CartToatalCard({ cartTotal, navigateToSelectAddress, proceedToCheckout,
                             : <button onClick={() => navigateToSelectAddress()} className="bg-black w-full py-2 text-white mt-2 rounded-lg font-medium">Proceed to order</button>}
                     </div>
                 </div>
-                <ApplyCoupon />
-
             </div>
         </>
     )

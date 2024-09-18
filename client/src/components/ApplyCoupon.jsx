@@ -1,4 +1,9 @@
-function ApplyCoupon() {
+import PropTypes from 'prop-types'
+import { useGetCouponsQuery } from '../store/api/couponApiSlice'
+
+function ApplyCoupon({ handleApplyCoupon, handleValidateCoupon, handleRemoveCoupon }) {
+    const { data: coupons } = useGetCouponsQuery()
+
     return (
         <div>
             <div className="w-full h-fit border border-[#CFCBCB] rounded-lg p-5 bg-white mt-6">
@@ -8,6 +13,12 @@ function ApplyCoupon() {
             </div>
         </div>
     )
+}
+
+ApplyCoupon.propTypes = {
+    handleApplyCoupon: PropTypes.func.isRequired,
+    handleValidateCoupon: PropTypes.func.isRequired,
+    handleRemoveCoupon: PropTypes.func.isRequired
 }
 
 export default ApplyCoupon
