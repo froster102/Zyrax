@@ -42,13 +42,13 @@ function ProductLists() {
                     </div>
                 </div>
             </div>
-            <div className="pt-6 flex justify-between w-full px-6 ">
+            <div className="pt-6 flex w-full px-6 ">
                 <Filter />
                 {
                     isError ? <div className="w-full text-center text-2xl font-medium h-full">No items found</div>
                         : <div className={`${isProductsLoading ? 'flex justify-center w-full' : ''}`}>
                             {
-                                isProductsLoading ? <div className="flex justify-center w-full"><RotatingLines strokeColor="black" strokeWidth="3" /></div>
+                                isProductsLoading ? <div className=""><RotatingLines strokeColor="black" strokeWidth="3" /></div>
                                     : products.map((product, i) => <ProductCard key={i} product={product} />)
                             }
                         </div>

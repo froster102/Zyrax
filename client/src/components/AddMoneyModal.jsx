@@ -18,7 +18,7 @@ function AddMoneyModal({ closeModal, onSumbit }) {
                         </button>
                         <label htmlFor="">Enter the amount to add</label>
                         <div className="flex items-center mt-2">
-                            <div className="p-2 rounded-l-md bg-stone-400">₹</div>
+                            <div className="p-2 rounded-l-md bg-neutral-400">₹</div>
                             <input
                                 value={amount}
                                 onChange={(e) => {

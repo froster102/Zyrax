@@ -32,7 +32,7 @@ function Sidebar() {
 
     return (
         <>
-            <div className='py-10 pb-12 px-[40px] border-[1px] border-stone-600 w-fit rounded-lg bg-[#F1F1F1]'>
+            <div className='py-10 pb-12 px-[40px] border-[1px] border-neutral-600 w-fit rounded-lg bg-[#F1F1F1]'>
                 <div>
                     <h1 className='font-bold'>
                         Main Menu

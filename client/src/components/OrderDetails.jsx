@@ -53,8 +53,8 @@ function OrderDetails() {
                     <RotatingLines strokeColor="black" strokeWidth="3" />
                 </div>
                     : <div>
-                        <div className="border border-stone-300 bg-stone-200 w-full h-full rounded-md mt-4">
-                            <div className="bg-stone-300 rounded-t-md p-2 text-sm flex justify-between">
+                        <div className="border border-neutral-300 bg-neutral-200 w-full h-full rounded-md mt-4">
+                            <div className="bg-neutral-300 rounded-t-md p-2 text-sm flex justify-between">
                                 <p>Order id: {orderDetails.order.orderId}</p>
                                 <p>{format(parseISO(orderDetails.order.createdAt), 'dd MMM, yyy')}</p>
                             </div>
@@ -74,7 +74,7 @@ function OrderDetails() {
                                                 onClick={() => {
                                                     setOpenReturnRequestModal(true)
                                                 }}
-                                                className="mt-4 px-2 py-1 border border-stone-500 rounded-md text-sm hover:bg-stone-900 hover:text-white transition ease-in" >Return order
+                                                className="mt-4 px-2 py-1 border border-neutral-500 rounded-md text-sm hover:bg-neutral-900 hover:text-white transition ease-in" >Return order
                                             </button>
                                                 : orderDetails.orderItem.status === 'cancelled' ? <div>
                                                     Product has been cancelled
@@ -87,13 +87,13 @@ function OrderDetails() {
                                                             onClick={() => {
                                                                 cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
                                                             }}
-                                                            className="mt-4 px-2 py-1 border border-stone-500 rounded-md text-sm hover:bg-stone-900 hover:text-white transition ease-in" >Cancel
+                                                            className="mt-4 px-2 py-1 border border-neutral-500 rounded-md text-sm hover:bg-neutral-900 hover:text-white transition ease-in" >Cancel
                                                         </button>
                                         }
                                     </div>
                                 </div>
                             </div>
-                            {/* <hr className="border border-stone-300"/> */}
+                            {/* <hr className="border border-neutral-300"/> */}
                             <div className="p-5">
                                 <div className="px-4">
                                     <div className="flex gap-2 items-start">

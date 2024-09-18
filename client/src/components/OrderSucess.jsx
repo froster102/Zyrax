@@ -31,11 +31,11 @@ function OrderSucess() {
                             <p className='font-medium pt-2'>Your order will be processed within 24 hours during working days. We will notify you by email once your order has been shipped.</p>
                             <button
                                 onClick={() => navigate('/account/orders', { replace: true })}
-                                className='rounded-md px-4 py-2 bg-stone-800 mt-4 text-white'>Order details</button>
+                                className='rounded-md px-4 py-2 bg-neutral-800 mt-4 text-white'>Order details</button>
                             <button
                                 onClick={() => navigate(`/${activeGender}`, { replace: true })}
-                                className='ml-2 rounded-md px-4 py-2 bg-stone-800 text-white'>Return to shoppping</button>
-                            <div className='rounded-md p-4 mt-4 font-medium bg-stone-300'>
+                                className='ml-2 rounded-md px-4 py-2 bg-neutral-800 text-white'>Return to shoppping</button>
+                            <div className='rounded-md p-4 mt-4 font-medium bg-neutral-300'>
                                 <div className='w-full flex justify-between'>
                                     <p>Order number</p>
                                     <p className='font-bold'>#{order_id}</p>

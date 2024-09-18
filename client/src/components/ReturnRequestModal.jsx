@@ -33,7 +33,7 @@ function ReturnRequestModal({ onSubmit, onClose, reason, additionalRemark, setRe
                                 onChange={(e) => {
                                     setReason(e.target.value)
                                 }}
-                                className='font-medium p-2 outline-none rounded-md bg-stone-100 mt-4 w-full'>
+                                className='font-medium p-2 outline-none rounded-md bg-neutral-100 mt-4 w-full'>
                                 <option value="">Select reason</option>
                                 <option value="product have been damaged">Product have been damaged</option>
                                 <option value="changed my mind">Changed my mind</option>
@@ -47,7 +47,7 @@ function ReturnRequestModal({ onSubmit, onClose, reason, additionalRemark, setRe
                                     const value = e.target.value.trim().replace(/[^a-zA-Z]/g, '')
                                     setAdditionalRemark(value)
                                 }}
-                                className="mt-4 rounded-md w-full p-2 bg-stone-100 focus:outline-none"></textarea>
+                                className="mt-4 rounded-md w-full p-2 bg-neutral-100 focus:outline-none"></textarea>
                             {errors.additionalRemark && <span className='text-red-700 text-sm'>{errors?.data?.message}</span>}
                             <div className='pt-4 flex justify-end'>
                                 <button onClick={onClose} className='px-2 py-1 border bg-neutral-700 text-white rounded-md'>Cancel</button>

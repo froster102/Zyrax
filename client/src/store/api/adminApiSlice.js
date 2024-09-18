@@ -119,16 +119,32 @@ const adminApiSlice = apiSlice.injectEndpoints({
             query: () => '/admin/coupons'
         }),
         addCoupon: builder.mutation({
-            query: ({ code, discount, expirationDate, minPurchaseAmount }) => ({
+            query: ({ code, discount, expirationDate, minPurchaseAmount, maxDiscountAmount }) => ({
                 url: '/admin/coupons',
                 method: 'POST',
-                body: { code, discount, expirationDate, minPurchaseAmount }
+                body: { code, discount, expirationDate, minPurchaseAmount, maxDiscountAmount }
             })
         }),
         deleteCoupon: builder.mutation({
             query: ({ couponId }) => ({
                 url: `/admin/coupons/${couponId}`,
                 method: 'DELETE'
+            })
+        }),
+        getOffers: builder.query({
+            query: () => '/admin/offers'
+        }),
+        addOffer: builder.mutation({
+            query: ({ name, discountPercentage, startDate, endDate, offerType }) => ({
+                url: '/admin/offers',
+                method: 'POST',
+                body: { name, discountPercentage, startDate, endDate, offerType }
+            })
+        }),
+        deleteOffer: builder.mutation({
+            query: ({ offerId }) => ({
+                url: `/admin/offers/${offerId}`,
+                method: 'DELETE',
             })
         })
     })
@@ -157,5 +173,8 @@ export const {
     useApproveReturnMutation,
     useGetAllCouponsQuery,
     useAddCouponMutation,
-    useDeleteCouponMutation
+    useDeleteCouponMutation,
+    useGetOffersQuery,
+    useAddOfferMutation,
+    useDeleteOfferMutation
 } = adminApiSlice

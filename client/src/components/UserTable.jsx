@@ -75,10 +75,10 @@ function UserTable({ users, blockUserById, isUserLoading, unblockUserById }) {
                                                 <div onClick={() => {
                                                     setViewUser(user)
                                                     setViewModal(true)
-                                                }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     <GrView size={20} />
                                                 </div>
-                                                <div className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                <div className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     {user.status === 'active' ? <TbUserCancel onClick={() => {
                                                         setConfirmModalState(prev => (
                                                             {

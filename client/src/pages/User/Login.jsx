@@ -49,7 +49,7 @@ function Login() {
                     refetchCart()
                 }
             } catch (error) {
-                console.log(error)
+                ''
             }
         }
         if (user) {

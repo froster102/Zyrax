@@ -14,15 +14,15 @@ function Orders() {
         <RotatingLines strokeColor='black' width='100' strokeWidth='2' />
       </div>
         : orders.map((order, i) => (
-          <div key={i} className="border border-stone-300 max-w-[824px]  pb-4 rounded-md mt-4">
-            <div className="bg-stone-200 rounded-t-md p-2 flex justify-between">
+          <div key={i} className="border border-neutral-300 max-w-[824px]  pb-4 rounded-md mt-4">
+            <div className="bg-neutral-200 rounded-t-md p-2 flex justify-between">
               <p className="text-sm">Order ID: {order.orderId}</p>
               <p className="text-sm">{format(parseISO(order.createdAt),'dd MMM, yyy')}</p>
             </div>
             {
               order.products.map((product, i) => (
                 <div key={i} className="px-4">
-                  <div onClick={() => navigate(`/account/orders/details?orderId=${order.orderId}&productId=${product.productId._id}`)} className="border border-stone-300 bg-stone-200 w-full min-h-[124px] rounded-md p-4 mt-4">
+                  <div onClick={() => navigate(`/account/orders/details?orderId=${order.orderId}&productId=${product.productId._id}`)} className="border border-neutral-300 bg-neutral-200 w-full min-h-[124px] rounded-md p-4 mt-4">
                     <div className="flex">
                       <img className="w-20" src={product.productId.imageUrls[0]} alt="" />
                       <div className="pl-4">

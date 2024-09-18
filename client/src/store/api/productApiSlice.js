@@ -14,7 +14,7 @@ const productApiSlice = apiSlice.injectEndpoints({
             }
         }),
         getProductDeatils: builder.query({
-            query: (name) => `/products/${name}`
+            query: (name) => `/user/products/${name}`
         }),
     })
 })

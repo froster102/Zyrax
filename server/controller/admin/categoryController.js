@@ -11,15 +11,15 @@ const getCategories = async (req, res) => {
 
 const addCategory = async (req, res) => {
     try {
-        const { name, description, categoryType, parentCategory } = req.body
+        const { name, description, categoryType, parentCategory, offer } = req.body
         if (categoryType.toLowerCase() === 'child') {
             const newCategory = await Category.create({
                 name: name,
                 description: description,
                 parent: parentCategory,
-                status: 'active'
+                status: 'active',
+                offer: offer
             })
-            console.log(newCategory)
             const responce = await Category.findByIdAndUpdate(parentCategory, {
                 $push: { children: newCategory._id }
             })
@@ -43,23 +43,24 @@ const addCategory = async (req, res) => {
 const editCategory = async (req, res) => {
     const { id } = req.params
     try {
-        const { name, description, categoryType, parentCategory } = req.body
+        const { name, description, categoryType, parentCategory, offer } = req.body
         if (categoryType.toLowerCase() === 'child') {
             await Category.findByIdAndUpdate(id, {
                 name: name,
                 description: name,
-                parent: parentCategory
+                parent: parentCategory,
+                offer
             })
             return res.status(200).json({ message: 'Category edited sucessfully' })
         }
         await Category.findByIdAndUpdate(id, {
             name: name,
             description: description,
-            parent: null,
+            parent: null
         })
         return res.status(200).json({ message: 'Category edited sucessfully' })
     } catch (error) {
-        console.log(error)
+        return res.status(500).json({ message: 'Failed to edit category' })
     }
 }
 
@@ -75,7 +76,7 @@ const blockCategory = async (req, res) => {
             if (blockedCategory) return res.status(200).json({ message: 'Category unblocked sucessfully' })
         }
     } catch (error) {
-        console.log(error)
+        return res.status(500).json({ message: 'Failed to block category' })
     }
 }
 
@@ -85,7 +86,7 @@ const deleteCategory = async (req, res) => {
         const responce = await Category.deleteOne({ _id: id })
         if (responce) return res.status(200).json({ message: 'Category deleted sucessfully' })
     } catch (error) {
-        console.log(error)
+        return res.status(500).json({ message: 'Failed to delete category' })
     }
 }
 

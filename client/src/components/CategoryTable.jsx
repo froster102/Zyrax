@@ -72,7 +72,7 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                             return (
                                 <tr key={i} className="border-b ">
                                     <td className="px-6 py-4 ">
-                                        <p className='text-stone-900 font-medium text-base'>{_.startCase(category.name)}</p>
+                                        <p className='text-neutral-900 font-medium text-base'>{_.startCase(category.name)}</p>
                                     </td>
                                     <td className="px-6 py-4">
                                         <StatusChip status={category.status} />
@@ -82,13 +82,13 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                                             <div onClick={() => {
                                                 setViewCategory(category)
                                                 setViewModal(true)
-                                            }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                            }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                 <GrView size={20} className="hover:text-white" />
                                             </div>
                                             <div onClick={() => {
                                                 setEditCategory(category)
                                                 setEditModal(true)
-                                            }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                            }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                 <FaEdit size={20} />
                                             </div>
                                             <div
@@ -101,7 +101,7 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                                                         message: `Are you sure you want to ${category.status === 'active' ? 'block' : 'unblock'} the category ${category.name} ?`
                                                     }))
                                                 }}
-                                                className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in"
+                                                className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in"
                                             >
                                                 <MdBlock size={20} />
                                             </div>
@@ -113,7 +113,7 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                                                     onConfirm: () => handleDelete(category._id),
                                                     message: `Are you sure you want to delete category ${category.name} ?`
                                                 }))
-                                            }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                            }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                 <MdDelete size={20} />
                                             </div>
                                         </div>

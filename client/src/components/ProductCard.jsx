@@ -23,7 +23,7 @@ function ProductCard({ product }) {
                         onLoad={() => setImageLoading(false)}
                     />
                     <div className="absolute w-full bottom-2 lg:px-4 md:px-2 px-1">
-                        <div className="bg-stone-400 bg-opacity-70 backdrop-blur-md rounded-[12px] group p-2">
+                        <div className="bg-neutral-400 bg-opacity-70 backdrop-blur-md rounded-[12px] group p-2">
                             <div className="flex justify-between items-center">
                                 <div className=" truncate ... whitespace-nowrap">
                                     <p className="lg:text-sm md:text-xs sm:text-[10px] text-[10px] font-semibold">{_.startCase(product?.name)}</p>

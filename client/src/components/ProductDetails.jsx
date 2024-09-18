@@ -186,12 +186,12 @@ function ProductDetails() {
                                 <div className='sm:block hidden w-full'>
                                     {activeCartItem
                                         ? <Link to={'/cart'} >
-                                            <button className='md:px-4 md:py-2 md:text-base p-2 text-sm  border border-[#CFCBCB] uppercase rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center'>
+                                            <button className='md:px-4 md:py-2 md:text-base p-2 text-sm  border border-[#CFCBCB] uppercase rounded-lg font-medium text-white bg-neutral-800 inline-flex items-center justify-center'>
                                                 <IoCart /> Go to cart
                                             </button>
                                         </Link>
                                         : <button onClick={() => { handleCartItems(product) }}
-                                            className='md:px-4 md:py-2 md:text-base p-2 text-sm  border border-[#CFCBCB] rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'
+                                            className='md:px-4 md:py-2 md:text-base p-2 text-sm  border border-[#CFCBCB] rounded-lg font-medium text-white bg-neutral-800 inline-flex items-center justify-center uppercase'
                                         >
                                             <IoCartOutline /> Add to Cart</button>
                                     }
@@ -199,15 +199,15 @@ function ProductDetails() {
                                         {activeWishlistItem ? <><IoMdHeart /> Added</> : <><IoMdHeartEmpty /> Add</>} to Wishlist</button>
                                 </div>
                                 {
-                                    product && <div className='sm:hidden fixed flex w-full justify-center bottom-0 left-1/2 -translate-x-1/2 z-50 bg-stone-100'>
+                                    product && <div className='sm:hidden fixed flex w-full justify-center bottom-0 left-1/2 -translate-x-1/2 z-50 bg-neutral-100'>
                                         {activeCartItem
                                             ? <Link to={'/cart'} >
-                                                <button className='p-2 text-sm sm:text-lg w-full text-nowrap border border-[#CFCBCB] rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'>
+                                                <button className='p-2 text-sm sm:text-lg w-full text-nowrap border border-[#CFCBCB] rounded-lg font-medium text-white bg-neutral-800 inline-flex items-center justify-center uppercase'>
                                                     <IoCart /> Go to cart
                                                 </button>
                                             </Link>
                                             : <button onClick={() => { handleCartItems(product) }}
-                                                className='p-2 text-sm sm:text-lg w-full border border-[#CFCBCB] rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'
+                                                className='p-2 text-sm sm:text-lg w-full border border-[#CFCBCB] rounded-lg font-medium text-white bg-neutral-800 inline-flex items-center justify-center uppercase'
                                             >
                                                 <IoCartOutline /> Add to Cart</button>
                                         }

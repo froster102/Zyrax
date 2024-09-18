@@ -28,7 +28,7 @@ function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartI
         <>
             <div className="relative">
                 <Link to={`/product/${item?.product?.name}`} >
-                    <div className="bg-stone-200 w-full rounded-lg border border-[#CFCBCB] flex p-[10px] relative mt-2 px-4">
+                    <div className="bg-neutral-200 w-full rounded-lg border border-[#CFCBCB] flex p-[10px] relative mt-2 px-4">
                         <img className="w-[127px] h-[146px] rounded-[20px]" src={item?.product?.imageUrls[0]} alt="" />
                         <div className="flex justify-between w-full md:pl-4 pl-2">
                             <div className="w-full">
@@ -65,12 +65,12 @@ function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartI
                                         e.preventDefault()
                                         e.stopPropagation()
                                         removeFromCart({ productId: item?.product?._id, selectedSize: item.selectedSize })
-                                    }} className="md:px-2 p-[2px] text-nowrap bg-stone-100 rounded-md border border-stone-300 hover:bg-black hover:text-white transition ease-in duration-200 md:text-sm text-xs font-medium z-10" >Remove</button>
+                                    }} className="md:px-2 p-[2px] text-nowrap bg-neutral-100 rounded-md border border-neutral-300 hover:bg-black hover:text-white transition ease-in duration-200 md:text-sm text-xs font-medium z-10" >Remove</button>
                                     <button onClick={(e) => {
                                         e.preventDefault()
                                         e.stopPropagation()
                                         moveItemToWishlist(item)
-                                    }} className="ml-2 md:px-2 p-[2px] text-nowrap bg-stone-100 rounded-md border border-stone-300 hover:bg-black hover:text-white transition ease-in duration-200 md:text-sm font-medium z-10 text-xs" >Move to Wishlist</button>
+                                    }} className="ml-2 md:px-2 p-[2px] text-nowrap bg-neutral-100 rounded-md border border-neutral-300 hover:bg-black hover:text-white transition ease-in duration-200 md:text-sm font-medium z-10 text-xs" >Move to Wishlist</button>
                                 </div>
                             </div>
                             <p className="font-semibold text-right pt-4 md:text-base text-sm text-nowrap">₹ {item?.product.price}</p>

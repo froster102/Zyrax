@@ -61,6 +61,14 @@ function Cart() {
     }
   }
 
+  async function handleApplyCoupon(code) {
+    try {
+
+    } catch (error) {
+      toast(error?.data?.message)
+    }
+  }
+
   return (
     <>
       <Toaster
@@ -74,30 +82,32 @@ function Cart() {
         }}
       />
       <div className="sm:max-w-[1040px] w-full m-auto">
-        <div className="md:flex w-full mt-8 m-auto gap-10 px-4">
-          <div className="w-full">
-            {cartItems.length === 0 && <EmptyCart />}
-            {cartItems.map((item, i) => (<CartProductCard
-              key={i} item={item}
-              removeFromCart={removeItemFromCart}
-              moveItemToWishlist={moveItemToWishlist}
-              updateCartItem={updateCartItem}
-              index={i}
-            />))
-            }
-            {cartItems.length > 0 && <div>
-            </div>}
+        {cartItems.length === 0 ? <EmptyCart />
+          : <div className="md:flex w-full mt-8 m-auto gap-10 px-4">
+            <div className="w-full">
+
+              {cartItems.map((item, i) => (<CartProductCard
+                key={i} item={item}
+                removeFromCart={removeItemFromCart}
+                moveItemToWishlist={moveItemToWishlist}
+                updateCartItem={updateCartItem}
+                index={i}
+              />))
+              }
+              {cartItems.length > 0 && <div>
+              </div>}
+            </div>
+            <div>
+              {
+                cartItems.length !== 0 && <CartToatalCard
+                  cartTotal={totalCartAmount}
+                  navigateToSelectAddress={() => navigate('/select-address', { state: { cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })}
+                />
+              }
+              <ApplyCoupon />
+            </div>
           </div>
-          <div>
-            {
-              cartItems.length !== 0 && <CartToatalCard
-                cartTotal={totalCartAmount}
-                navigateToSelectAddress={() => navigate('/select-address', { state: { cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })}
-              />
-            }
-            <ApplyCoupon />
-          </div>
-        </div>
+        }
       </div>
     </>
   )

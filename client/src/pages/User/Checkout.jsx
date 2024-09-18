@@ -125,7 +125,7 @@ function Checkout() {
             <div className="md:flex w-full mt-8 m-auto gap-10 px-4 pb-20">
                 <div className="w-full">
                     <p>Select payment method</p>
-                    <div className='w-full border border-stone-300 bg-stone-200 rounded-lg p-5 mt-2'>
+                    <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div className='flex w-full justify-between gap-1'>
                             <p>
                                 Cash on delivery
@@ -133,7 +133,7 @@ function Checkout() {
                             <input name='payment' onClick={() => setPaymentMethod('cash on delivery')} type="radio" />
                         </div>
                     </div>
-                    <div className='w-full border border-stone-300 bg-stone-200 rounded-lg p-5 mt-2'>
+                    <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div className='flex w-full justify-between'>
                             <p className='flex items-center justify-center gap-1'>
                                 <AnimatePresence>
@@ -152,7 +152,7 @@ function Checkout() {
                             <input name='payment' onClick={() => setPaymentMethod('razorpay')} type="radio" />
                         </div>
                     </div>
-                    {/* <div className='w-full border border-stone-300 bg-stone-200 rounded-lg p-5 mt-2'>
+                    {/* <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div
                             onClick={() => {
                                 setPaymentMethod('card')
@@ -171,9 +171,9 @@ function Checkout() {
                         </div>
                         <div className={`py-5 ${openCardAccordion ? 'flex' : 'hidden'} justify-center transition-all ease-in-out duration-300`}>
                             <form action="" onSubmit={handleSubmit(proceedToCheckOut)}>
-                                <div className='w-[400px] border rounded-md border-stone-300 shadow-xl py-4 px-4'>
-                                    <div className={`w-full rounded-md bg-stone-300 px-2 ${errors?.cardNumber ? 'border border-red-600' : ''}`}>
-                                        <label className='text-xs text-stone-500'>Card Number</label>
+                                <div className='w-[400px] border rounded-md border-neutral-300 shadow-xl py-4 px-4'>
+                                    <div className={`w-full rounded-md bg-neutral-300 px-2 ${errors?.cardNumber ? 'border border-red-600' : ''}`}>
+                                        <label className='text-xs text-neutral-500'>Card Number</label>
                                         <input
                                             {...register('cardNumber')}
                                             value={getValues('cardNumber') || ''}
@@ -196,8 +196,8 @@ function Checkout() {
                                     </div>
                                     <div className='flex justify-between items-center'>
                                         <div className='flex gap-4 pt-4'>
-                                            <div className={`rounded-md w-16 bg-stone-300 px-2 ${errors?.month ? 'border border-red-600' : ''} `}>
-                                                <label className='text-xs text-stone-500' >Month</label>
+                                            <div className={`rounded-md w-16 bg-neutral-300 px-2 ${errors?.month ? 'border border-red-600' : ''} `}>
+                                                <label className='text-xs text-neutral-500' >Month</label>
                                                 <input
                                                     {...register('month')}
                                                     value={getValues('month' || '')}
@@ -210,8 +210,8 @@ function Checkout() {
                                                     }}
                                                     className='w-full text-sm bg-transparent focus:outline-none h-4' type="text" placeholder='00' />
                                             </div>
-                                            <div className={`rounded-md w-16 bg-stone-300 px-2 ${errors?.year ? 'border border-red-600' : ''}`}>
-                                                <label className='text-xs text-stone-500' >Year</label>
+                                            <div className={`rounded-md w-16 bg-neutral-300 px-2 ${errors?.year ? 'border border-red-600' : ''}`}>
+                                                <label className='text-xs text-neutral-500' >Year</label>
                                                 <input
                                                     {...register('year')}
                                                     value={getValues('year') || ''}
@@ -226,8 +226,8 @@ function Checkout() {
                                             </div>
                                         </div>
                                         <div className='pt-4'>
-                                            <div className={`rounded-md w-16 bg-stone-300 px-2 ${errors?.cvv ? 'border border-red-600' : ''}`}>
-                                                <label className='text-xs text-stone-500' >CVV</label>
+                                            <div className={`rounded-md w-16 bg-neutral-300 px-2 ${errors?.cvv ? 'border border-red-600' : ''}`}>
+                                                <label className='text-xs text-neutral-500' >CVV</label>
                                                 <input
                                                     {...register('cvv')}
                                                     value={getValues('cvv') || ''}
@@ -243,8 +243,8 @@ function Checkout() {
                                         </div>
                                     </div>
                                     <div className='pt-4'>
-                                        <div className={`w-full rounded-md bg-stone-300 px-2 ${errors?.name ? 'border border-red-600' : ''}`}>
-                                            <label className='text-xs text-stone-500'>Name on card</label>
+                                        <div className={`w-full rounded-md bg-neutral-300 px-2 ${errors?.name ? 'border border-red-600' : ''}`}>
+                                            <label className='text-xs text-neutral-500'>Name on card</label>
                                             <input
                                                 {...register('name')}
                                                 value={getValues('name') || ''}
@@ -259,7 +259,7 @@ function Checkout() {
                             </form>
                         </div>
                     </div> */}
-                    <div className='w-full border border-stone-300 bg-stone-200 rounded-lg p-5 mt-2'>
+                    <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div onClick={() => setPaymentMethod('zyraxWallet')} className='flex w-full justify-between gap-1'>
                             <p className='flex items-center justify-between gap-1'>
                                 <span>
@@ -270,7 +270,7 @@ function Checkout() {
                             <input name='payment' onClick={() => setPaymentMethod('zyraxWallet')} type="radio" />
                         </div>
                     </div>
-                    <div className='w-full border border-stone-300 bg-stone-200 rounded-lg p-5 mt-2'>
+                    <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div onClick={() => setPaymentMethod('payPal')} className='flex w-full justify-between gap-1'>
                             <p className='flex items-center justify-between'>
                                 <span>

@@ -15,13 +15,15 @@ const addCoupon = async (req, res) => {
         discount,
         expirationDate,
         minPurchaseAmount,
+        maxDiscountAmount
     } = req.body
     try {
         const coupon = await Coupon.create({
             code,
             discount,
             expirationDate,
-            minPurchaseAmount
+            minPurchaseAmount,
+            maxDiscountAmount
         })
         if (coupon) return res.status(201).json({ message: 'Coupon created sucessfully' })
     } catch (e) {

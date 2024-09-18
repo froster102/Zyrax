@@ -7,6 +7,7 @@ import { MdDelete } from "react-icons/md"
 import _ from "lodash"
 import AddCouponModal from "./AddCouponModal"
 import PropTypes from 'prop-types'
+import { format, parseISO } from "date-fns"
 
 function CouponTable({ coupons, isCouponsLoading, handleAddCoupon, handleDeleteCoupon }) {
     const [openAddCouponModal, setOpenAddCouponModal] = useState(false)
@@ -30,13 +31,19 @@ function CouponTable({ coupons, isCouponsLoading, handleAddCoupon, handleDeleteC
                     <IoSearchOutline size={20} color="gray" />
                     <input className='h-[36px] rounded-md w-80 outline-none' type="text" placeholder='Search' value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
-                <button onClick={() => { setOpenAddCouponModal(true) }} className='bg-black px-4 py-2 rounded-full text-white font-medium'>Add category</button>
+                <button onClick={() => { setOpenAddCouponModal(true) }} className='bg-black px-4 py-2 rounded-full text-white font-medium'>Add coupon</button>
             </div>
             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                 <thead className="text-xs text-black uppercase bg-neutral-300">
                     <tr>
                         <th className="px-6 py-3">
                             Code
+                        </th>
+                        <th className="px-6 py-3">
+                            Min.purchase amount
+                        </th>
+                        <th className="px-6 py-3">
+                            Max.discount amount
                         </th>
                         <th className="px-6 py-3">
                             Status
@@ -68,13 +75,19 @@ function CouponTable({ coupons, isCouponsLoading, handleAddCoupon, handleDeleteC
                             return (
                                 <tr key={i} className="border-b ">
                                     <td className="px-6 py-4 ">
-                                        <p className='text-stone-900 font-medium text-base'>{_.startCase(coupon.code)}</p>
+                                        <p className='text-neutral-900 font-medium text-base'>{coupon.code}</p>
                                     </td>
                                     <td className="px-6 py-4 ">
-                                        <p className='text-stone-900 font-medium text-base'>{_.startCase(coupon.status)}</p>
+                                        <p className='text-neutral-900 font-medium text-base'>{coupon.minPurchaseAmount}</p>
+                                    </td>
+                                    <td className="px-6 py-4 ">
+                                        <p className='text-neutral-900 font-medium text-base'>{coupon.maxDiscountAmount}</p>
+                                    </td>
+                                    <td className="px-6 py-4 ">
+                                        <StatusChip status={coupon.status} />
                                     </td>
                                     <td className="px-6 py-4">
-                                        <StatusChip status={coupon.expirationDate} />
+                                        <p>{format(parseISO(coupon.expirationDate), 'dd MMM, yyy, h:mm a')}</p>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex gap-2">
@@ -86,7 +99,7 @@ function CouponTable({ coupons, isCouponsLoading, handleAddCoupon, handleDeleteC
                                                     onConfirm: () => handleDeleteCoupon(coupon._id),
                                                     message: `Are you sure you want to delete category ${coupon.code} ?`
                                                 }))
-                                            }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                            }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                 <MdDelete size={20} />
                                             </div>
                                         </div>
@@ -103,13 +116,18 @@ function CouponTable({ coupons, isCouponsLoading, handleAddCoupon, handleDeleteC
                 onConfirm={confirmModalState.onConfirm}
                 message={confirmModalState.message}
             />
-            {openAddCouponModal && <AddCouponModal handleAddCoupon={handleAddCoupon} />}
+            {
+                openAddCouponModal && <AddCouponModal
+                    handleAddCoupon={handleAddCoupon}
+                    onClose={() => { setOpenAddCouponModal(false) }}
+                />
+            }
         </>
     )
 }
 
 CouponTable.propTypes = {
-    coupons: PropTypes.array.isRequired,
+    coupons: PropTypes.array,
     isCouponsLoading: PropTypes.bool.isRequired,
     handleAddCoupon: PropTypes.func.isRequired,
     handleDeleteCoupon: PropTypes.func.isRequired

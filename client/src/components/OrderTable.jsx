@@ -66,7 +66,7 @@ function OrderTable({ orders, changeOrderStatus }) {
                                         {_.startCase(order.payment.method)}
                                     </td>
                                     <td className="">
-                                        <button className='flex px-4 py-2 border border-stone-800 items-center justify-center rounded-md gap-2'><SlEye />Preview</button>
+                                        <button className='flex px-4 py-2 border border-neutral-800 items-center justify-center rounded-md gap-2'><SlEye />Preview</button>
                                     </td>
                                 </tr>
 

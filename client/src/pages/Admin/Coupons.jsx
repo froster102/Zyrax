@@ -3,39 +3,43 @@ import { useAddCouponMutation, useDeleteCouponMutation, useGetAllCouponsQuery } 
 import CouponTable from "../../components/CouponTable"
 
 function Coupons() {
-    const { data: coupons, isLoading: isCouponsLoading } = useGetAllCouponsQuery()
+    const { data: coupons, isLoading: isCouponsLoading, refetch: refetchCoupons } = useGetAllCouponsQuery()
     const [addCoupon] = useAddCouponMutation()
     const [deleteCoupon] = useDeleteCouponMutation()
 
     async function handleAddCoupon(data) {
-        const { code, discount, expirationDate, minPurchaseAmount } = data
+        const { code, discount, expirationDate, minPurchaseAmount, maxDiscountAmount } = data
         try {
-            const res = await addCoupon({ code, discount, expirationDate, minPurchaseAmount }).unwrap()
+            const res = await addCoupon({ code, discount, expirationDate, minPurchaseAmount, maxDiscountAmount }).unwrap()
             toast(res?.message)
+            refetchCoupons()
         } catch (error) {
-            toast(res?.data?.message)
+            toast(error?.data?.message)
         }
 
     }
 
     async function handleDeleteCoupon(couponId) {
         try {
-            const res = await addCoupon({ code, discount, expirationDate, minPurchaseAmount }).unwrap()
+            const res = await deleteCoupon({ couponId }).unwrap()
             toast(res?.message)
         } catch (error) {
-            toast(res?.data?.message)
+            toast(error?.data?.message)
         }
 
     }
 
     return (
         <div className='border border-black w-full ml-4 rounded-lg bg-neutral-50 shadow-inner pt-[40px] px-[20px]'>
-            <CouponTable
-                coupons={coupons}
-                isCouponsLoading={isCouponsLoading}
-                handleAddCoupon={handleAddCoupon}
-                handleDeleteCoupon={handleDeleteCoupon}
-            />
+            <div className='bg-neutral-200 rounded-lg shadow-xl mt-4 w-full'>
+                <CouponTable
+                    coupons={coupons}
+                    isCouponsLoading={isCouponsLoading}
+                    handleAddCoupon={handleAddCoupon}
+                    handleDeleteCoupon={handleDeleteCoupon}
+                    refetchCoupons={refetchCoupons}
+                />
+            </div>
         </div>
     )
 }

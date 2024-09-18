@@ -30,6 +30,9 @@ const CartItemSchema = {
             validator: v => v > 0 && v <= 5,
             message: "Quantity must be a number greater than 0 and less than or equal to 4"
         }
+    },
+    appliedCoupons  : {
+        type : [mongoose.SchemaTypes.ObjectId]
     }
 }
 

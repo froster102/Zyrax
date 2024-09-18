@@ -99,7 +99,7 @@ function Navbar() {
       <div className='lg:max-w-[1600px] lg:block m-auto hidden transition-all ease-in duration-500'>
         <div className={`${hideNav ? 'hidden' : 'block'}`} >
           <div className={`px-[20px] ${sticky ? 'fixed w-full top-0 z-50 drop-shadow-xl' : 'mt-2'} transition ease-in`} onScroll={() => { setSticky(true) }}>
-            <div className='bg-stone-200 max-w-[1600px] h-[60px] rounded-[20px] p-2 flex gap-4 items-center justify-between'>
+            <div className='bg-neutral-200 max-w-[1600px] h-[60px] rounded-[20px] p-2 flex gap-4 items-center justify-between'>
               {!isCategoriesLoading && categories?.map((category, i) => {
                 if (category.parent === null) {
                   return <Dropdown key={i} title={_.startCase(category.name)} subCategories={category.children} />
@@ -126,7 +126,7 @@ function Navbar() {
       <div className='lg:hidden'>
         <div className={`${hideNav ? 'hidden' : 'block'}`} >
           <div className={`${sticky ? 'fixed w-full top-0 z-50 drop-shadow-xl' : 'mt-2'} transition ease-in`} onScroll={() => { setSticky(true) }}>
-            <div className='bg-stone-200 h-[40px] px-2 flex items-center justify-between'>
+            <div className='bg-neutral-200 h-[40px] px-2 flex items-center justify-between'>
               <IoMenu size={30} onClick={() => { setSidebarOpen(!openSideBar) }} />
               <div className='flex gap-1 items-center'>
                 <Link to='/account/profile' >
@@ -153,18 +153,18 @@ function Navbar() {
       </div>
       {openSideBar &&
         <>
-          <div onClick={() => { setSidebarOpen(!openSideBar) }} className="fixed inset-0 bg-stone-900 bg-opacity-75 transition-all backdrop-blur-sm z-50"></div>
+          <div onClick={() => { setSidebarOpen(!openSideBar) }} className="fixed inset-0 bg-neutral-900 bg-opacity-75 transition-all backdrop-blur-sm z-50"></div>
           <motion.div
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className='fixed top-0 left-0 z-50 bg-stone-300 w-[80%] h-screen p-4'>
+            className='fixed top-0 left-0 z-50 bg-neutral-300 w-[80%] h-screen p-4'>
             <div className='flex items-center'>
               <img className='w-10 h-10' src={Zyrax_icon} alt="" />
               <h1 className='text-2xl font-bold'>Zyrax.Store</h1>
               <div>
                 {
-                  !userAuth ? <button className='ml-2 py-1 px-2 text-sm border border-stone-900 rounded-lg'>Login/Register</button> : <p></p>
+                  !userAuth ? <button className='ml-2 py-1 px-2 text-sm border border-neutral-900 rounded-lg'>Login/Register</button> : <p></p>
                 }
               </div>
             </div>
@@ -172,11 +172,11 @@ function Navbar() {
               <button onClick={() => {
                 navigate('/men')
                 setSidebarOpen(false)
-              }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'men' ? 'bg-black text-white' : 'bg-stone-200 shadow-md'}`}>Men</button>
+              }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'men' ? 'bg-black text-white' : 'bg-neutral-200 shadow-md'}`}>Men</button>
               <button onClick={() => {
                 navigate('/women')
                 setSidebarOpen(false)
-              }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'women' ? 'bg-black text-white' : 'bg-stone-200 shadow-md'}`}>Women</button>
+              }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'women' ? 'bg-black text-white' : 'bg-neutral-200 shadow-md'}`}>Women</button>
             </div>
             <div className='mt-4 w-full'>
               {categories.map((category, i) => {

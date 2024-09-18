@@ -10,12 +10,16 @@ const CouponSchema = new mongoose.Schema({
     discount: {
         type: Number,
         required: [true, 'Dicount is percentage is required'],
-        min: [1, 'Dicount must be at least 1%'],
-        max: [100, 'Dicount cannot exceed 100%']
+        min: [1, 'Discount must be at least 1%'],
+        max: [100, 'Discount cannot exceed 100%']
     },
     expirationDate: {
         type: Date,
         required: [true, 'Expiration date is required']
+    },
+    maxDiscountAmount: {
+        type: Number,
+        required: [true, 'Maximum discount amount is required']
     },
     minPurchaseAmount: {
         type: Number,

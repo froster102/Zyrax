@@ -8,6 +8,7 @@ import * as productController from '../controller/admin/productController.js'
 import * as categoryController from '../controller/admin/categoryController.js'
 import * as returnController from '../controller/admin/returnController.js'
 import * as couponController from '../controller/admin/couponController.js'
+import * as offerController from '../controller/admin/offerController.js'
 
 const router = express.Router()
 
@@ -41,6 +42,10 @@ router.put('/returns', returnController.approveReturn)
 router.get('/coupons', couponController.getCoupons)
 router.post('/coupons', couponController.addCoupon)
 router.delete('/coupons/:couponId', couponController.deleteCoupon)
+
+router.get('/offers', offerController.getOffers)
+router.post('/offers', offerController.addOffer)
+router.delete('/offers/:offerId', offerController.deleteOffer)
 
 router.get('/categories', categoryController.getCategories)
 router.post('/categories', categoryController.addCategory)

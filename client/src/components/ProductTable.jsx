@@ -132,10 +132,10 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">
-                                                <div className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                <div className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     <GrView size={20} className="hover:text-white" />
                                                 </div>
-                                                <div onClick={() => { navigate(`/admin/dashboard/products/${product._id}/edit`) }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                <div onClick={() => { navigate(`/admin/dashboard/products/${product._id}/edit`) }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     <FaEdit size={20} />
                                                 </div>
                                                 <div onClick={() => {
@@ -146,7 +146,7 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                                                         message: `Are you sure to ${product.status === 'active' ? 'block' : 'unblock'} product ${product.name} ?`,
                                                         onConfirm: () => handleBlockProduct({ id: product._id })
                                                     }))
-                                                }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     {product.status === 'active' ? <TbBarrierBlock size={20} /> : <TbBarrierBlockOff size={20} />}
                                                 </div>
                                                 <div onClick={() => {
@@ -157,7 +157,7 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                                                         message: `Are you sure you want to delete product ${product.name} ?`,
                                                         onConfirm: () => handleDelete({ id: product._id })
                                                     }))
-                                                }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     <MdDelete size={20} />
                                                 </div>
                                             </div>

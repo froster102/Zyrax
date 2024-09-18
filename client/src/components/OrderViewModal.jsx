@@ -91,7 +91,7 @@ function OrderViewModal({ orderDetail, onClose, changeOrderStatus }) {
                                                 <div className='flex justify-between pt-2'>
                                                     <p>Delivery status</p>
                                                     <select
-                                                        className='ml-4 px-2 py-1 rounded-md text-white bg-stone-800'
+                                                        className='ml-4 px-2 py-1 rounded-md text-white bg-neutral-800'
                                                         value={product.status} onChange={(e) => {
                                                             const status = e.target.value
                                                             setConfirmModalState(prev => ({

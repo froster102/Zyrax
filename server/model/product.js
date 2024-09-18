@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Category } from "./category.js";
+import { Offer } from "./offer.js";
 
 const stockSchema = new mongoose.Schema({
     size: {
@@ -59,6 +60,17 @@ const ProductSchema = new mongoose.Schema({
         }
     },
     discount: { type: String },
+    offer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Offer',
+        validate: {
+            validator: async (v) => {
+                const offer = await Offer.findById(v)
+                return !!offer
+            },
+            message: 'Offer not found'
+        },
+    },
     stock: [stockSchema],
     category: {
         type: mongoose.Schema.Types.ObjectId,
