@@ -20,12 +20,13 @@ const OfferSchema = new mongoose.Schema({
     startDate: {
         type: Date,
         // required: [true, 'Start date is required'],
-        validate: {
-            validator: (v) => {
-                return v >= new Date()
-            },
-            message: 'Start date should not be in the past'
-        }
+        // validate: {
+        //     validator: (v) => {
+        //         return v >= new Date()
+        //     },
+        //     message: 'Start date should not be in the past'
+        // },
+        default: Date.now()
     },
     endDate: {
         type: Date,
@@ -34,8 +35,8 @@ const OfferSchema = new mongoose.Schema({
     offerType: {
         type: String,
         enum: {
-            values : ['product', 'category'],
-            message : 'Offer type should be either product or catergory'
+            values: ['product', 'category'],
+            message: 'Offer type should be either product or catergory'
         },
         required: [true, 'Offer type is required']
     }

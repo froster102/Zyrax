@@ -2,11 +2,12 @@ import _ from "lodash"
 import { useRef } from "react"
 import { Link } from "react-router-dom"
 import PropTypes from 'prop-types'
+import { calculateDiscount } from '../utils/helper'
 
 function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartItem, index }) {
     const selectedSizeRef = useRef(null)
     const selectedQtyRef = useRef(null)
-    
+
     async function handleChange() {
         const selectedSize = selectedSizeRef.current.value
         const selectedQty = selectedQtyRef.current.value
@@ -73,7 +74,19 @@ function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartI
                                     }} className="ml-2 md:px-2 p-[2px] text-nowrap bg-neutral-100 rounded-md border border-neutral-300 hover:bg-black hover:text-white transition ease-in duration-200 md:text-sm font-medium z-10 text-xs" >Move to Wishlist</button>
                                 </div>
                             </div>
-                            <p className="font-semibold text-right pt-4 md:text-base text-sm text-nowrap">₹ {item?.product.price}</p>
+                            <div className="font-semibold text-right pt-4 md:text-base text-sm text-nowrap">
+                                {item.product?.offer ? <p className='flex items-center gap-2 w-full'>
+                                    {'₹' + parseInt(calculateDiscount(item.product.price, item.product.offer.discountPercentage))}
+                                    <span className='block text-sm items-end relative text-neutral-500'>
+                                        ₹{item.product.price}
+                                        <span className='block absolute top-[5px]'>-----</span>
+                                        <span className='pl-2 text-lg text-green-500'>{item.product.offer.discountPercentage}%</span>
+                                    </span>
+                                </p>
+                                    : <p className='font-semibold text-right pt-4 md:text-base text-sm text-nowrap align-text-top'>₹ {item.product?.price}</p>
+                                }
+                            </div>
+
                         </div>
                     </div>
                 </Link>

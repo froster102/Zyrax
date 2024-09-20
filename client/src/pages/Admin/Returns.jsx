@@ -1,9 +1,20 @@
 import { RotatingLines } from "react-loader-spinner"
-import { useGetAllReturnsQuery } from "../../store/api/adminApiSlice"
-
+import { useApproveReturnMutation, useGetAllReturnsQuery } from "../../store/api/adminApiSlice"
+import toast from "react-hot-toast"
 
 function Returns() {
   const { data: returns, isLoading: isReturnsLoading } = useGetAllReturnsQuery()
+  const [approveReturn] = useApproveReturnMutation()
+
+  async function handleApproveReturn({ productId, orderId }) {
+    try {
+      const res = await approveReturn({ productId, orderId }).unwrap()
+      toast(res?.message)
+    } catch (error) {
+      toast(error?.data?.message)
+    }
+  }
+
   return (
     <div className="pl-10">
       <table className="w-full text-sm text-left rtl:text-right shadow-xl text-gray-500 bg-neutral-200">
@@ -54,7 +65,7 @@ function Returns() {
                 {return_.status}
               </td>
               <td className="px-6 py-4">
-                {return_.status === 'requested' && <button className="bg-black rounded-md text-white px-2 py-1">Approve</button>}
+                {return_.status === 'requested' && <button onClick={() => { handleApproveReturn({ productId: return_.productId._id, orderId: return_.orderId._id }) }} className="bg-black rounded-md text-white px-2 py-1">Approve</button>}
               </td>
             </tr>
           })}

@@ -32,7 +32,7 @@ const adminApiSlice = apiSlice.injectEndpoints({
             })
         }),
         fetchProducts: builder.query({
-            query: () => '/admin/products'
+            query: ({ currentPage: page, limit }) => `/admin/products?page=${page}&limit=${limit}`
         }),
         fetchProduct: builder.query({
             query: ({ id }) => `/admin/products/${id}`
@@ -132,7 +132,10 @@ const adminApiSlice = apiSlice.injectEndpoints({
             })
         }),
         getOffers: builder.query({
-            query: () => '/admin/offers'
+            query: ({ offerType = '' }) => {
+                if (offerType) return `/admin/offers?offerType=${offerType}`
+                else return `/admin/offers`
+            }
         }),
         addOffer: builder.mutation({
             query: ({ name, discountPercentage, startDate, endDate, offerType }) => ({

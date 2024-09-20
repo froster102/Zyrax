@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { RiStore3Fill } from "react-icons/ri";
 import { FaCheckCircle } from "react-icons/fa";
 import AddImageModal from '../../components/AddImageModal';
-import { useAddProductMutation, useEditProductMutation, useFetchProductQuery, useGetCategoriesQuery } from '../../store/api/adminApiSlice'
+import { useAddProductMutation, useEditProductMutation, useFetchProductQuery, useGetCategoriesQuery, useGetOffersQuery } from '../../store/api/adminApiSlice'
 import { BeatLoader } from 'react-spinners'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, } from 'react-hook-form'
@@ -22,6 +22,7 @@ function AddProduct({ mode }) {
     const [editProduct, { isLoading: isUpdating }] = useEditProductMutation()
     const { id } = useParams()
     const { data: product, isLoading: isProductLoading, refetch } = useFetchProductQuery({ id }, { skip: !id })
+    const { data: offers, isLoading: isOffersLoading } = useGetOffersQuery({ offerType: 'product' })
     const { control, register, handleSubmit, getValues, setValue, formState: { errors, isDirty }, reset } = useForm(
         {
             resolver: zodResolver(addProductSchema)
@@ -35,14 +36,13 @@ function AddProduct({ mode }) {
                 acc[size] = String(quantity)
                 return acc
             }, {})
-            console.log(stockObj)
             reset({
                 name: product.name,
                 description: product.description,
                 gender: product.gender,
                 price: String(product.price),
                 stock: stockObj,
-                discount: product.discount,
+                offer: product.offer,
                 category: product.category?._id,
                 images: product.imageUrls
             })
@@ -58,7 +58,6 @@ function AddProduct({ mode }) {
     }
 
     function onSubmit(data) {
-        console.log(data)
         uploadProduct(data)
     }
     function addImage(newImage) {
@@ -102,7 +101,7 @@ function AddProduct({ mode }) {
                 toast(res?.message)
                 // setTimeout(()=>navigate('/admin/dashboard/products'))
                 refetch()
-            }else {
+            } else {
                 const res = await addProduct(productData).unwrap()
                 navigate('/admin/dashboard/products')
                 toast(res?.message)
@@ -113,7 +112,6 @@ function AddProduct({ mode }) {
                 setPreview(null)
             }
         } catch (error) {
-            console.log(error?.data?.message)
             toast(error?.data?.message)
             setPreview(null)
             reset()
@@ -210,14 +208,16 @@ function AddProduct({ mode }) {
                                         {errors.price && <span className='text-red-700 text-sm block'>{errors.price?.message}</span>}
                                     </div>
                                     <div className='mt-4'>
-                                        <p>Discount</p>
-                                        <select {...register('discount')} className='rounded-lg bg-[#D9D9D9] h-[42px] mt-2 p-2 focus:border-none outline-none w-60' type="text">
-                                            <option value="">Select discount type</option>
-                                            <option value="Monsoon discount">Monsoon discount</option>
-                                            <option value="Monsoon discount">Monsoon discount</option>
-                                            <option value="Once in a while discount">Once in a while discount</option>
+                                        <p>Add Offer</p>
+                                        <select {...register('offer')} className='rounded-lg bg-[#D9D9D9] h-[42px] mt-2 p-2 focus:border-none outline-none w-60' type="text">
+                                            <option value="">Select offer type</option>
+                                            {
+                                                !isOffersLoading && offers.map(offer => (
+                                                    <option key={offer._id} value={offer._id}>{offer.name}</option>
+                                                ))
+                                            }
                                         </select>
-                                        {errors.discount && <span className='text-red-700 text-sm block'>{errors.discount?.message}</span>}
+                                        {errors.offer && <span className='text-red-700 text-sm block'>{errors.offer?.message}</span>}
                                     </div>
                                 </div>
                                 <div className='mt-4 pl-20'>
@@ -233,7 +233,7 @@ function AddProduct({ mode }) {
                         <div className='col-start-2 w-[649px] h-[264px] border shadow-md  rounded-md bg-white py-[10px] px-[40px]'>
                             <div className='flex justify-between items-center'>
                                 <h1 className='text-xl font-semibold'>Category </h1>
-                                <Link to='/admin/dashboard/manage/category' ><button className='bg-black text-white font-medium px-8 py-4 mt-4 rounded-full'>Manage category</button></Link>
+                                <Link to='/admin/dashboard/category' ><button className='bg-black text-white font-medium px-8 py-4 mt-4 rounded-full'>Manage category</button></Link>
                             </div>
                             <div className='mt-4'>
                                 <p>Select Category</p>

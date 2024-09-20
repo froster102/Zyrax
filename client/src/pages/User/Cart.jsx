@@ -9,6 +9,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";
 import CartToatalCard from "../../components/CartToatalCard";
 import ApplyCoupon from "../../components/ApplyCoupon";
+import { calculateDiscount } from "../../utils/helper";
 
 function Cart() {
   const cartItems = useSelector(selectCartItems)
@@ -17,19 +18,37 @@ function Cart() {
   const [addToUserWishlist] = useAddItemsToUserWishlistMutation()
   const [updateUserCartItem] = useUpdateUserCartItemsMutation()
   const userAuth = useSelector(selectUserToken)
+  const [mrpTotal, setMrpTotal] = useState(0)
   const [totalCartAmount, setTotalCartAmount] = useState(0)
+  const [couponDiscountAmount, setCouponDiscountAmount] = useState(0)
+  const [offerAmount, setOfferAmount] = useState(0)
   const navigate = useNavigate()
 
   useEffect(() => {
     function calculateCartTotal() {
-      let total = 0
-      for (let item of cartItems) {
-        total += Number(item.product.price) * item.selectedQty
-      }
-      setTotalCartAmount(total)
+      let totalMrp = 0
+      let totalOffer = 0
+
+      cartItems.forEach((item) => {
+        const price = Number(item.product.price)
+        const selectedQty = Number(item.selectedQty)
+        totalMrp += price * selectedQty
+        if (item.product.offer) {
+          const offerPrice = calculateDiscount(price, item.product.offer.discountPercentage)
+          totalOffer += (price - offerPrice) * selectedQty
+          console.log(totalOffer)
+        }
+
+      })
+      const finalTotal = totalMrp - totalOffer - couponDiscountAmount
+
+      setMrpTotal(totalMrp)
+      setOfferAmount(totalOffer)
+      setTotalCartAmount(finalTotal)
+
     }
     calculateCartTotal()
-  }, [cartItems])
+  }, [cartItems, couponDiscountAmount])
 
   async function removeItemFromCart({ productId, moveToCart, selectedSize }) {
     try {
@@ -69,6 +88,20 @@ function Cart() {
     }
   }
 
+  async function handleRemoveCoupon(code) {
+    try {
+
+    } catch (error) {
+      toast(error?.data?.message)
+    }
+  }
+
+  // function calculateOffer(cartItems) {
+  //   const prodcutOfferDicount = cartItems.reduce(acc, el)=> {
+  //     if (el.pro)
+  //   }
+  // }
+
   return (
     <>
       <Toaster
@@ -100,11 +133,17 @@ function Cart() {
             <div>
               {
                 cartItems.length !== 0 && <CartToatalCard
+                  priceTotal={mrpTotal}
                   cartTotal={totalCartAmount}
-                  navigateToSelectAddress={() => navigate('/select-address', { state: { cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })}
+                  offerDiscount={offerAmount}
+                  couponDiscount={couponDiscountAmount}
+                  navigateToSelectAddress={() => navigate('/select-address', { state: { mrpTotal, offerAmount, couponDiscountAmount, cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })}
                 />
               }
-              <ApplyCoupon />
+              <ApplyCoupon
+                handleApplyCoupon={handleApplyCoupon}
+                handleRemoveCoupon={handleRemoveCoupon}
+              />
             </div>
           </div>
         }

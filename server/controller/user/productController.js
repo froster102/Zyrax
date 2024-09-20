@@ -1,6 +1,9 @@
 import { Category } from '../../model/category.js'
 import { Product } from '../../model/product.js'
 
+// @desc Get products
+// @route GET api/v1/user/products/
+// @access Public
 const getProducts = async (req, res) => {
     try {
         const { category, exclude = '', latest = false, limit = 0, gender = '', sort } = req.query
@@ -93,14 +96,19 @@ const getProducts = async (req, res) => {
     }
 }
 
+// @desc Get a product detail
+// @route GET api/v1/user/products/
+// @access Public
 const getProductDeatils = async (req, res) => {
     try {
         const { name } = req.params
-        const product = await Product.findOne({ name: name, status: 'active' }, { name: true, price: true, stock: true, description: true, imageUrls: true, stockQty: true }).populate({
+        const product = await Product.findOne({ name: name, status: 'active' }, { name: true, price: true,offer:true, stock: true, description: true, imageUrls: true, stockQty: true }).populate({
             path: 'category',
-            select: 'name status'
-        })
-        if (!product || product.category.status === 'blocked') return res.status(404).json({ message: 'Product either removed or not found' })
+            populate: {
+                path: 'parent'
+            }
+        }).populate('offer')
+        if (!product || product.category.status === 'blocked' || product.category.parent.status === 'blocked') return res.status(404).json({ message: 'Product either removed or not found' })
         return res.status(200).json(product)
     } catch (error) {
         console.log(error)

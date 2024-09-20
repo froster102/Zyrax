@@ -109,6 +109,9 @@ const OrderSchema = new mongoose.Schema({
                     message: 'Size not valid'
                 }
             },
+            orderPrice : {
+                type : Number,
+            },
             unitPrice: {
                 type: Number,
                 required: [true, 'Unit price is required'],

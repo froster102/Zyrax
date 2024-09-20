@@ -90,28 +90,32 @@ function OrderViewModal({ orderDetail, onClose, changeOrderStatus }) {
                                                 </div>
                                                 <div className='flex justify-between pt-2'>
                                                     <p>Delivery status</p>
-                                                    <select
-                                                        className='ml-4 px-2 py-1 rounded-md text-white bg-neutral-800'
-                                                        value={product.status} onChange={(e) => {
-                                                            const status = e.target.value
-                                                            setConfirmModalState(prev => ({
-                                                                ...prev,
-                                                                show: true,
-                                                                action: 'Change',
-                                                                message: `Are you sure you want to change status from ${product.status} to ${e.target.value}`,
-                                                                onConfirm: () => changeOrderStatus({ orderId: orderDetail._id, itemId: product._id, status: status })
-                                                            }))
-                                                        }}>
-                                                        <option value="pending">Pending</option>
-                                                        <option value="confirmed">Confirmed</option>
-                                                        <option value="shipped">Shipped</option>
-                                                        <option value="delivered">Delivered</option>
-                                                        <option value="cancelled">Cancelled</option>
-                                                        <option value="return requested">Return requested</option>
-                                                    </select>
+                                                    {
+                                                        product.status !== 'delivered'
+                                                            ? <select
+                                                                className='ml-4 px-2 py-1 rounded-md text-white bg-neutral-800'
+                                                                value={product.status} onChange={(e) => {
+                                                                    const status = e.target.value
+                                                                    setConfirmModalState(prev => ({
+                                                                        ...prev,
+                                                                        show: true,
+                                                                        action: 'Change',
+                                                                        message: `Are you sure you want to change status from ${product.status} to ${e.target.value}`,
+                                                                        onConfirm: () => changeOrderStatus({ orderId: orderDetail._id, itemId: product._id, status: status })
+                                                                    }))
+                                                                }}>
+                                                                <option value="pending">Pending</option>
+                                                                <option value="confirmed">Confirmed</option>
+                                                                <option value="shipped">Shipped</option>
+                                                                <option value="delivered">Delivered</option>
+                                                                <option value="cancelled">Cancelled</option>
+                                                                <option value="return requested">Return requested</option>
+                                                            </select>
+                                                            : <p className='ml-4 px-2 py-1 rounded-md text-white bg-neutral-800'>Delivered</p>
+                                                    }
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                     ))}
                                 </div>

@@ -9,7 +9,8 @@ function SelectDeliveryAddress() {
     const navigate = useNavigate()
     const [pageLoading, setPageLoading] = useState(true)
     const [deliveryAddress, setDeliveryAddress] = useState({})
-    const { totalCartAmount, cartItems, orderProcess } = location.state || {}
+    const { totalCartAmount, cartItems, orderProcess, mrpTotal, offerAmount, couponDiscountAmount } = location.state || {}
+    console.log(totalCartAmount, cartItems, orderProcess, mrpTotal, offerAmount, couponDiscountAmount)
 
     useEffect(() => {
         if (!orderProcess) {
@@ -30,7 +31,10 @@ function SelectDeliveryAddress() {
             <Address deliveryAddress={deliveryAddress} setDeliveryAddress={setDeliveryAddress} orderMode={true} />
             <CartToatalCard
                 cartTotal={totalCartAmount}
-                proceedToCheckout={() => navigate('/checkout', { state: { cartItems, totalCartAmount, selectedAddress: deliveryAddress } })}
+                priceTotal={mrpTotal}
+                offerDiscount={offerAmount}
+                couponDiscount={couponDiscountAmount}
+                proceedToCheckout={() => navigate('/checkout', { state: { mrpTotal, offerAmount, couponDiscountAmount, cartItems, totalCartAmount, selectedAddress: deliveryAddress } })}
             />
         </div>
     )

@@ -21,7 +21,8 @@ import Unavailable from './Unavailable';
 import StockOut from './StockOut';
 import { AnimatePresence } from 'framer-motion';
 import { useGetProductDeatilsQuery, useGetProductsQuery } from '../store/api/productApiSlice';
-
+import { toast } from 'react-toastify';
+import { calculateDiscount } from '../utils/helper'
 
 const RATINGS = [
     {
@@ -108,7 +109,7 @@ function ProductDetails() {
                 userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize }] }).unwrap()
                 dispatch(addToCart({ product, selectedSize, selectedQty: 1 }))
             } catch (error) {
-                ''
+                toast(error?.data?.message)
             }
         }
     }
@@ -155,7 +156,16 @@ function ProductDetails() {
                         </div>
                         <div className='w-full h-[1px] bg-[#CFCBCB]'></div>
                         <div className='md:px-8 px-4 mt-4'>
-                            <p className='lg:text-2xl md:text-xl font-semibold w-full'>₹ {product?.price || <Skeleton width={'50px'} />}</p>
+                            {product?.offer ? <p className='flex items-center gap-2 lg:text-2xl md:text-xl font-semibold w-full'>
+                                {'₹' + parseInt(calculateDiscount(product.price, product.offer.discountPercentage))}
+                                <span className='block text-sm items-end relative text-neutral-500'>
+                                    ₹{product.price}
+                                    <span className='block absolute top-[5px]'>-----</span>
+                                    <span className='pl-2 text-lg text-green-500'>{product.offer.discountPercentage}%</span>
+                                </span>
+                            </p>
+                                : <p className='lg:text-2xl md:text-xl font-semibold w-full'>₹ {product?.price || <Skeleton width={'50px'} />}</p>
+                            }
                             <p className='font-light'>MRP incl. of all taxes</p>
                             <div className='h-[23px] bg-[#D9D9D9] w-fit rounded-lg border border-[#CFCBCB]'>
                                 <div className='flex text-sm px-2 justify-center items-center font-semibold gap-2'>

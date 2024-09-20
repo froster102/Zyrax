@@ -68,7 +68,7 @@ function OrderDetails() {
                                             <p className="text-xs font-light px-2">|</p>
                                             <p className="text-xs font-light">Qty : {_.startCase(orderDetails.orderItem.quantity)}</p>
                                         </div>
-                                        <p className="">₹ {_.startCase(orderDetails.orderItem.totalPrice)}</p>
+                                        <p className="">₹ {_.startCase(orderDetails.orderItem.orderPrice)}</p>
                                         {
                                             orderDetails.orderItem.status === 'delivered' ? <button
                                                 onClick={() => {
@@ -83,12 +83,16 @@ function OrderDetails() {
                                                         <div>
                                                             Product has been requested for a return
                                                         </div>
-                                                        : <button
-                                                            onClick={() => {
-                                                                cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
-                                                            }}
-                                                            className="mt-4 px-2 py-1 border border-neutral-500 rounded-md text-sm hover:bg-neutral-900 hover:text-white transition ease-in" >Cancel
-                                                        </button>
+                                                        : orderDetails.orderItem.status === 'returned' ?
+                                                            <div>
+                                                                Product returned successfully
+                                                            </div>
+                                                            : <button
+                                                                onClick={() => {
+                                                                    cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
+                                                                }}
+                                                                className="mt-4 px-2 py-1 border border-neutral-500 rounded-md text-sm hover:bg-neutral-900 hover:text-white transition ease-in" >Cancel
+                                                            </button>
                                         }
                                     </div>
                                 </div>

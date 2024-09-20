@@ -5,7 +5,7 @@ import { selectUserToken } from '../store/slices/authSlice'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
-function ApplyCoupon({ handleApplyCoupon, handleValidateCoupon, handleRemoveCoupon }) {
+function ApplyCoupon({ handleApplyCoupon, handleRemoveCoupon }) {
     const userAuth = useSelector(selectUserToken)
     const navigate = useNavigate()
     const { data: coupons } = useGetCouponsQuery(undefined, { skip: !userAuth })
@@ -28,7 +28,6 @@ function ApplyCoupon({ handleApplyCoupon, handleValidateCoupon, handleRemoveCoup
 
 ApplyCoupon.propTypes = {
     handleApplyCoupon: PropTypes.func.isRequired,
-    handleValidateCoupon: PropTypes.func.isRequired,
     handleRemoveCoupon: PropTypes.func.isRequired
 }
 

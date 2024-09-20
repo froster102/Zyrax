@@ -9,7 +9,7 @@ const addProduct = async (req, res) => {
         // if (!categories.includes(req.body.Catergory)) {
         //     return res.status(400).json({ message: 'Bad request' })
         // }
-        const { name, description, category, price, discount, stock, gender } = req.body
+        const { name, description, category, price, offer, stock, gender } = req.body
         function tranformStockData(stock) {
             const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
             const transformed = []
@@ -41,7 +41,7 @@ const addProduct = async (req, res) => {
             description: description,
             category: category,
             price: price,
-            discount: discount,
+            offer,
             stock: transformedStockObj,
             gender: gender,
             imageUrls: imageUrls,
@@ -65,15 +65,19 @@ const addProduct = async (req, res) => {
 }
 
 const getProducts = async (req, res) => {
+    const page = parseInt(req.query.page)
+    const limit = parseInt(req.query.limit)
+    const skip = (page - 1) * limit
     try {
-        const products = await Product.find({}).populate('category')
+        const products = await Product.find({}).populate('category').skip(skip).limit(limit)
         if (!products) {
             return res.status(404).json({ message: 'No products found' })
         }
-        return res.status(200).json(products)
+        const totalCount = products.length
+        return res.status(200).json({ products, totalCount })
     } catch (err) {
         console.log(err)
-        return res.status(500).json({ message: 'Failed to get products    ' })
+        return res.status(500).json({ message: 'Failed to get products' })
     }
 }
 
@@ -102,7 +106,7 @@ const editProduct = async (req, res) => {
         // if (!categories.includes(req.body.Category)) {
         //     return res.status(400).json({ message: 'Bad request' })
         // }
-        const { name, description, category, price, discount, stock, gender } = req.body
+        const { name, description, category, price, offer, stock, gender } = req.body
         function tranformStockData(stock) {
             const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
             const transformed = []
@@ -132,7 +136,7 @@ const editProduct = async (req, res) => {
             description: description,
             category: category,
             price: price,
-            discount: discount,
+            offer,
             stock: transformedStockObj,
             gender: gender,
             imageUrls: imageUrls

@@ -1,6 +1,8 @@
+import { nanoid } from "nanoid"
 import { Order } from "../../model/order.js"
 import { Product } from "../../model/product.js"
 import { Return } from "../../model/return.js"
+import { Wallet } from "../../model/wallet.js"
 
 const getUserOrders = async (req, res) => {
     try {
@@ -69,6 +71,7 @@ const cancelOrder = async (req, res) => {
         }, { new: true, runValidators: true })
         if (order) {
             const cancelledProduct = order.products.find(product => product.productId.toString() === productId)
+            const { orderPrice } = order.products.find(product => product.productId.toString() === productId)
             if (cancelledProduct) {
                 const { size, quantity } = cancelledProduct
                 await Product.findOneAndUpdate({
@@ -81,20 +84,34 @@ const cancelOrder = async (req, res) => {
                         }
                     }
                 )
+                if (order.payment.method !== 'cash on delivery') {
+                    console.log(orderPrice)
+                    const wallet = await Wallet.findOne({ user_id: req.userId })
+                    const transaction = {
+                        txnid: nanoid(),
+                        amount: orderPrice,
+                        type: 'credit',
+                        status: 'success'
+                    }
+                    wallet.balance += Number(orderPrice)
+                    wallet.transactions.push(transaction)
+                    await wallet.save()
+                }
             }
             return res.status(200).json({ message: 'Order cancelled sucessfully' })
         }
     } catch (e) {
-        if (e.name === 'CastError') {
-            return res.status(400).json({ message: `Invalid ${e.path === 'productId' ? 'product ID' : 'order ID'}` })
-        }
-        if (e.name === 'ValidationError') {
-            const message = []
-            for (let error in e.errors) {
-                message.push(e.errors[error].properties.message)
-            }
-            return res.status(400).json({ message })
-        }
+        // console.log(e)
+        // if (e.name === 'CastError') {
+        //     return res.status(400).json({ message: `Invalid ${e.path === 'productId' ? 'product ID' : 'order ID'}` })
+        // }
+        // if (e.name === 'ValidationError') {
+        //     const message = []
+        //     for (let error in e.errors) {
+        //         message.push(e.errors[error].properties.message)
+        //     }
+        //     return res.status(400).json({ message })
+        // }
         return res.status(500).json({ message: 'Failed to cancel orders' })
     }
 }
@@ -112,21 +129,23 @@ const returnOrder = async (req, res) => {
     try {
         const existingReturn = await Return.findOne({ user_id: req.userId, productId: productId })
         if (existingReturn) return res.status(409).json({ message: 'Return already request , in processing' })
+        const order = await Order.findOne({ orderId: orderId })
         const return_ = await Return.create({
             user_id: req.userId,
-            orderId,
+            orderId: order._id,
             productId,
             reason,
             remark: additionalRemarks,
             status: 'requested',
         })
-        const order = await Order.findOneAndUpdate(
-            { _id: orderId, 'products.productId': productId },
+        await Order.findOneAndUpdate(
+            { orderId: orderId, 'products.productId': productId },
             { $set: { 'products.$.status': 'return requested' } },
             { new: true }
         )
         return res.status(201).json({ message: 'Your return has been succcesfully requested' })
     } catch (e) {
+        console.log(e)
         if (e.name === 'ValidationError') {
             const message = []
             for (let error in e.errors) {

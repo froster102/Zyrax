@@ -50,7 +50,7 @@ function AddOfferModal({ handleAddOffer, onClose }) {
                                 />
                                 {errors && <span className='text-red-700 text-sm'>{errors?.discountPercentage?.message}</span>}
                                 <label className='block pt-4' htmlFor="">End Date</label>
-                                <input {...register('endDate')} className='p-2 w-full block rounded-md' type="date" />
+                                <input {...register('endDate', { valueAsDate: true })} className='p-2 w-full block rounded-md' type="date" />
                                 {errors && <span className='text-red-700 text-sm'>{errors?.endDate?.message}</span>}
                                 <div className='max-w-64'>
                                     {errors && <span className='text-wrap text-red-700 text-sm'>{errors?.expiration_date?.message}</span>}

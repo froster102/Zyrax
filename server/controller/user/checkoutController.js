@@ -5,6 +5,7 @@ import razorpay from "../../config/razorpayConfig.js"
 import { User } from "../../model/user.js"
 import { Wallet } from "../../model/wallet.js"
 import { nanoid } from "nanoid"
+import { calculateDiscount } from "../../utils/helper.js"
 
 const handleCheckOut = async (req, res) => {
     const { paymentMethod, shippingAddressId } = req.body
@@ -15,16 +16,27 @@ const handleCheckOut = async (req, res) => {
         const cart = await Cart.findOne({ user_id: req.userId }).populate({
             path: 'items',
             populate: {
-                path: 'productId'
+                path: 'productId',
             }
         })
         const cartItems = cart.items
         let totalAmount = 0
         let itemTotalPrice = 0
         const processedItems = []
+
+        const productIds = cartItems.map(item => item.productId._id.toString())
+        const products = await Product.find({ _id: { $in: productIds } }).populate('offer')
+
+        const productMap = products.reduce((acc, product) => {
+            acc[product._id] = product
+            return acc
+        }, {})
+
+
         for (let item of cartItems) {
-            const product = await Product.findById(item.productId)
+            const product = productMap[item.productId._id]
             if (!product) return res.status(404).json({ message: `Product with ${item.productId} not found` })
+
             const sizeQtyMap = product.stock.reduce((acc, { size, quantity }) => {
                 acc[size] = quantity
                 return acc
@@ -40,14 +52,23 @@ const handleCheckOut = async (req, res) => {
                     itemId: item.productId
                 })
             }
-            itemTotalPrice = item?.productId?.price * item?.selectedQty
+            const itemPrice = product.price
+            const selectedQty = item.selectedQty
+
+            const finalPrice = product.offer
+                ? calculateDiscount(itemPrice, product.offer.discountPercentage)
+                : itemPrice
+
+            itemTotalPrice = finalPrice * selectedQty
             totalAmount += itemTotalPrice
+
             processedItems.push({
                 productId: item?.productId?._id,
                 quantity: item?.selectedQty,
                 size: item?.selectedSize,
+                orderPrice: itemTotalPrice,
                 unitPrice: item?.productId?.price,
-                totalPrice: itemTotalPrice,
+                totalPrice: totalAmount,
                 status: 'confirmed'
             })
         }
@@ -77,7 +98,7 @@ const handleCheckOut = async (req, res) => {
                 for (const item of processedItems) {
                     await Product.findOneAndUpdate(
                         { _id: item.productId, 'stock.size': item.size },
-                        { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true })
+                        { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true }, { new: true })
                 }
                 return res.status(200).json({ message: 'Order placed sucessfully', orderId: order.orderId })
             }
@@ -153,6 +174,7 @@ const handleCheckOut = async (req, res) => {
             }
         }
     } catch (e) {
+        console.log(e)
         if (e.name === 'ValidationError') {
             const message = []
             for (let error in e.errors) {

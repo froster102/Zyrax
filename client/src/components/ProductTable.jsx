@@ -13,9 +13,10 @@ import StatusChip from "./StatusChip";
 import StockTable from "./StockTable";
 import ConfirmationModal from './ConfirmationModal'
 import { RotatingLines } from "react-loader-spinner";
+import Pagination from "./Pagination";
 
 
-function ProductTable({ products, isProductsLoading, refetch }) {
+function ProductTable({ currentPage, setCurrentPage, products, isProductsLoading, refetch, totalCount }) {
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
     const [blockProduct] = useBlockProductMutation()
@@ -169,6 +170,11 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                     </table>
                 </div>
             </div>
+            <Pagination
+                totalPages={totalCount}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+            />
             <ConfirmationModal
                 show={confirmModalState.show}
                 action={confirmModalState.action}
@@ -183,7 +189,8 @@ function ProductTable({ products, isProductsLoading, refetch }) {
 ProductTable.propTypes = {
     products: PropTypes.arrayOf(object),
     isProductsLoading: PropTypes.bool.isRequired,
-    refetch: PropTypes.func.isRequired
+    refetch: PropTypes.func.isRequired,
+    totalCount: PropTypes.number
 }
 
 export default ProductTable

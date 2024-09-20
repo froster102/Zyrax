@@ -2,16 +2,16 @@ import toast from "react-hot-toast"
 import OfferTable from "../../components/OfferTable"
 import { useAddOfferMutation, useDeleteOfferMutation, useGetOffersQuery } from "../../store/api/adminApiSlice"
 import { useState } from "react"
-import AddOfferModal from "../../components/addOfferModal"
+import AddOfferModal from "../../components/AddOfferModal"
 
 function Offer() {
-    const { data: offers, isLoading: isOffersLoading } = useGetOffersQuery()
+    const { data: offers, isLoading: isOffersLoading } = useGetOffersQuery({ offerType: '' })
     const [addOffer] = useAddOfferMutation()
     const [deleteOffer] = useDeleteOfferMutation()
     const [openAddOfferModal, setOpenAddOfferModal] = useState(false)
 
     async function handleAddOffer(data) {
-        const { name, discountPercentage, startDate, endDate,offerType } = data
+        const { name, discountPercentage, startDate, endDate, offerType } = data
         try {
             const res = await addOffer({ name, discountPercentage, startDate, endDate, offerType }).unwrap()
             toast(res?.message)

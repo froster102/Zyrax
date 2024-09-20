@@ -1,9 +1,15 @@
 import { Offer } from "../../model/offer.js"
 
 export const getOffers = async (req, res) => {
+    const { offerType } = req.query
     try {
-        const offers = await Offer.find({})
-        return res.status(200).json(offers)
+        if (offerType) {
+            const offers = await Offer.find({ offerType })
+            return res.status(200).json(offers)
+        } else {
+            const offers = await Offer.find()
+            return res.status(200).json(offers)
+        }
     } catch (error) {
         return res.status(500).json({ message: 'Failed to get offers' })
     }

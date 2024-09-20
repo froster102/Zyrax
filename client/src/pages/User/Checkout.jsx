@@ -23,7 +23,7 @@ function Checkout() {
     const dispatch = useDispatch()
     const activeGender = useSelector(selectActiveGender)
     const [pageLoading, setPageLoading] = useState(true)
-    const { cartItems, totalCartAmount, selectedAddress } = location.state || ''
+    const { mrpTotal, offerAmount, couponDiscountAmount, cartItems, totalCartAmount, selectedAddress } = location.state || ''
     const [paymentMethod, setPaymentMethod] = useState('')
     const [checkout, { isLoading }] = useChekoutMutation()
     const [activeIconIndex, setActiveIndex] = useState(0)
@@ -284,6 +284,9 @@ function Checkout() {
                 </div>
                 <CardToatalCard
                     cartTotal={totalCartAmount}
+                    priceTotal={mrpTotal}
+                    offerDiscount={offerAmount}
+                    couponDiscount={couponDiscountAmount}
                     proceedToCheckout={proceedToCheckOut}
                     checkoutLoading={isLoading}
                 />

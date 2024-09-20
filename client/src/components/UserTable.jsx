@@ -84,7 +84,7 @@ function UserTable({ users, blockUserById, isUserLoading, unblockUserById }) {
                                                             {
                                                                 ...prev,
                                                                 show: true,
-                                                                message: `Are you sure you want to block user ${user.firstName} ${user.lastName}`,
+                                                                message: `Are you sure you want to block user ${user.firstName} ${user?.lastName}`,
                                                                 action: `${user.status === 'active' ? 'block' : 'unblock'}`,
                                                                 onConfirm: () => blockUserById({ id: user._id })
                                                             }
