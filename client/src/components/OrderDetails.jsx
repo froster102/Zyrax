@@ -8,6 +8,7 @@ import { RotatingLines } from "react-loader-spinner"
 import { format, parseISO } from 'date-fns'
 import queryString from 'query-string'
 import { FaCheckCircle } from "react-icons/fa";
+import ConfirmationModal from './ConfirmationModal'
 
 function OrderDetails() {
     const location = useLocation()
@@ -103,7 +104,14 @@ function OrderDetails() {
                                                                 </div>
                                                                 : <button
                                                                     onClick={() => {
-                                                                        cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
+                                                                        setConfirmModalState(prev => ({
+                                                                            ...prev,
+                                                                            show: true,
+                                                                            action: 'Proceed',
+                                                                            message: `Are you sure that you want to cancel ${orderDetails.orderItem.productId.name}`,
+                                                                            onConfirm: () => cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
+                                                                        }))
+                                                                        // cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
                                                                     }}
                                                                     className="mt-4 px-2 py-1 border border-neutral-500 rounded-md text-sm hover:bg-neutral-900 hover:text-white transition ease-in" >Cancel
                                                                 </button>
@@ -153,13 +161,22 @@ function OrderDetails() {
                                 </div>
                             </div>
                         </div>
-                        {openReturnRequestModal && <ReturnRequestModal
-                            reason={returnReason}
-                            setReason={setReturnReason}
-                            additionalRemark={additionalRemark}
-                            setAdditionalRemark={setAdditionalRemark}
-                            onSubmit={() => returnOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id, reason: returnReason, additionalRemarks: additionalRemark })}
-                            onClose={() => setOpenReturnRequestModal(false)} />}
+                        {
+                            openReturnRequestModal && <ReturnRequestModal
+                                reason={returnReason}
+                                setReason={setReturnReason}
+                                additionalRemark={additionalRemark}
+                                setAdditionalRemark={setAdditionalRemark}
+                                onSubmit={() => returnOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id, reason: returnReason, additionalRemarks: additionalRemark })}
+                                onClose={() => setOpenReturnRequestModal(false)} />
+                        }
+                        <ConfirmationModal
+                            show={confirmModalState.show}
+                            action={confirmModalState.action}
+                            onCancel={confirmModalState.onCancel}
+                            onConfirm={confirmModalState.onConfirm}
+                            message={confirmModalState.message}
+                        />
                     </div>
             }
         </>
