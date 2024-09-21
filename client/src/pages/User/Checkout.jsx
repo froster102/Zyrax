@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import CardToatalCard from '../../components/CartToatalCard'
 import { useEffect, useState } from 'react'
-import { useChekoutMutation } from '../../store/api/userApiSlice'
+import { useChekoutMutation, useVerifyPaymentMutation } from '../../store/api/userApiSlice'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { removeFromCart, resetCart, selectActiveGender } from '../../store/slices/userSlice'
@@ -26,6 +26,7 @@ function Checkout() {
     const { mrpTotal, offerAmount, couponDiscountAmount, cartItems, totalCartAmount, selectedAddress } = location.state || ''
     const [paymentMethod, setPaymentMethod] = useState('')
     const [checkout, { isLoading }] = useChekoutMutation()
+    const [verifyPayment] = useVerifyPaymentMutation()
     const [activeIconIndex, setActiveIndex] = useState(0)
     // useEffect(() => {
     //     const iconSlideInterval = setInterval(() => {
@@ -56,13 +57,11 @@ function Checkout() {
             if (paymentMethod === 'cash on delivery' || paymentMethod === 'zyraxWallet') {
                 dispatch(resetCart())
                 toast(res.message)
-                navigate(`/order-sucess?order_id=${res.orderId}`)
+                navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails } })
             }
             if (paymentMethod === 'razorpay') {
-                dispatch(resetCart())
                 loadRazorpayCheckout(res)
             }
-
         } catch (error) {
             toast(error?.data?.message)
             if (error?.data?.type === 'stockError') {
@@ -97,21 +96,35 @@ function Checkout() {
                 "description": "Proceed with your suitable payment",
                 "image": "https://example.com/your_logo",
                 "order_id": orderData.id,
-                "callback_url": import.meta.env.VITE_RAZORPAY_ORDER_CALLBACKURL,
+                handler: function (res) {
+                    handlePaymentResponse(res)
+                },
                 "notes": {
                     "address": "The Zyrax Store  Office"
                 },
                 "theme": {
                     "color": "#3399cc"
                 }
-
             }
-            const paymentObject = new window.Razorpay(options)
-            paymentObject.open()
+            const razorpay = new window.Razorpay(options)
+            razorpay.on('payment.failed', (res) => {
+                handlePaymentResponse(res)
+            })
+            razorpay.open()
+
         } catch (error) {
             toast('Failed to load payment page please try again later')
         }
 
+    }
+    async function handlePaymentResponse(paymentDetails) {
+        try {
+            const res = await verifyPayment(paymentDetails).unwrap()
+            dispatch(resetCart())
+            navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails } })
+        } catch (error) {
+            toast('Failed to confirm payment please try after some time')
+        }
     }
 
     if (pageLoading) {

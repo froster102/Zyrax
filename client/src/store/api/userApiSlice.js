@@ -81,6 +81,13 @@ const userApiSlice = apiSlice.injectEndpoints({
                 }
             }
         }),
+        verifyPayment: builder.mutation({
+            query: (paymentDetails) => ({
+                url: '/user/payments/verify',
+                method: 'POST',
+                body: paymentDetails
+            })
+        }),
         fetchUserOrders: builder.query({
             query: () => '/user/orders'
         }),
@@ -143,6 +150,7 @@ export const {
     useUpdateUserCartItemsMutation,
     useRemoveItemFromUserCartMutation,
     useChekoutMutation,
+    useVerifyPaymentMutation,
     useCreateWalletMutation,
     useGetWalletDetailsQuery,
     useTopUpWalletMutation,

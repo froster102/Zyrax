@@ -36,7 +36,6 @@ function Cart() {
         if (item.product.offer) {
           const offerPrice = calculateDiscount(price, item.product.offer.discountPercentage)
           totalOffer += (price - offerPrice) * selectedQty
-          console.log(totalOffer)
         }
 
       })

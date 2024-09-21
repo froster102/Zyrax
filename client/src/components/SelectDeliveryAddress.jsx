@@ -10,7 +10,6 @@ function SelectDeliveryAddress() {
     const [pageLoading, setPageLoading] = useState(true)
     const [deliveryAddress, setDeliveryAddress] = useState({})
     const { totalCartAmount, cartItems, orderProcess, mrpTotal, offerAmount, couponDiscountAmount } = location.state || {}
-    console.log(totalCartAmount, cartItems, orderProcess, mrpTotal, offerAmount, couponDiscountAmount)
 
     useEffect(() => {
         if (!orderProcess) {

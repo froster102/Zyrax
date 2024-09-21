@@ -6,7 +6,7 @@ import { Wallet } from "../../model/wallet.js"
 
 const getUserOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ userId: req.userId }).populate('products.productId').sort({ createdAt: -1 })
+        const orders = await Order.find({ userId: req.userId, status: { $ne: 'initiated' } }).populate('products.productId').sort({ createdAt: -1 })
         return res.status(200).json(orders)
     } catch (e) {
         if (e.name === 'ValidationError') {

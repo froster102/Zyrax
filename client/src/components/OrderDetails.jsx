@@ -18,7 +18,18 @@ function OrderDetails() {
     const [cancelUserOrder] = useCancelOrderMutation()
     const [returnUserOrder] = useReturnOrderMutation()
     const { orderId, productId } = queryString.parse(location.search)
-
+    const [confirmModalState, setConfirmModalState] = useState({
+        show: false,
+        action: '',
+        message: '',
+        onConfirm: () => { },
+        onCancel: () => {
+            setConfirmModalState(prev => ({
+                ...prev,
+                show: false
+            }))
+        }
+    })
     const { data: wallet, isLoading: isWalletLoading } = useGetWalletDetailsQuery()
     const { data: orderDetails, isLoading: isOrderDetailsLoading } = useGetUserOrderDetailsQuery({ orderId, productId })
 
@@ -79,20 +90,23 @@ function OrderDetails() {
                                                 : orderDetails.orderItem.status === 'cancelled' ? <div>
                                                     Product has been cancelled
                                                 </div>
-                                                    : orderDetails.orderItem.status === 'return requested' ?
-                                                        <div>
-                                                            Product has been requested for a return
-                                                        </div>
-                                                        : orderDetails.orderItem.status === 'returned' ?
+                                                    : orderDetails.orderItem.status === 'failed' ? <div>
+                                                        Failed to place the order
+                                                    </div>
+                                                        : orderDetails.orderItem.status === 'return requested' ?
                                                             <div>
-                                                                Product returned successfully
+                                                                Product has been requested for a return
                                                             </div>
-                                                            : <button
-                                                                onClick={() => {
-                                                                    cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
-                                                                }}
-                                                                className="mt-4 px-2 py-1 border border-neutral-500 rounded-md text-sm hover:bg-neutral-900 hover:text-white transition ease-in" >Cancel
-                                                            </button>
+                                                            : orderDetails.orderItem.status === 'returned' ?
+                                                                <div>
+                                                                    Product returned successfully
+                                                                </div>
+                                                                : <button
+                                                                    onClick={() => {
+                                                                        cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
+                                                                    }}
+                                                                    className="mt-4 px-2 py-1 border border-neutral-500 rounded-md text-sm hover:bg-neutral-900 hover:text-white transition ease-in" >Cancel
+                                                                </button>
                                         }
                                     </div>
                                 </div>

@@ -6,7 +6,10 @@ function StatusChip({ status }) {
     'active': 'bg-green-500/20 text-green-900',
     'blocked' : 'bg-red-500/20 text-red-900',
     'pending':'bg-yellow-500/20 text-yellow-900',
-    'success': 'bg-green-500/20 text-green-900'
+    'success': 'bg-green-500/20 text-green-900',
+    'failed' : 'bg-red-500/20 text-red-900',
+    'confirmed' : 'bg-yellow-500/20 text-yellow-900',
+    'delivered' : 'bg-green-500/20 text-green-900'
   }
 
   return (

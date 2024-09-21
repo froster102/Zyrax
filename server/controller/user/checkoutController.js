@@ -69,10 +69,13 @@ const handleCheckOut = async (req, res) => {
                 orderPrice: itemTotalPrice,
                 unitPrice: item?.productId?.price,
                 totalPrice: totalAmount,
-                status: 'confirmed'
+                status: 'pending'
             })
         }
         if (paymentMethod === 'cash on delivery') {
+            for (let item of processedItems) {
+                item.status = 'confirmed'
+            }
             const order = await Order.create({
                 userId: req.userId,
                 orderId: nanoid(6),
@@ -100,7 +103,16 @@ const handleCheckOut = async (req, res) => {
                         { _id: item.productId, 'stock.size': item.size },
                         { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true }, { new: true })
                 }
-                return res.status(200).json({ message: 'Order placed sucessfully', orderId: order.orderId })
+                const createdOrder = await Order.findOne({ _id: order._id }).populate({
+                    path: 'products.productId'
+                }).populate({
+                    path: 'userId',
+                    select: 'firstName email phoneNumber'
+                }).populate({
+                    path: 'shipping.addressId'
+                })
+                const { _id, ...updatedOrder } = createdOrder.toObject()
+                return res.status(200).json({ message: 'Order placed sucessfully', orderDetails: { order: updatedOrder } })
             }
         } else if (paymentMethod === 'razorpay') {
             const paymentOrder = await razorpay.orders.create({
@@ -110,9 +122,9 @@ const handleCheckOut = async (req, res) => {
             })
             const order = await Order.create({
                 userId: req.userId,
-                order_id: paymentOrder.id,
+                payment_order_id: paymentOrder.id,
                 orderId: nanoid(6),
-                status: 'confirmed',
+                status: 'initiated',
                 totalAmount,
                 shipping: {
                     addressId: shippingAddressId
@@ -123,15 +135,11 @@ const handleCheckOut = async (req, res) => {
                 },
                 products: processedItems
             })
-            if (order) {
-                await Cart.findOneAndUpdate({
-                    user_id: req.userId,
-                }, {
-                    $set: { items: [] }
-                }, { new: true })
-            }
             return res.status(200).json(paymentOrder)
         } else if (paymentMethod === 'zyraxWallet') {
+            for (let item of processedItems) {
+                item.status = 'confirmed'
+            }
             const txnid = nanoid(12)
             const wallet = await Wallet.findOne({ user_id: req.userId })
             if (totalAmount > wallet.balance) return res.status(400).json({ message: 'Insufficient balance in your wallet' })
@@ -170,11 +178,19 @@ const handleCheckOut = async (req, res) => {
                         { _id: item.productId, 'stock.size': item.size },
                         { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true })
                 }
-                return res.status(200).json({ message: 'Order placed sucessfully', orderId: order.orderId })
+                const createdOrder = await Order.findOne({ _id: order._id }).populate({
+                    path: 'products.productId'
+                }).populate({
+                    path: 'userId',
+                    select: 'firstName email phoneNumber'
+                }).populate({
+                    path: 'shipping.addressId'
+                })
+                const { _id, ...updatedOrder } = createdOrder.toObject()
+                return res.status(200).json({ message: 'Order placed sucessfully', orderDetails: { order: updatedOrder } })
             }
         }
     } catch (e) {
-        console.log(e)
         if (e.name === 'ValidationError') {
             const message = []
             for (let error in e.errors) {
