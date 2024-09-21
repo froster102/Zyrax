@@ -45,7 +45,6 @@ router.get('/products', validateGetProducts, getProducts)
 router.get('/products/categories', getAllCategories)
 router.get('/products/:name', getProductDeatils)
 
-router.post('/verify-payment', verifyPayment)
 router.post('/verify-wallet-payment', verifyWalletPayment)
 
 router.use(userAuth)
@@ -73,6 +72,8 @@ router.put('/addresses/:id', updateAddress)
 router.delete('/addresses/:id', deleteAddress)
 
 router.post('/checkout', handleCheckOut)
+router.post('/payments/verify', verifyPayment)
+router.post('/wallet/payments/verify')
 
 router.get('/wallet', getWalletDetails)
 router.post('/wallet', createWallet)
