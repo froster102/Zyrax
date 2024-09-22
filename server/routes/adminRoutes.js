@@ -9,6 +9,7 @@ import * as categoryController from '../controller/admin/categoryController.js'
 import * as returnController from '../controller/admin/returnController.js'
 import * as couponController from '../controller/admin/couponController.js'
 import * as offerController from '../controller/admin/offerController.js'
+import * as analyticsController from '../controller/admin/analyticsController.js'
 
 const router = express.Router()
 
@@ -19,6 +20,9 @@ const upload = multer({
 router.post('/auth/signin', authController.signin)
 
 router.use(adminAuth)
+
+router.get('/analytics', analyticsController.getAnalyticsData)
+router.get('/analytics/overview', analyticsController.getOverviewData)
 
 router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.viewUser)
