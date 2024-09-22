@@ -55,6 +55,7 @@ export const signin = async (req, res) => {
                 return res.status(400).json({ message: 'Please verify your account by clicking the link send to your email' })
             }
             if (match && user.verification_status) {
+                await User.findOneAndUpdate({ _id: user._id }, { lastLogin: Date.now() })
                 const token = generateAccessToken(user._id, 'user')
                 const refreshToken = generateRefreshToken(user._id, 'user')
                 res.cookie('jwt', refreshToken, {
@@ -105,6 +106,7 @@ export const signUp = async (req, res) => {
             if (response) return res.status(201).json({ message: 'Please verify you email by clicking the link sent to your email' })
         }
     } catch (e) {
+        console.log(e)
         if (e.name === 'ValidationError') {
             const errMsg = []
             for (let error in e.errors) {
@@ -163,7 +165,7 @@ export const verifyEmail = async (req, res) => {
         try {
             const user = await User.findOneAndUpdate({
                 _id: userId
-            }, { verification_status: true, status: 'active', createdAt: null }, { new: true })
+            }, { verification_status: true, status: 'active', $set: { verification_started: null } }, { new: true })
             return res.send('Account verified successfully please login to continue')
         } catch (error) {
             return res.status(500).json({ message: 'Failed to verify please try again later' })

@@ -2,10 +2,9 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import { SlEye } from "react-icons/sl";
-import { format, parseISO } from 'date-fns'
 import OrderViewModal from './OrderViewModal';
 import StatusChip from './StatusChip';
-
+import { formatISODate } from '../utils/helper';
 
 function OrderTable({ orders, changeOrderStatus }) {
     const [openViewModal, setOpenViewModal] = useState(false)
@@ -54,7 +53,7 @@ function OrderTable({ orders, changeOrderStatus }) {
                                         {order.orderId}
                                     </td>
                                     <td className=" py-4">
-                                        {format(parseISO(order.createdAt), 'dd MMM, yyy')}
+                                        {formatISODate(order.createdAt)}
                                     </td>
                                     <td className="px-6 py-4">
                                         {order.totalAmount}
