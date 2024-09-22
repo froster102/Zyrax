@@ -20,15 +20,6 @@ const getUserOrders = async (req, res) => {
     }
 }
 
-const processOrder = async (req, res) => {
-    // const { productId, }
-    try {
-
-    } catch (error) {
-
-    }
-}
-
 const getOrderDetails = async (req, res) => {
     const { orderId, productId } = req.query
     if (!orderId) return res.status(400).json({ message: 'Order id is required' })
@@ -85,7 +76,6 @@ const cancelOrder = async (req, res) => {
                     }
                 )
                 if (order.payment.method !== 'cash on delivery') {
-                    console.log(orderPrice)
                     const wallet = await Wallet.findOne({ user_id: req.userId })
                     const transaction = {
                         txnid: nanoid(),

@@ -92,12 +92,8 @@ const handleCheckOut = async (req, res) => {
                 products: processedItems
             })
             if (order) {
-                await Cart.findOneAndUpdate({
-                    user_id: req.userId,
-                }, {
-                    $set: { items: [] }
-                }, { new: true })
-
+                await Cart.findOneAndUpdate({ user_id: req.userId, }, { $set: { items: [] } }, { new: true })
+                await User.findOneAndUpdate({ _id: req.userId }, { $inc: { orderCount: 1, totalSpent: order.totalAmount } })
                 for (const item of processedItems) {
                     await Product.findOneAndUpdate(
                         { _id: item.productId, 'stock.size': item.size },
@@ -167,12 +163,8 @@ const handleCheckOut = async (req, res) => {
                 products: processedItems
             })
             if (order) {
-                await Cart.findOneAndUpdate({
-                    user_id: req.userId,
-                }, {
-                    $set: { items: [] }
-                }, { new: true })
-
+                await User.findOneAndUpdate({ _id: req.userId }, { $inc: { orderCount: 1, totalSpent: order.totalAmount } })
+                await Cart.findOneAndUpdate({ user_id: req.userId, }, { $set: { items: [] } }, { new: true })
                 for (const item of processedItems) {
                     await Product.findOneAndUpdate(
                         { _id: item.productId, 'stock.size': item.size },

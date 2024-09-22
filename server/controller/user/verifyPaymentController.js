@@ -3,6 +3,7 @@ import { Order } from '../../model/order.js'
 import { Product } from '../../model/product.js'
 import razorpay from '../../config/razorpayConfig.js'
 import { Cart } from '../../model/cart.js'
+import { User } from '../../model/user.js'
 
 const verifyPayment = async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, error } = req.body
@@ -38,6 +39,7 @@ const verifyPayment = async (req, res) => {
             }))
             if (bulkOps.length > 0) {
                 const response = await Product.bulkWrite(bulkOps)
+                await User.findOneAndUpdate({ _id: req.userId }, { $inc: { orderCount: 1, totalSpent: order.totalAmount } })
                 await Cart.findOneAndUpdate({
                     user_id: req.userId,
                 }, {
@@ -46,7 +48,7 @@ const verifyPayment = async (req, res) => {
             }
             const payment = await razorpay.payments.fetch(razorpay_payment_id)
             order.status = 'confirmed'
-            order.products.forEach(product=>{
+            order.products.forEach(product => {
                 product.status = 'confirmed'
             })
             order.payment.status = 'success'
