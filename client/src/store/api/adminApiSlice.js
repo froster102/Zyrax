@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { apiSlice } from './apiSlice'
 
 
@@ -17,19 +18,38 @@ const adminApiSlice = apiSlice.injectEndpoints({
             })
         }),
         fetchUsers: builder.query({
-            query: () => `/admin/users/`
+            query: () => `/admin/users`,
+            providesTags: (result) => result ? [{ type: 'Users', id: 'LIST' }] : []
         }),
         blockUser: builder.mutation({
             query: (id) => ({
                 url: `/admin/users/${id}/block`,
                 method: 'PATCH',
-            })
+            }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    const res = await queryFulfilled
+                    console.log(res)
+                    dispatch(adminApiSlice.util.invalidateTags([{ type: 'Users', id: 'LIST' }]))
+                } catch (error) {
+                    console.warn('Failed to invalidate cache')
+                }
+            },
         }),
         unblockUser: builder.mutation({
             query: ({ id }) => ({
                 url: `/admin/users/${id}/unblock`,
                 method: 'PATCH',
-            })
+            }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    const res = await queryFulfilled
+                    console.log(res)
+                    dispatch(adminApiSlice.util.invalidateTags([{ type: 'Users', id: 'LIST' }]))
+                } catch (error) {
+                    console.warn('Failed to invalidate cache')
+                }
+            },
         }),
         fetchProducts: builder.query({
             query: ({ currentPage: page, limit }) => `/admin/products?page=${page}&limit=${limit}`
