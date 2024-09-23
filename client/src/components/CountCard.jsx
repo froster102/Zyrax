@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 function CountCard({ title, count, Icon }) {
     return (
-        <div className="px-10 py-4 rounded-lg border border-neutral-200 bg-neutral-100 shadow-lg">
+        <div className="p-4 w-full flex justify-center items-center rounded-lg border border-neutral-200 bg-neutral-100 shadow-lg">
             <div className="flex items-center gap-4">
                 <Icon size={30} />
                 <div>

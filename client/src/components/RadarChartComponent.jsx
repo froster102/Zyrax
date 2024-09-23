@@ -39,7 +39,7 @@ const chartConfig = {
 
 function RadarChartComponent() {
     return (
-        <Card className="mt-4 max-w-[524px] bg-neutral-100 shadow-lg text-black w-full">
+        <Card className="mt-4 bg-neutral-100 shadow-lg text-black w-full">
             <CardHeader>
                 <CardTitle>Visits</CardTitle>
                 <CardDescription>
@@ -56,8 +56,8 @@ function RadarChartComponent() {
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}
                         />
-                        <PolarGrid strokeWidth={1} />
-                        <PolarAngleAxis dataKey="month" />
+                        <PolarGrid stroke="#d4d4d4" strokeWidth={1} />
+                        <PolarAngleAxis dataKey="month" tickFormatter={v=>v.slice(0,3)} />
                         <Radar
                             dataKey="desktop"
                             fill="#171717"

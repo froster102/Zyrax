@@ -36,7 +36,7 @@ const chartConfig = {
 
 function BarChartComponent() {
     return (
-        <Card className="mt-4 max-w-[524px] bg-neutral-100 shadow-lg text-black w-full">
+        <Card className="mt-4 bg-neutral-100 shadow-lg text-black w-full">
             <CardHeader>
                 <CardTitle>Revenue Overview</CardTitle>
                 <CardDescription>
