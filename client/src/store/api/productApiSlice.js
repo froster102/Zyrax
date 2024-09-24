@@ -3,18 +3,18 @@ import { apiSlice } from "./apiSlice";
 const productApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllCategories: builder.query({
-            query: () => `/user/products/categories`
+            query: () => `/products/categories`
         }),
         getProducts: builder.query({
             query: ({ category, exclude, latest, gender, sort }) => {
-                if (latest && category) return `/user/products?latest=${latest}&category=${category}&gender=${gender}`
-                if (category && exclude) return `/user/products?category=${category}&exclude=${exclude}&gender=${gender}`
-                if (sort) return `/user/products?category=${category}&gender=${gender}&sort=${sort}`
-                if (category) return `/user/products?category=${category}&gender=${gender}`
+                if (latest && category) return `/products?latest=${latest}&category=${category}&gender=${gender}`
+                if (category && exclude) return `/products?category=${category}&exclude=${exclude}&gender=${gender}`
+                if (sort) return `/products?category=${category}&gender=${gender}&sort=${sort}`
+                if (category) return `/products?category=${category}&gender=${gender}`
             }
         }),
         getProductDeatils: builder.query({
-            query: (name) => `/user/products/${name}`
+            query: (name) => `/products/${name}`
         }),
     })
 })

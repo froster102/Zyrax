@@ -13,10 +13,6 @@ import { handleCheckOut } from '../controller/user/checkoutController.js'
 import { verifyPayment } from '../controller/user/verifyPaymentController.js'
 import { verifyWalletPayment } from '../controller/user/verifyWalletPaymentController.js'
 import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/walletController.js'
-import { searchProducts } from '../controller/user/searchController.js'
-import { validateGetProducts } from '../middlewares/validationMiddleware.js'
-import { getProductDeatils, getProducts } from '../controller/user/productController.js'
-import { getAllCategories } from '../controller/user/categoryiesController.js'
 import * as couponController from '../controller/user/couponController.js'
 
 const router = express.Router()
@@ -39,11 +35,6 @@ router.post('/auth/signup', validatePassword, signUp)
 router.post('/auth/forgot-password', validateEmail, forgotPassword)
 router.post('/auth/reset-password', validateResetPassword, resetPassword)
 router.get('/auth/verify-email', verifyEmail)
-
-router.get('/products/search', searchProducts)
-router.get('/products', validateGetProducts, getProducts)
-router.get('/products/categories', getAllCategories)
-router.get('/products/:name', getProductDeatils)
 
 router.post('/verify-wallet-payment', verifyWalletPayment)
 

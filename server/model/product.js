@@ -87,6 +87,7 @@ const ProductSchema = new mongoose.Schema({
     status: { type: String, enum: ['active', 'blocked'] }
 }, { timestamps: true })
 
+ProductSchema.index({ name: 'text' })
 const Product = mongoose.model('Product', ProductSchema)
 
 export {

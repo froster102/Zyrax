@@ -8,8 +8,10 @@ function Filter() {
     const [priceRange, setPriceRange] = useState([0, 3000])
     return (
         <>
-            <div className="md:block hidden border border-neutral-400 rounded-lg h-fit max-w-[280px] w-full p-4">
-                <div className="text-lg font-medium">
+            <div className="w-full ">
+                
+
+                {/* <div className="text-lg font-medium">
                     <div>
                         <div className="pt-2 w-full">Ratings</div>
                         <div className="pl-4">
@@ -80,7 +82,7 @@ function Filter() {
                 </div>
                 <div className="flex justify-center pt-4">
                     <button className="px-2 py-1 bg-neutral-900 rounded-lg text-white">Apply filter</button>
-                </div>
+                </div> */}
             </div>
         </>
     )

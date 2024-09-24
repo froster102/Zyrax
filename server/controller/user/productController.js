@@ -6,90 +6,77 @@ import { Product } from '../../model/product.js'
 // @access Public
 const getProducts = async (req, res) => {
     try {
-        const { category, exclude = '', latest = false, limit = 0, gender = '', sort } = req.query
-        const categoryData = await Category.findOne({ name: category }).populate({
-            path: 'children'
-        })
-        if (!categoryData) return res.status(404).json({ message: 'Category not found' })
-        if (categoryData.status === 'blocked') return res.status(404).json({ message: 'Category not available' })
-        const activeCatergoryIds = []
-        if (categoryData.parent === null) {
-            if (categoryData.status === 'active') {
-                activeCatergoryIds.push(categoryData._id)
-                categoryData.children.map((child) => {
-                    if (child.status === 'active') {
-                        activeCatergoryIds.push(child._id)
-                    }
-                })
-            }
-        } else {
-            const parentCategory = await Category.findOne({ _id: categoryData.parent })
-            if (parentCategory && parentCategory.status === 'active') {
-                activeCatergoryIds.push(categoryData._id)
-            }
+        const { search, category, priceRange, exclude, offerPercentage, stock, latest = false, page = 1, limit = 0, gender = '', sort } = req.query
+        const query = { status: 'active' }
+        const sortOptions = {}
+        if (gender) {
+            query.gender = gender
         }
-        const sortQuery = {}
+        if (search) {
+            query.$text = { $search: search }
+        }
         if (latest) {
-            sortQuery.createdAt = -1
-        } else {
+            sortOptions.createdAt = -1
+        }
+        if (exclude) {
+            query.name = { $ne: exclude }
+        }
+        if (category) {
+            const foundCategory = await Category.findOne({ name: category }).populate()
+            const categoryIds = [foundCategory._id, ...foundCategory.children]
+            query.category = { $in: categoryIds }
+        }
+        if (priceRange) {
+            const [min, max] = priceRange.split('-').map(Number)
+            query.price = { $gte: min, $lte: max }
+        }
+        if (sort) {
             switch (sort) {
                 case 'L2H': {
-                    sortQuery.price = 1
+                    sortOptions.price = 1
                     break
                 }
                 case 'H2L': {
-                    sortQuery.price = -1
+                    sortOptions.price = -1
                     break
                 }
                 case 'A2Z': {
-                    sortQuery.name = 1
+                    sortOptions.name = 1
                     break
                 }
                 case 'Z2A': {
-                    sortQuery.name = -1
+                    sortOptions.name = -1
                     break
                 }
                 case 'newest': {
-                    sortQuery.createdAt = -1
+                    sortOptions.createdAt = -1
                     break
                 }
                 default: {
-                    sortQuery._id = 1
+                    sortOptions._id = 1
                 }
             }
         }
-        const products = await Product.aggregate([
-            { $match: {} },
-            {
-                $lookup: {
-                    from: 'categories',
-                    localField: 'category',
-                    foreignField: '_id',
-                    as: 'category'
-                }
+        if (Boolean(stock)) {
+            query['$expr'] = { $gt: [{ $sum: '$stock.quantity' }, 0] }
+        }
+        const skip = (page - 1) * limit
+        const products = await Product.find(query).populate({
+            path: 'category',
+            match: {
+                status: 'active'
             },
-            { $unwind: '$category' },
-            {
-                $match: {
-                    'category._id': { $in: activeCatergoryIds },
-                    'category.status': 'active',
-                    gender: gender,
-                    name: { $ne: exclude },
+            populate: {
+                path: 'parent',
+                match: {
                     status: 'active'
                 }
-            },
-            {
-                $sort: sortQuery
-            },
-            {
-                $project: {
-                    name: 1,
-                    price: 1,
-                    imageUrls: 1,
-                    'category.name': 1,
-                }
             }
-        ])
+        }).populate('offer').sort(sortOptions).limit(parseInt(limit))
+        if (offerPercentage) {
+            const filteredProducts = products.filter(product => product.offer && product.offer.discountPercentage >= offerPercentage)
+            return res.status(200).json(filteredProducts)
+        }
         return res.status(200).json(products)
     } catch (error) {
         console.log(error)
@@ -102,7 +89,7 @@ const getProducts = async (req, res) => {
 const getProductDeatils = async (req, res) => {
     try {
         const { name } = req.params
-        const product = await Product.findOne({ name: name, status: 'active' }, { name: true, price: true,offer:true, stock: true, description: true, imageUrls: true, stockQty: true }).populate({
+        const product = await Product.findOne({ name: name, status: 'active' }, { name: true, price: true, offer: true, stock: true, description: true, imageUrls: true, stockQty: true }).populate({
             path: 'category',
             populate: {
                 path: 'parent'
