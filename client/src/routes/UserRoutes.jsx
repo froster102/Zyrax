@@ -41,7 +41,7 @@ function UserRoutes() {
                 <Route path='/women' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>
                 <Route path='/wishlist' element={<LayoutWithWidth><Wishlist /></LayoutWithWidth>} ></Route>
                 <Route path='/cart' element={<Cart></Cart>} ></Route>
-                <Route path='/products/:category' element={<LayoutWithWidth><ProductLists /></LayoutWithWidth>} ></Route>
+                <Route path='/products/' element={<LayoutWithWidth><ProductLists /></LayoutWithWidth>} ></Route>
                 <Route path='/product/:name' element={<LayoutWithWidth><ProductDetails /></LayoutWithWidth>}></Route>
                 <Route path='/forgot-password' element={<LayoutWithWidth><ForgotPassword /></LayoutWithWidth>}></Route>
                 <Route path='/reset-password/:token' element={<LayoutWithWidth><ResetPassword /></LayoutWithWidth>} ></Route>

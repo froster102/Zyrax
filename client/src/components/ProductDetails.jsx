@@ -49,7 +49,7 @@ function ProductDetails() {
     const wishlistItems = useSelector(selectWishlistItems)
     const cartItems = useSelector(selectCartItems)
     const { data: product, isError: isProductDeatilsError, isLoading: isProductLoading, refetch: refetchProductDeatils } = useGetProductDeatilsQuery(name)
-    const { data: similiarProducts, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
+    const { data: { products: similiarProducts = [] } = {}, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
     const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading } = useGetUserWishlistItemsQuery()
     const [imageModal, setImageModal] = useState(false)
     const [productImgPrev, setProductImgPrev] = useState(product?.imageUrls[0])

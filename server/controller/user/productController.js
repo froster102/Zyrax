@@ -6,14 +6,14 @@ import { Product } from '../../model/product.js'
 // @access Public
 const getProducts = async (req, res) => {
     try {
-        const { search, category, priceRange, exclude, offerPercentage, stock, latest = false, page = 1, limit = 0, gender = '', sort } = req.query
+        const { search, category, minPrice, maxPrice, exclude, offerPercentage, stock, latest = false, page = 1, limit = 0, gender = '', sort } = req.query
         const query = { status: 'active' }
         const sortOptions = {}
         if (gender) {
             query.gender = gender
         }
         if (search) {
-            query.$text = { $search: search }
+            query.name = { $regex: search, $options: 'i' }
         }
         if (latest) {
             sortOptions.createdAt = -1
@@ -26,9 +26,14 @@ const getProducts = async (req, res) => {
             const categoryIds = [foundCategory._id, ...foundCategory.children]
             query.category = { $in: categoryIds }
         }
-        if (priceRange) {
-            const [min, max] = priceRange.split('-').map(Number)
-            query.price = { $gte: min, $lte: max }
+        if (minPrice || maxPrice) {
+            query.price = {}
+            if (minPrice) {
+                query.price.$gte = minPrice
+            }
+            if (maxPrice) {
+                query.price.$lte = maxPrice
+            }
         }
         if (sort) {
             switch (sort) {
@@ -57,10 +62,14 @@ const getProducts = async (req, res) => {
                 }
             }
         }
-        if (Boolean(stock)) {
+        if (stock === 'inStock') {
             query['$expr'] = { $gt: [{ $sum: '$stock.quantity' }, 0] }
         }
+        if (stock === 'outOfStock') {
+            query['$expr'] = { $eq: [{ $sum: '$stock.quantity' }, 0] }
+        }
         const skip = (page - 1) * limit
+        const totalCount = await Product.countDocuments(query)
         const products = await Product.find(query).populate({
             path: 'category',
             match: {
@@ -72,14 +81,15 @@ const getProducts = async (req, res) => {
                     status: 'active'
                 }
             }
-        }).populate('offer').sort(sortOptions).limit(parseInt(limit))
+        }).populate('offer').sort(sortOptions).skip(skip).limit(parseInt(limit))
         if (offerPercentage) {
             const filteredProducts = products.filter(product => product.offer && product.offer.discountPercentage >= offerPercentage)
-            return res.status(200).json(filteredProducts)
+            return res.status(200).json({ products: filteredProducts, totalCount })
         }
-        return res.status(200).json(products)
+        return res.status(200).json({ products, totalCount })
     } catch (error) {
         console.log(error)
+        return res.status(500).json({ message: 'Failed to get products' })
     }
 }
 

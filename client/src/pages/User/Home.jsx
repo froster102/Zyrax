@@ -12,8 +12,8 @@ function Home() {
   const { pathname } = useLocation()
   const activeGender = useSelector(selectActiveGender)
   const gender = pathname.replace(/\//g, '')
-  const { data: topwears, isError: isTopwearsError, isLoading: isTopwearsLoading } = useGetProductsQuery({ category: 'topwears', gender })
-  const { data: bottomwears, isError: isBottomwearsError, isLoading: isBottomwearsLoading } = useGetProductsQuery({ category: 'bottomwears', gender })
+  const { data: { products: topwears = [] } = {}, isError: isTopwearsError, isLoading: isTopwearsLoading } = useGetProductsQuery({ filter: { category: 'topwears', gender } })
+  const { data: { products: bottomwears = [] } = {}, isError: isBottomwearsError, isLoading: isBottomwearsLoading } = useGetProductsQuery({ filter: { category: 'bottomwears', gender } })
   const dispatch = useDispatch()
 
   useEffect(() => {
