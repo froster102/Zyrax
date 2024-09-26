@@ -83,7 +83,7 @@ const getProducts = async (req, res) => {
             }
         }).populate('offer').sort(sortOptions).skip(skip).limit(parseInt(limit))
         if (offerPercentage) {
-            const filteredProducts = products.filter(product => product.offer && product.offer.discountPercentage >= offerPercentage)
+            const filteredProducts = products.filter(product => product.offer && product.offer.discountPercentage >= Number(offerPercentage))
             return res.status(200).json({ products: filteredProducts, totalCount })
         }
         return res.status(200).json({ products, totalCount })
