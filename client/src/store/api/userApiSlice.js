@@ -125,13 +125,6 @@ const userApiSlice = apiSlice.injectEndpoints({
                 method: 'PUT',
                 body: { amount }
             })
-        }),
-        validateCoupon: builder.mutation({
-            query: ({ couponCode }) => ({
-                url: '/users/coupons/',
-                method: 'POST',
-                body: { couponCode }
-            })
         })
     })
 })

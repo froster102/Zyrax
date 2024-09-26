@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../store/slices/authSlice';
 import UserDropdown from './UserDropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender, addToWishlist } from '../store/slices/userSlice';
+import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender, addToWishlist, applyCoupon } from '../store/slices/userSlice';
 import { useGetAllCategoriesQuery } from '../store/api/productApiSlice';
 import { useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery } from '../store/api/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
@@ -68,6 +68,9 @@ function Navbar() {
         }
       })
       dispatch(syncCart(dispatchCartState))
+      if (userCartItems?.appliedCoupon?.code) {
+        dispatch(applyCoupon({coupon:userCartItems.appliedCoupon}))
+      }
       refetchCart()
     }
   }, [dispatch, userAuth, userCartItems, isUserCartItemsLoading, userWishlistItems, isUserWishlistItemsLoading, refetchCart, refetchUserWishlistItems])

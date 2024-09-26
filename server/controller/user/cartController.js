@@ -52,7 +52,7 @@ export const addCartItems = async (req, res) => {
 // @access Private
 export const getCartItems = async (req, res) => {
     try {
-        const items = await Cart.findOne({ user_id: req.userId }, { items: true, _id: false }).populate({
+        const items = await Cart.findOne({ user_id: req.userId }, { items: true, _id: false, appliedCoupon: true }).populate({
             path: 'items.productId',
             populate: {
                 path: 'category',

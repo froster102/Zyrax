@@ -50,7 +50,6 @@ router.put('/cart/items/:itemId', cartController.updateCartItems)
 router.delete('/cart/items/:itemId', validateObjectId, cartController.removeCartItem)
 
 router.get('/coupons', couponController.getCoupons)
-router.post('/coupons/validate', couponController.validateCoupon)
 router.post('/coupons/apply', couponController.applyCoupon)
 router.delete('/coupons/remove', couponController.removeCoupon)
 

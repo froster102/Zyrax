@@ -5,25 +5,17 @@ const couponApiSlice = apiSlice.injectEndpoints({
         getCoupons: builder.query({
             query: () => '/user/coupons'
         }),
-        validateCoupon: builder.mutation({
-            query: ({ couponCode }) => ({
-                url: '/user/coupons/validate',
-                method: 'POST',
-                body: { couponCode }
-            })
-        }),
         applyCoupon: builder.mutation({
-            query: ({ couponCode }) => ({
+            query: ({ code }) => ({
                 url: '/user/coupons/apply',
                 method: 'POST',
-                body: { couponCode }
+                body: { code }
             })
         }),
         removeCoupon: builder.mutation({
-            query: ({ couponCode }) => ({
+            query: () => ({
                 url: '/user/coupons/remove',
-                method: 'DELETE',
-                body: { couponCode }
+                method: 'DELETE'
             })
         })
     })
@@ -31,7 +23,6 @@ const couponApiSlice = apiSlice.injectEndpoints({
 
 export const {
     useGetCouponsQuery,
-    useValidateCouponMutation,
     useApplyCouponMutation,
     useRemoveCouponMutation
 } = couponApiSlice

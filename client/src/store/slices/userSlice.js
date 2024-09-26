@@ -5,7 +5,12 @@ const initialState = localStorage.getItem('user') ? JSON.parse(localStorage.getI
         items: []
     },
     cart: {
-        items: []
+        items: [],
+        appliedCoupon: {
+            code: '',
+            discount: 0,
+            maxDiscountAmount: 0
+        }
     },
     addresses: [],
     selected_gender: 'men'
@@ -93,6 +98,19 @@ const userSlice = createSlice({
             state.cart.items = []
             saveToLocalStorage(state)
         },
+        applyCoupon: (state, action) => {
+            const { coupon } = action.payload
+            state.cart.appliedCoupon = coupon
+            saveToLocalStorage(state)
+        },
+        removeAppliedCoupon: (state) => {
+            state.cart.appliedCoupon = {
+                code: '',
+                discount: 0,
+                maxDiscountAmount: 0
+            }
+            saveToLocalStorage(state)
+        },
         moveToWishlist: (state, action) => {
             const { itemToMove } = action.payload
             if (!state.wishlist.items.find(item => item._id === itemToMove._id)) state.wishlist.items.push(itemToMove)
@@ -125,6 +143,8 @@ export const {
     addToCart,
     updateCartItems,
     removeFromCart,
+    applyCoupon,
+    removeAppliedCoupon,
     moveToWishlist,
     resetCart,
     selectGender,
@@ -136,3 +156,4 @@ export default userSlice.reducer
 export const selectActiveGender = state => state.user.selected_gender
 export const selectWishlistItems = state => state.user.wishlist.items
 export const selectCartItems = state => state.user.cart.items
+export const selectAppliedCoupon = state => state.user.cart.appliedCoupon

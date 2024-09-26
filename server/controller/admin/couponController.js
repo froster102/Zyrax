@@ -5,6 +5,7 @@ const getCoupons = async (req, res) => {
         const coupons = await Coupon.find({})
         return res.status(200).json(coupons)
     } catch (error) {
+        if (error.code === 1100) return res.status(409).json({ message: 'Coupon code must be unique' })
         return res.status(500).json({ message: 'Failed to get coupons' })
     }
 }

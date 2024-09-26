@@ -28,7 +28,9 @@ const addCouponSchema = z.object({
     expiration_time: z.string().min(1, 'Expiration time is required')
         .regex(/^(2[0-3]|[01]?[0-9]):([0-5][0-9])$/, 'Expiration time not valid'),
 
-    maxDiscountAmount: z.string().min(1, 'Maximum discount amount is required'),
+    maxDiscountAmount: z.string().trim().min(1, 'Maximum discount amount is required').refine(v => Number(v) < 1000, {
+        message: 'Maximum discount should be 1000'
+    }),
 });
 
 export default addCouponSchema

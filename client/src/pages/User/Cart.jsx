@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "../../components/CartProductCard"
-import { moveToWishlist, removeFromCart, selectCartItems, updateCartItems } from "../../store/slices/userSlice";
+import { moveToWishlist, removeFromCart, selectAppliedCoupon, selectCartItems, updateCartItems } from "../../store/slices/userSlice";
 import EmptyCart from "../../components/EmptyCart";
 import { useAddItemsToUserWishlistMutation, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../store/api/userApiSlice";
 import { selectUserToken } from "../../store/slices/authSlice";
@@ -20,7 +20,8 @@ function Cart() {
   const userAuth = useSelector(selectUserToken)
   const [mrpTotal, setMrpTotal] = useState(0)
   const [totalCartAmount, setTotalCartAmount] = useState(0)
-  const [couponDiscountAmount, setCouponDiscountAmount] = useState(0)
+  const [totalCouponDiscount, setTotalCouponDiscount] = useState(0)
+  const appliedCoupon = useSelector(selectAppliedCoupon)
   const [offerAmount, setOfferAmount] = useState(0)
   const navigate = useNavigate()
 
@@ -34,20 +35,27 @@ function Cart() {
         const selectedQty = Number(item.selectedQty)
         totalMrp += price * selectedQty
         if (item.product.offer) {
-          const offerPrice = calculateDiscount(price, item.product.offer.discountPercentage)
-          totalOffer += (price - offerPrice) * selectedQty
+          const offerDeduction = calculateDiscount(price, item.product.offer.discountPercentage)
+          totalOffer += (price - offerDeduction) * selectedQty
         }
 
       })
-      const finalTotal = totalMrp - totalOffer - couponDiscountAmount
+      const totalPrice = totalMrp - totalOffer
+      if (appliedCoupon?.code) {
+        const couponDiscountAmount = calculateDiscount(totalPrice, appliedCoupon.discount)
+        const applicableCouponDiscount = Math.min(couponDiscountAmount, appliedCoupon.maxDiscountAmount)
+        setTotalCouponDiscount(applicableCouponDiscount)
+      } else {
+        setTotalCouponDiscount(0)
+      }
+      const finalTotal = (totalMrp - totalOffer) - totalCouponDiscount
 
       setMrpTotal(totalMrp)
       setOfferAmount(totalOffer)
       setTotalCartAmount(finalTotal)
-
     }
     calculateCartTotal()
-  }, [cartItems, couponDiscountAmount])
+  }, [cartItems, totalCouponDiscount, appliedCoupon])
 
   async function removeItemFromCart({ productId, moveToCart, selectedSize }) {
     try {
@@ -78,28 +86,6 @@ function Cart() {
       toast(error?.data?.message)
     }
   }
-
-  async function handleApplyCoupon(code) {
-    try {
-
-    } catch (error) {
-      toast(error?.data?.message)
-    }
-  }
-
-  async function handleRemoveCoupon(code) {
-    try {
-
-    } catch (error) {
-      toast(error?.data?.message)
-    }
-  }
-
-  // function calculateOffer(cartItems) {
-  //   const prodcutOfferDicount = cartItems.reduce(acc, el)=> {
-  //     if (el.pro)
-  //   }
-  // }
 
   return (
     <>
@@ -135,13 +121,12 @@ function Cart() {
                   priceTotal={mrpTotal}
                   cartTotal={totalCartAmount}
                   offerDiscount={offerAmount}
-                  couponDiscount={couponDiscountAmount}
-                  navigateToSelectAddress={() => navigate('/select-address', { state: { mrpTotal, offerAmount, couponDiscountAmount, cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })}
+                  couponDiscount={totalCouponDiscount}
+                  navigateToSelectAddress={() => navigate('/select-address', { state: { mrpTotal, offerAmount, couponDiscountAmount: totalCouponDiscount, cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })}
                 />
               }
               <ApplyCoupon
-                handleApplyCoupon={handleApplyCoupon}
-                handleRemoveCoupon={handleRemoveCoupon}
+                appliedCoupon={appliedCoupon || ''}
               />
             </div>
           </div>

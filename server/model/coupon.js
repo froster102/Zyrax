@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const CouponSchema = new mongoose.Schema({
     code: {
         type: String,
+        trim: true,
         unique: [true, 'Coupon code must be unique'],
         required: [true, 'Coupon code is required'],
         set: value => value.toUpperCase()

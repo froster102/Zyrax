@@ -10,6 +10,7 @@ import { useEffect, useState } from "react"
 import { useGetProductsQuery } from "../store/api/productApiSlice"
 import queryString from "query-string"
 import Pagination from "./Pagination"
+import { FadeLoader } from "react-spinners"
 
 function ProductLists() {
     const location = useLocation()
@@ -40,7 +41,7 @@ function ProductLists() {
         gender
     }
     const [sort, setSort] = useState('')
-    const { data: { products = [], totalCount = 0 } = {}, isLoading: isProductsLoading, isError } = useGetProductsQuery({ filter, sort })
+    const { data: { products = [], totalCount = 0 } = {}, isLoading: isProductsLoading, isFetching: isProductsFetching, isError } = useGetProductsQuery({ filter, sort })
 
     useEffect(() => {
         setFilter(prev => ({
@@ -64,6 +65,14 @@ function ProductLists() {
 
     return (
         <>
+            {
+                isProductsFetching && <div className="absolute inset-0 z-10 w-full h-full overflow-hidden">
+                    <div className="fixed inset-0 bg-neutral-300 bg-opacity-35 transition-all backdrop-blur-sm"></div>
+                    <div className="flex justify-center items-center h-full">
+                        <FadeLoader />
+                    </div>
+                </div>
+            }
             <div className="flex justify-between md:justify-center items-center w-full px-2">
                 <div className="md:block hidden w-full">
                     <BreadCrumbs category={query?.category} />
