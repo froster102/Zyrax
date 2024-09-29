@@ -120,6 +120,9 @@ const OrderSchema = new mongoose.Schema({
                     message: 'Unit price must be at a positive number greater than 100'
                 }
             },
+            appliedOfferAmount: {
+                type: Number,
+            },
             totalPrice: {
                 type: Number,
                 required: [true, 'Unit price is required'],
@@ -149,7 +152,10 @@ const OrderSchema = new mongoose.Schema({
                 type: Date,
             },
         }
-    ]
+    ],
+    appliedCouponAmount: {
+        type: Number
+    }
 }, { timestamps: true })
 
 const Order = mongoose.model('Order', OrderSchema)

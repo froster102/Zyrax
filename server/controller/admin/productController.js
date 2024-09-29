@@ -65,15 +65,14 @@ const addProduct = async (req, res) => {
 }
 
 const getProducts = async (req, res) => {
-    const page = parseInt(req.query.page)
-    const limit = parseInt(req.query.limit)
+    const { page = 1, limit = 0 } = req.query
     const skip = (page - 1) * limit
     try {
+        const totalCount = await Product.countDocuments()
         const products = await Product.find({}).populate('category').skip(skip).limit(limit)
         if (!products) {
             return res.status(404).json({ message: 'No products found' })
         }
-        const totalCount = products.length
         return res.status(200).json({ products, totalCount })
     } catch (err) {
         console.log(err)

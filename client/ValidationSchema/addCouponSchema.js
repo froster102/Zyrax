@@ -12,7 +12,7 @@ const addCouponSchema = z.object({
     minPurchaseAmount: z.string().min(1, 'Minimum purchase amount is required')
         .refine((value) => {
             const numberValue = parseInt(value);
-            return !isNaN(numberValue) && numberValue >= 500;
+            return !isNaN(numberValue) && numberValue >= 200;
         }, {
             message: 'Minimum purchase amount should be 500 or greater'
         }),

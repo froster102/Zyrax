@@ -32,7 +32,7 @@ const chartData = [
 
 const chartConfig = {
     desktop: {
-        label: "Desktop",
+        label: "Visits",
         color: "hsl(var(--chart-1))",
     },
 }
@@ -41,7 +41,13 @@ function RadarChartComponent() {
     return (
         <Card className="mt-4 bg-neutral-100 shadow-lg text-black w-full">
             <CardHeader>
-                <CardTitle>Visits</CardTitle>
+                <CardTitle className='flex justify-between items-center'>
+                    <p>Visits</p>
+                    <div>
+                        <button className="text-xs bg-neutral-300 rounded-md font-medium p-1">Weekly</button>
+                        <button className="text-xs bg-neutral-300 rounded-md font-medium p-1 ml-2">Monthly</button>
+                    </div>
+                </CardTitle>
                 <CardDescription>
                     Showing total visitors for the last 6 months
                 </CardDescription>
@@ -57,7 +63,7 @@ function RadarChartComponent() {
                             content={<ChartTooltipContent hideLabel />}
                         />
                         <PolarGrid stroke="#d4d4d4" strokeWidth={1} />
-                        <PolarAngleAxis dataKey="month" tickFormatter={v=>v.slice(0,3)} />
+                        <PolarAngleAxis dataKey="month" tickFormatter={v => v.slice(0, 3)} />
                         <Radar
                             dataKey="desktop"
                             fill="#171717"

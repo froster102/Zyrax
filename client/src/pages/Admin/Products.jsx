@@ -4,9 +4,11 @@ import { useFetchProductsQuery } from "../../store/api/adminApiSlice";
 import { useState } from "react";
 
 function Products() {
-  const [currentPage, setCurrentPage] = useState(1)
-  const limit = 10
-  const { data: products, isLoading: isProductsLoading, refetch } = useFetchProductsQuery({ currentPage, limit })
+  const [filter, setFilter] = useState({
+    limit: 10,
+    page: 1
+  })
+  const { data: { products = [], totalCount = 0 } = {}, isLoading: isProductsLoading, refetch } = useFetchProductsQuery({ filter, sort:'' })
 
   return (
     <>
@@ -20,13 +22,13 @@ function Products() {
           duration: 3000
         }}
       />
-      <div className='border border-black w-full ml-4 rounded-lg bg-neutral-50 shadow-inner pt-[40px] px-[20px]'>
+      <div className='border border-black w-full ml-4 rounded-lg bg-neutral-50 shadow-inner pt-[40px] px-[20px] pb-10'>
         <h1 className='text-3xl font-semibold'>Products</h1>
         <ProductTable
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          products={products?.products}
-          totalCount={products?.totalCount}
+          filter={filter}
+          setFilter={setFilter}
+          products={products}
+          totalCount={totalCount}
           isProductsLoading={isProductsLoading}
           refetch={refetch}
         />

@@ -42,7 +42,7 @@ function Cart() {
       })
       const totalPrice = totalMrp - totalOffer
       if (appliedCoupon?.code) {
-        const couponDiscountAmount = calculateDiscount(totalPrice, appliedCoupon.discount)
+        const couponDiscountAmount = parseInt((appliedCoupon.discount / 100) * totalPrice)
         const applicableCouponDiscount = Math.min(couponDiscountAmount, appliedCoupon.maxDiscountAmount)
         setTotalCouponDiscount(applicableCouponDiscount)
       } else {
@@ -126,7 +126,7 @@ function Cart() {
                 />
               }
               <ApplyCoupon
-                appliedCoupon={appliedCoupon || ''}
+                cartItems={cartItems}
               />
             </div>
           </div>

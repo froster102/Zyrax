@@ -6,12 +6,13 @@ import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 import { IoIosArrowDown, IoIosClose } from 'react-icons/io'
 import { useEffect, useState } from 'react'
-import { applyCoupon, removeAppliedCoupon } from '@/store/slices/userSlice'
+import { applyCoupon, removeAppliedCoupon, selectAppliedCoupon } from '@/store/slices/userSlice'
 
-function ApplyCoupon({ appliedCoupon }) {
+function ApplyCoupon({ cartItems }) {
     const userAuth = useSelector(selectUserToken)
+    const appliedCoupon = useSelector(selectAppliedCoupon)
     const navigate = useNavigate()
-    const { data: { coupons = [] } = {}, refetch: refetchCoupons } = useGetCouponsQuery(undefined, { skip: !userAuth })
+    const { data: { coupons = [] } = {}, isLoading: isCouponsLoading, refetch: refetchCoupons, isError } = useGetCouponsQuery(undefined, { skip: !userAuth })
     const [couponCode, setCouponCode] = useState({
         code: ''
     })
@@ -44,8 +45,24 @@ function ApplyCoupon({ appliedCoupon }) {
     }
 
     useEffect(() => {
-        refetchCoupons()
-    }, [refetchCoupons])
+        function checkCouponAvailablity(couponCode) {
+            if (coupons.length > 0) {
+                const availableCoupons = coupons.map(coupon => coupon.code)
+                if (availableCoupons.includes(couponCode)) return true
+            }
+            return false
+        }
+        if (isError) {
+            navigate('/login')
+        }
+        const isCouponAvailable = checkCouponAvailablity(appliedCoupon.code)
+        if (!isCouponAvailable) {
+            if (appliedCoupon.code) {
+                dispatch(removeAppliedCoupon())
+            }
+        }
+        userAuth && refetchCoupons()
+    }, [refetchCoupons, userAuth, navigate, isError, cartItems, appliedCoupon, isCouponsLoading, coupons, dispatch])
 
     return (
         <div>
@@ -68,7 +85,7 @@ function ApplyCoupon({ appliedCoupon }) {
                         } else {
                             if (!couponCode.code) {
                                 setError('Coupon code is required')
-                            } else if(!/^[A-Za-z0-9]+$/.test(couponCode.code)) {
+                            } else if (!/^[A-Za-z0-9]+$/.test(couponCode.code)) {
                                 setError('Only alphabets are allowed')
                             } else {
                                 handleApplyCoupon(couponCode)
@@ -120,7 +137,7 @@ function ApplyCoupon({ appliedCoupon }) {
 }
 
 ApplyCoupon.propTypes = {
-    appliedCoupon: PropTypes.object
+    cartItems: PropTypes.array
 }
 
 export default ApplyCoupon

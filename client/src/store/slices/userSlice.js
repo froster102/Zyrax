@@ -92,10 +92,20 @@ const userSlice = createSlice({
         removeFromCart: (state, action) => {
             const { productId, selectedSize } = action.payload
             state.cart.items = state.cart.items.filter((item) => !(item?.product._id === productId && item?.selectedSize === selectedSize))
+            if (state.cart.items.length === 0) state.cart.appliedCoupon = {
+                code: '',
+                discount: 0,
+                maxDiscountAmount: 0
+            }
             saveToLocalStorage(state)
         },
         resetCart: (state) => {
             state.cart.items = []
+            state.cart.appliedCoupon = {
+                code: '',
+                discount: 0,
+                maxDiscountAmount: 0
+            }
             saveToLocalStorage(state)
         },
         applyCoupon: (state, action) => {

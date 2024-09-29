@@ -6,6 +6,7 @@ import { User } from "../../model/user.js"
 import { Wallet } from "../../model/wallet.js"
 import { nanoid } from "nanoid"
 import { calculateDiscount } from "../../utils/helper.js"
+import { Coupon } from "../../model/coupon.js"
 
 const handleCheckOut = async (req, res) => {
     const { paymentMethod, shippingAddressId } = req.body
@@ -17,6 +18,9 @@ const handleCheckOut = async (req, res) => {
             path: 'items',
             populate: {
                 path: 'productId',
+                populate: {
+                    path: 'offer'
+                }
             }
         })
         const cartItems = cart.items
@@ -35,9 +39,10 @@ const handleCheckOut = async (req, res) => {
 
         for (let item of cartItems) {
             const product = productMap[item.productId._id]
+            let offerDiscountAmount = 0
             if (!product) return res.status(404).json({ message: `Product with ${item.productId} not found` })
 
-            const sizeQtyMap = product.stock.reduce((acc, { size, quantity }) => {
+            const sizeQtyMap = item.productId.stock.reduce((acc, { size, quantity }) => {
                 acc[size] = quantity
                 return acc
             }, {})
@@ -58,10 +63,11 @@ const handleCheckOut = async (req, res) => {
             const finalPrice = product.offer
                 ? calculateDiscount(itemPrice, product.offer.discountPercentage)
                 : itemPrice
-
+            if (item.productId.offer) {
+                offerDiscountAmount = parseInt((item.productId?.offer.discountPercentage / 100) * item?.productId?.price)
+            }
             itemTotalPrice = finalPrice * selectedQty
             totalAmount += itemTotalPrice
-
             processedItems.push({
                 productId: item?.productId?._id,
                 quantity: item?.selectedQty,
@@ -69,8 +75,22 @@ const handleCheckOut = async (req, res) => {
                 orderPrice: itemTotalPrice,
                 unitPrice: item?.productId?.price,
                 totalPrice: totalAmount,
+                appliedOfferAmount: offerDiscountAmount,
                 status: 'pending'
             })
+        }
+        let appliedCouponAmount = 0
+        if (cart.appliedCoupon.code) {
+            const coupon = await Coupon.findOne({ code: cart.appliedCoupon.code })
+            if (coupon.minPurchaseAmount <= totalAmount) {
+                const couponAmount = parseInt((cart.appliedCoupon.discount / 100) * totalAmount)
+                const applicableDiscountAmount = Math.min(couponAmount, cart.appliedCoupon.maxDiscountAmount)
+                totalAmount -= applicableDiscountAmount
+                appliedCouponAmount = applicableDiscountAmount
+            } else {
+                cart.appliedCoupon = {}
+                await cart.save()
+            }
         }
         if (paymentMethod === 'cash on delivery') {
             for (let item of processedItems) {
@@ -89,7 +109,8 @@ const handleCheckOut = async (req, res) => {
                     status: 'pending',
                     transactionId: null
                 },
-                products: processedItems
+                products: processedItems,
+                appliedCouponAmount
             })
             if (order) {
                 await Cart.findOneAndUpdate({ user_id: req.userId, }, { $set: { items: [] } }, { new: true })
@@ -129,7 +150,8 @@ const handleCheckOut = async (req, res) => {
                     status: 'pending',
                     transactionId: crypto.randomUUID(),
                 },
-                products: processedItems
+                products: processedItems,
+                appliedCouponAmount
             })
             return res.status(200).json(paymentOrder)
         } else if (paymentMethod === 'zyraxWallet') {
@@ -160,7 +182,8 @@ const handleCheckOut = async (req, res) => {
                     status: 'pending',
                     transactionId: txnid,
                 },
-                products: processedItems
+                products: processedItems,
+                appliedCouponAmount
             })
             if (order) {
                 await User.findOneAndUpdate({ _id: req.userId }, { $inc: { orderCount: 1, totalSpent: order.totalAmount } })
@@ -183,6 +206,7 @@ const handleCheckOut = async (req, res) => {
             }
         }
     } catch (e) {
+        console.log(e)
         if (e.name === 'ValidationError') {
             const message = []
             for (let error in e.errors) {

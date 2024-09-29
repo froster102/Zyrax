@@ -28,7 +28,7 @@ function OrderSucess() {
 
     return (
         <>
-            <div>
+            <div className='px-4'>
                 <div className='w-full flex justify-center mt-24 mb-24' >
                     <div className='max-w-[524px]'>
                         <h1 className='text-4xl font-bold'><MdLocalShipping className='inline mr-2' />Thanks for your order!</h1>

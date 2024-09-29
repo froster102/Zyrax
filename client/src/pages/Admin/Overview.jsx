@@ -4,16 +4,39 @@ import { RiShoppingBag3Line } from "react-icons/ri";
 import { RiMoneyDollarCircleFill } from "react-icons/ri";
 import RadarChartComponent from "@/components/RadarChartComponent";
 import BarChartComponent from "@/components/BarChartComponent";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import DateFilter from "@/components/DateFilter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import OrderTable from "@/components/OrderTable";
-
+import { useFetchProductsQuery, useGetAnalyticsGraphDataQuery, useGetOverviewDataQuery } from "@/store/api/adminApiSlice";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import ProductCard from "@/components/ProductCard";
 
 function Overview() {
+  const [filter, setFilter] = useState({
+    limit: 10,
+    period: '',
+  })
+
+  const [chartFilter, setChartFilter] = useState({
+    period: 'month'
+  })
+
   const printRef = useRef()
+
+  const { data: {
+    totalProducts = 0,
+    totalCustomers = 0,
+    totalRevenue = 0,
+    totalProductsSold = 0,
+    totalOfferAmount = 0,
+    totalCouponAmount = 0,
+    orders = []
+  } = {} } = useGetOverviewDataQuery({ filter, sort: '' })
+  const { data: { products = [] } = {} } = useFetchProductsQuery({ filter, sort: '' })
+  const { data: { chartData = [] } = {} } = useGetAnalyticsGraphDataQuery({ filter: chartFilter, sort: '' })
 
   function generatePdf() {
     const element = printRef.current
@@ -35,24 +58,37 @@ function Overview() {
 
   return (
     <>
-      <div ref={printRef} className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px]'>
+      <div ref={printRef} className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px] pb-10'>
         <h1 className='text-3xl font-semibold'>Overview</h1>
         <div className="flex w-full justify-end">
           <div>
             <button className="mr-4 text-sm font-medium rounded-md bg-stone-300 px-4 py-2" onClick={generatePdf} >Generate report</button>
-            <DateFilter />
+            <DateFilter
+              filter={filter}
+              setFilter={setFilter}
+            />
           </div>
         </div>
         <div className="flex gap-4 pt-4">
           <div className="w-full">
             <div className="flex gap-4">
-              <CountCard title="Total Customers" count={'543,0053'} Icon={FaUsers} />
-              <CountCard title="Total Orders" count={'5430,053'} Icon={RiShoppingBag3Line} />
-              <CountCard title="Total Revenue" count={'543,0053'} Icon={RiMoneyDollarCircleFill} />
-              <CountCard title="Total Products" count={'5430,053'} Icon={FaBox} />
+              <CountCard title="Total Customers" count={String(totalCustomers)} Icon={FaUsers} />
+              <CountCard title="Total Orders" count={String(orders.length)} Icon={RiShoppingBag3Line} />
+              <CountCard title="Total Revenue" count={String('₹' + totalRevenue)} Icon={RiMoneyDollarCircleFill} />
+              <CountCard title="Total Products" count={(String(totalProducts))} Icon={FaBox} />
+              <CountCard title="Products Sold" count={(String(totalProductsSold))} Icon={FaBox} />
             </div>
             <div className="flex w-full gap-4">
-              <BarChartComponent />
+              <BarChartComponent
+                chartData={chartData}
+                filter={chartFilter}
+                setFilter={setChartFilter}
+                chartMetaData={{
+                  label: 'Revenue',
+                  XAxis: chartFilter.period,
+                  YAxis: 'revenue'
+                }}
+              />
               <RadarChartComponent />
             </div>
           </div>
@@ -68,15 +104,39 @@ function Overview() {
           <Card className="w-full">
             <CardHeader>
               <CardTitle>Recent orders</CardTitle>
-              <CardContent>
-                {/* <OrderTable /> */}
-              </CardContent>
             </CardHeader>
+            <CardContent>
+              <ScrollArea className='h-[324px]'>
+                <div className="relative overflow-x-auto shadow-xl mt-4 bg-neutral-200 rounded-lg">
+                  <OrderTable
+                    orders={orders}
+                  />
+                </div>
+                <ScrollBar orientation="vertical"
+                />
+              </ScrollArea>
+            </CardContent>
           </Card>
           <Card className="max-w-[424px] w-full">
             <CardHeader>
               <CardTitle>Top Products</CardTitle>
             </CardHeader>
+            <CardContent>
+              <ScrollArea className='max-w-full whitespace-nowrap'>
+                <div className="flex w-full space-x-4">
+                  {
+                    products.map((product, i) => (
+                      <div key={i} className="max-w-[280px]">
+                        <ProductCard
+                          product={product}
+                        />
+                      </div>
+                    ))
+                  }
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </CardContent>
           </Card>
         </div>
       </div>

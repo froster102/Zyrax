@@ -3,7 +3,7 @@ import { useChangeOrderStatusMutation, useFetchOrdersQuery } from "../../store/a
 import OrderTable from "../../components/OrderTable"
 
 function Orders() {
-  const { data: orders, isLoading: isOrderLoading, refetch } = useFetchOrdersQuery()
+  const { data: { orders = [] } = {}, isLoading: isOrderLoading, refetch } = useFetchOrdersQuery()
   const [changeUserOrderStatus] = useChangeOrderStatusMutation()
 
   async function changeOrderStatus({ orderId, itemId, status }) {

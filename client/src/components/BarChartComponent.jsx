@@ -11,34 +11,35 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
+import PropTypes from "prop-types";
 
-const chartData = [
-    { month: "January", desktop: 186 },
-    { month: "February", desktop: 305 },
-    { month: "March", desktop: 237 },
-    { month: "April", desktop: 73 },
-    { month: "May", desktop: 209 },
-    { month: "June", desktop: 214 },
-    { month: "July", desktop: 150 },
-    { month: "August", desktop: 190 },
-    { month: "September", desktop: 220 },
-    { month: "October", desktop: 180 },
-    { month: "November", desktop: 240 },
-    { month: "December", desktop: 300 },
-];
 
-const chartConfig = {
-    desktop: {
-        label: "Desktop",
-        color: "hsl(var(--chart-1))",
-    },
-};
+function BarChartComponent({ chartData, setFilter, chartMetaData }) {
 
-function BarChartComponent() {
+    const chartConfig = {
+        desktop: {
+            label: chartMetaData?.label||'',
+            color: "hsl(var(--chart-1))",
+        },
+    };
+
+    function filterChange(filter){
+        setFilter(prev=>({
+            ...prev,
+            period : filter
+        }))
+    }
+
     return (
         <Card className="mt-4 bg-neutral-100 shadow-lg text-black w-full">
             <CardHeader>
-                <CardTitle>Revenue Overview</CardTitle>
+                <CardTitle className='flex justify-between items-center'>
+                    <p>Revenue Overview</p>
+                    <div>
+                        <button onClick={()=>{filterChange('week')}} className="text-xs bg-neutral-300 rounded-md font-medium p-1">Weekly</button>
+                        <button onClick={()=>{filterChange('month')}} className="text-xs bg-neutral-300 rounded-md font-medium p-1 ml-2">Monthly</button>
+                    </div>
+                </CardTitle>
                 <CardDescription>
                     Showing total revenue for the last 6 months
                 </CardDescription>
@@ -49,7 +50,7 @@ function BarChartComponent() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#737373" vertical={false} />
                         <YAxis />
                         <XAxis
-                            dataKey="month"
+                            dataKey={chartMetaData?.XAxis || ''}
                             tick={{ fill: 'red' }}
                             tickLine={false}
                             tickMargin={10}
@@ -60,12 +61,18 @@ function BarChartComponent() {
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}
                         />
-                        <Bar dataKey="desktop" fill="#171717" radius={8} />
+                        <Bar dataKey={chartMetaData?.YAxis || ''} fill="#171717" radius={8} />
                     </BarChart>
                 </ChartContainer>
             </CardContent>
         </Card>
     )
+}
+
+BarChartComponent.propTypes = {
+    chartMetaData: PropTypes.object,
+    chartData: PropTypes.array,
+    setFilter: PropTypes.func
 }
 
 export default BarChartComponent

@@ -21,8 +21,8 @@ router.post('/auth/signin', authController.signin)
 
 router.use(adminAuth)
 
-router.get('/analytics', analyticsController.getAnalyticsData)
 router.get('/analytics/overview', analyticsController.getOverviewData)
+router.get('/analytics/chart', analyticsController.getAnalyticsChartData)
 
 router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.viewUser)

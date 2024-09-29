@@ -16,7 +16,7 @@ import { RotatingLines } from "react-loader-spinner";
 import Pagination from "./Pagination";
 
 
-function ProductTable({ currentPage, setCurrentPage, products, isProductsLoading, refetch, totalCount }) {
+function ProductTable({ filter,setFilter, products, isProductsLoading, refetch, totalCount }) {
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
     const [blockProduct] = useBlockProductMutation()
@@ -54,6 +54,13 @@ function ProductTable({ currentPage, setCurrentPage, products, isProductsLoading
         }
     }
 
+    function setPage(page) {
+        setFilter(prev => ({
+            ...prev,
+            page: page
+        }))
+    }
+
     return (
         <>
             <Toaster
@@ -75,7 +82,7 @@ function ProductTable({ currentPage, setCurrentPage, products, isProductsLoading
                     <Link to='/admin/dashboard/products/add' ><button className="bg-black text-sm text-white font-medium rounded-3xl w-fit h-fit px-4 py-2">Add new product</button></Link>
                 </div>
                 <div className="pt-4">
-                    <table className="w-full text-sm text-left rtl:text-right shadow-xl text-gray-500 bg-neutral-200">
+                    <table className="w-full text-sm text-left rtl:text-right text-gray-500 bg-neutral-200">
                         <thead className="text-xs text-gray-700 uppercase bg-neutral-300 ">
                             <tr>
                                 <th className="px-6 py-3">
@@ -168,13 +175,17 @@ function ProductTable({ currentPage, setCurrentPage, products, isProductsLoading
                             })}
                         </tbody>
                     </table>
+                    <div className="flex w-full h-fit items-center justify-between px-4">
+                        <p className="justify-self-start font-medium">Total {totalCount} products</p>
+                        <Pagination
+                            totalPages={Math.ceil(totalCount / filter.limit)}
+                            currentPage={filter.page}
+                            onPageChange={setPage}
+                        />
+                    </div>
                 </div>
             </div>
-            <Pagination
-                totalPages={totalCount}
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-            />
+
             <ConfirmationModal
                 show={confirmModalState.show}
                 action={confirmModalState.action}
@@ -187,6 +198,8 @@ function ProductTable({ currentPage, setCurrentPage, products, isProductsLoading
 }
 
 ProductTable.propTypes = {
+    filter: PropTypes.object,
+    setFilter:PropTypes.func,
     products: PropTypes.arrayOf(object),
     isProductsLoading: PropTypes.bool.isRequired,
     refetch: PropTypes.func.isRequired,

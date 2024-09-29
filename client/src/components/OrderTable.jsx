@@ -10,10 +10,10 @@ function OrderTable({ orders, changeOrderStatus }) {
     const [openViewModal, setOpenViewModal] = useState(false)
     const [orderDetail, setOrderDetail] = useState({})
 
-    useEffect(() => {
-        const order = orders.find((order => order.orderId === orderDetail?.orderId))
-        setOrderDetail(order)
-    }, [orders, orderDetail])
+    // useEffect(() => {
+    //     const order = orders.find((order => order.orderId === orderDetail?.orderId))
+    //     setOrderDetail(order)
+    // }, [orders, orderDetail])
 
     return (
         <>

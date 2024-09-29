@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { constructQueryParams } from '@/utils/helper'
 import { apiSlice } from './apiSlice'
 
 
@@ -44,7 +45,6 @@ const adminApiSlice = apiSlice.injectEndpoints({
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
                     const res = await queryFulfilled
-                    console.log(res)
                     dispatch(adminApiSlice.util.invalidateTags([{ type: 'Users', id: 'LIST' }]))
                 } catch (error) {
                     console.warn('Failed to invalidate cache')
@@ -52,7 +52,12 @@ const adminApiSlice = apiSlice.injectEndpoints({
             },
         }),
         fetchProducts: builder.query({
-            query: ({ currentPage: page, limit }) => `/admin/products?page=${page}&limit=${limit}`
+            query: ({ filter, sort }) => {
+                console.log('filter')
+                const params = { ...filter, sort }
+                const query = constructQueryParams(params)
+                return `/admin/products?${query}`
+            }
         }),
         fetchProduct: builder.query({
             query: ({ id }) => `/admin/products/${id}`
@@ -113,7 +118,10 @@ const adminApiSlice = apiSlice.injectEndpoints({
             })
         }),
         fetchOrders: builder.query({
-            query: () => '/admin/orders'
+            query: (params) => {
+                const query = constructQueryParams(params)
+                return `/admin/orders?${query}`
+            }
         }),
         getAllReturns: builder.query({
             query: () => '/admin/returns'
@@ -136,14 +144,23 @@ const adminApiSlice = apiSlice.injectEndpoints({
             }
         }),
         getAllCoupons: builder.query({
-            query: () => '/admin/coupons'
+            query: () => '/admin/coupons',
+            providesTags: (result) => result ? [{ type: 'Coupons', id: 'LIST' }] : []
         }),
         addCoupon: builder.mutation({
             query: ({ code, discount, expirationDate, minPurchaseAmount, maxDiscountAmount }) => ({
                 url: '/admin/coupons',
                 method: 'POST',
                 body: { code, discount, expirationDate, minPurchaseAmount, maxDiscountAmount }
-            })
+            }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled
+                    dispatch(adminApiSlice.util.invalidateTags([{ type: 'Coupons', id: 'LIST' }]))
+                } catch (error) {
+                    console.warn('Failed to invalidate cachel')
+                }
+            }
         }),
         deleteCoupon: builder.mutation({
             query: ({ couponId }) => ({
@@ -169,6 +186,20 @@ const adminApiSlice = apiSlice.injectEndpoints({
                 url: `/admin/offers/${offerId}`,
                 method: 'DELETE',
             })
+        }),
+        getOverviewData: builder.query({
+            query: ({ filter, sort }) => {
+                const params = { ...filter, sort }
+                const query = constructQueryParams(params)
+                return `/admin/analytics/overview/?${query}`
+            }
+        }),
+        getAnalyticsGraphData: builder.query({
+            query: ({ filter }) => {
+                const params = { ...filter }
+                const query = constructQueryParams(params)
+                return `/admin/analytics/chart?${query}`
+            }
         })
     })
 })
@@ -199,5 +230,7 @@ export const {
     useDeleteCouponMutation,
     useGetOffersQuery,
     useAddOfferMutation,
-    useDeleteOfferMutation
+    useDeleteOfferMutation,
+    useGetOverviewDataQuery,
+    useGetAnalyticsGraphDataQuery
 } = adminApiSlice

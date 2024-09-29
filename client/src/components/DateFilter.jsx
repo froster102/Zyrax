@@ -18,12 +18,28 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import PropTypes from "prop-types"
 
-function DateFilter() {
-    const [selection, setSelection] = useState("option1")
-    const [date, setDate] = useState()
+function DateFilter({ filter, setFilter }) {
+    const [date, setDate] = useState({ from: '', to: '' })
 
-    console.log(selection)
+    function handlePeriodChange(period) {
+        setFilter({
+            period: period
+        })
+    }
+
+    function handleDateRangeChange(dateRange) {
+        setDate(dateRange)
+        if (date?.from && date?.to) {
+            setFilter({
+                startDate: date.from.toISOString(),
+                endDate: date.to.toISOString()
+            })
+        }
+    }
+
+    // console.log(filter)
 
     return (
         <DropdownMenu>
@@ -33,7 +49,7 @@ function DateFilter() {
             <DropdownMenuContent className="w-56">
                 <DropdownMenuLabel>Select an option</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup value={selection} onValueChange={setSelection}>
+                <DropdownMenuRadioGroup value={filter.period} onValueChange={handlePeriodChange}>
                     <DropdownMenuRadioItem value="lastDay">Last day</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="lastWeek">Last Week</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="lastMonth">Last Month</DropdownMenuRadioItem>
@@ -70,8 +86,8 @@ function DateFilter() {
                                 mode="range"
                                 defaultMonth={date?.from}
                                 selected={date}
-                                onSelect={setDate}
-                                numberOfMonths={2}
+                                onSelect={handleDateRangeChange}
+                                numberOfMonths={1}
                             />
                         </PopoverContent>
                     </Popover>
@@ -79,6 +95,11 @@ function DateFilter() {
             </DropdownMenuContent>
         </DropdownMenu>
     )
+}
+
+DateFilter.propTypes = {
+    filter: PropTypes.object,
+    setFilter: PropTypes.func
 }
 
 export default DateFilter

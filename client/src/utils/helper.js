@@ -12,12 +12,12 @@ function formatISODate(isoTime) {
 
 function constructQueryParams(params) {
     const queryArr = []
-
     function addParam(key, value) {
         if (value) queryArr.push(`${key}=${encodeURIComponent(value)}`)
 
     }
     addParam('search', params?.search)
+    addParam('period',params?.period)
     addParam('category', params?.category)
     addParam('exclude', params?.exclude)
     addParam('offerPercentage', params?.offerPercentage)
