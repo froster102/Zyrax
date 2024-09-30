@@ -50,8 +50,9 @@ const topUpWallet = async (req, res) => {
 
 const getWalletDetails = async (req, res) => {
     try {
-        const wallet = await Wallet.findOne({ user_id: req.userId })
+        const wallet = await Wallet.findOne({ user_id: req.userId }).sort({ 'transactions.createdAt': -1 })
         if (!wallet) return res.status(404).json({ message: 'Wallet not found for the requested user' })
+        if (wallet) wallet.transactions.sort((a, b) => b.createdAt - a.createdAt)
         return res.status(200).json(wallet)
     } catch (error) {
         return res.status(500).json({ message: 'Failed to get wallet details' })

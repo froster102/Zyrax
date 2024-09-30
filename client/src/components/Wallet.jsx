@@ -6,6 +6,7 @@ import ConfirmationModal from "./ConfirmationModal"
 import { useState } from "react"
 import StatusChip from "./StatusChip"
 import AddMoneyModal from "./AddMoneyModal"
+import { formatISODate } from "@/utils/helper";
 
 function Wallet() {
   const { data: wallet, isLoading: isWalletLoading, refetch: refetchWallet } = useGetWalletDetailsQuery()
@@ -152,7 +153,7 @@ function Wallet() {
                             {transaction?.type}
                           </td>
                           <td className="px-6 py-4">
-                            {transaction?.createdAt}
+                            {formatISODate(transaction?.createdAt)}
                           </td>
                           <td className="px-6 py-4">
                             <StatusChip status={transaction?.status} />
