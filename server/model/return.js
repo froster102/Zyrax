@@ -29,7 +29,7 @@ const ReturnSchema = new mongoose.Schema({
     },
     productId: {
         type: mongoose.SchemaTypes.ObjectId,
-        ref:'Product',
+        ref: 'Product',
         required: [true, 'Product ID is required to refund'],
         validate: {
             validator: async function (v) {
@@ -53,6 +53,9 @@ const ReturnSchema = new mongoose.Schema({
             message: 'Invalid status, status must be either "request" or "approved"'
         }
     },
+    approvedAt: {
+        type: Date
+    }
 }, { timestamps: true })
 
 const Return = mongoose.model('Return', ReturnSchema)

@@ -2,6 +2,7 @@ import { nanoid } from "nanoid"
 import { Order } from "../../model/order.js"
 import { Return } from "../../model/return.js"
 import { Wallet } from '../../model/wallet.js'
+import { Product } from "../../model/product.js"
 
 const getAllReturns = async (req, res) => {
     try {
@@ -27,7 +28,15 @@ const approveReturn = async (req, res) => {
         return_.status = 'approved'
         const returnOrder = order.products.find(product => product.productId.toString() === productId)
         returnOrder.status = 'returned'
-        // const product = await Product.find({ _id: productId })
+        return_.approvedAt = new Date()
+        if (return_.reason !== 'product have been damaged') {
+            const orderedProduct = order.products.find(product => product.productId.toString() === productId)
+            const size = orderedProduct.size
+            const product = await Product.findOneAndUpdate(
+                { _id: productId, 'stock.size': size },
+                { $inc: { 'stock.$.quantity': orderedProduct.quantity } }
+            )
+        }
         await return_.save()
         await order.save()
         const wallet = await Wallet.findOne({ user_id: order.userId })

@@ -14,8 +14,7 @@ const stockSchema = new mongoose.Schema({
         // min: [5, 'Minimun 5 quantity should be available for the product']
         validate: {
             validator: (v) => {
-                console.log(v)
-                return v > 0
+                return v >= 0
             },
             message: 'Quantity must be a positive number greater than 0'
         },
@@ -84,7 +83,14 @@ const ProductSchema = new mongoose.Schema({
             message: 'Category id not found'
         }
     },
-    status: { type: String, enum: ['active', 'blocked'] }
+    status: { type: String, enum: ['active', 'blocked'] },
+    soldCount: {
+        type: Number,
+        validate: {
+            validator: (v) => v >= 0,
+            message: 'Product sold count should be a positive number'
+        }
+    }
 }, { timestamps: true })
 
 ProductSchema.index({ name: 'text' })
