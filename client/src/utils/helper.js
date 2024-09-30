@@ -17,7 +17,7 @@ function constructQueryParams(params) {
 
     }
     addParam('search', params?.search)
-    addParam('period',params?.period)
+    addParam('period', params?.period)
     addParam('category', params?.category)
     addParam('exclude', params?.exclude)
     addParam('offerPercentage', params?.offerPercentage)
@@ -29,6 +29,8 @@ function constructQueryParams(params) {
     addParam('sort', params?.sort)
     addParam('minPrice', params?.minPrice)
     addParam('maxPrice', params?.maxPrice)
+    addParam('startDate', params?.startDate)
+    addParam('endDate', params?.endDate)
 
     return queryArr.length ? `${queryArr.join('&')}` : ''
 }

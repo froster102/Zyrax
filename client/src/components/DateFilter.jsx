@@ -39,7 +39,7 @@ function DateFilter({ filter, setFilter }) {
         }
     }
 
-    // console.log(filter)
+    console.log(filter)
 
     return (
         <DropdownMenu>

@@ -4,9 +4,8 @@ import { User } from "../../model/user.js"
 import { getLastDay, getLastWeek, getLastMonth, getLastYear, constructGraphData } from "../../utils/helper.js"
 
 const getOverviewData = async (req, res) => {
-    const matchQuery = {}
     const { period, limit = 0, startDate = '', endDate = '' } = req.query
-    const dateRange = {}
+    let dateRange = {}
 
     if (period) {
         switch (period) {
@@ -31,6 +30,7 @@ const getOverviewData = async (req, res) => {
     } else if (startDate && endDate) {
         dateRange = { start: new Date(startDate), end: new Date(endDate) }
     }
+
 
     try {
         const productsResult = await Product.aggregate([
