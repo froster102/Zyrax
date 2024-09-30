@@ -122,11 +122,12 @@ const returnOrder = async (req, res) => {
         'order placed by mistake',
         'doesnt liked the fit'
     ]
+
     if (!validReasons.includes(reason)) return res.status(400).json({ message: 'Enter a valid reason' })
     try {
-        const existingReturn = await Return.findOne({ user_id: req.userId, productId: productId })
-        if (existingReturn) return res.status(409).json({ message: 'Return already request , in processing' })
         const order = await Order.findOne({ orderId: orderId })
+        const existingReturn = await Return.findOne({ user_id: req.userId, productId: productId, orderId: order._id })
+        if (existingReturn) return res.status(409).json({ message: 'Return already request , in processing' })
         const return_ = await Return.create({
             user_id: req.userId,
             orderId: order._id,

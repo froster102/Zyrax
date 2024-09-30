@@ -25,6 +25,7 @@ const approveReturn = async (req, res) => {
             productId
         })
         if (!return_) return res.status(404).json({ message: 'Return with id not found' })
+        if (return_.status === 'approved') return res.status(400).json({ message: 'Return has already been approved' })
         const order = await Order.findOne({ _id: orderId })
         return_.status = 'approved'
         const returnOrder = order.products.find(product => product.productId.toString() === productId)
