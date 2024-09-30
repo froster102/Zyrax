@@ -64,7 +64,7 @@ const handleCheckOut = async (req, res) => {
                 ? calculateDiscount(itemPrice, product.offer.discountPercentage)
                 : itemPrice
             if (item.productId.offer) {
-                offerDiscountAmount = parseInt((item.productId?.offer.discountPercentage / 100) * item?.productId?.price)
+                offerDiscountAmount = parseInt((item.productId?.offer.discountPercentage / 100) * item?.productId?.price) * item.selectedQty
             }
             itemTotalPrice = finalPrice * selectedQty
             totalAmount += itemTotalPrice

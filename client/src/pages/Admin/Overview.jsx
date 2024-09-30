@@ -24,7 +24,7 @@ function Overview() {
     period: 'month'
   })
 
-  const printRef = useRef()
+  const revenueChartRef = useRef()
 
   const { data: {
     totalProducts = 0,
@@ -39,26 +39,53 @@ function Overview() {
   const { data: { chartData = [] } = {} } = useGetAnalyticsGraphDataQuery({ filter: chartFilter, sort: '' })
 
   function generatePdf() {
-    const element = printRef.current
-    html2canvas(element, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png')
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4',
-        putOnlyUsedFonts: true,
-        floatPrecision: 16
-      })
-      const imgWidth = pdf.internal.pageSize.getWidth()
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
-      pdf.save('report.pdf')
+
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+      putOnlyUsedFonts: true,
+      floatPrecision: 16
     })
+
+    pdf.setFontSize(25)
+    pdf.text('Sales Report', 10, 10)
+
+    pdf.setFontSize(14)
+    pdf.text(`Total Products: ${totalProducts}`, 10, 30)
+    pdf.text(`Total Customers: ${totalCustomers}`, 10, 40)
+    pdf.text(`Total Revenue: ${totalRevenue}`, 10, 50)
+    pdf.text(`Total Products Sold: ${totalProductsSold}`, 10, 60)
+    pdf.text(`Total Offer Amount: ${totalOfferAmount}`, 10, 70)
+    pdf.text(`Total Coupon Amount: ${totalCouponAmount}`, 10, 80)
+
+    pdf.text('Orders', 10, 100)
+
+    const startY = 110
+    const rowHeight = 10
+
+    pdf.setFontSize(12);
+    const headers = ['Order ID', 'Total Amount', 'Status', 'Date'];
+    const headerWidths = [40, 40, 40, 40];
+
+    headers.forEach((header, index) => {
+      pdf.text(header, 10 + index * headerWidths[index], startY);
+    });
+
+    orders.forEach((order, index) => {
+      const yPosition = startY + (index + 1) * rowHeight;
+      pdf.text(order.orderId, 10, yPosition);
+      pdf.text(`${order.totalAmount}`, 10 + headerWidths[0], yPosition);
+      pdf.text(order.status, 10 + headerWidths[0] + headerWidths[1], yPosition);
+      pdf.text(new Date(order.createdAt).toLocaleDateString(), 10 + headerWidths[0] + headerWidths[1] + headerWidths[2], yPosition);
+    });
+
+    pdf.save('report.pdf')
   }
 
   return (
     <>
-      <div ref={printRef} className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px] pb-10'>
+      <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px] pb-10'>
         <h1 className='text-3xl font-semibold'>Overview</h1>
         <div className="flex w-full justify-end">
           <div>
@@ -78,7 +105,7 @@ function Overview() {
               <CountCard title="Total Products" count={(String(totalProducts))} Icon={FaBox} />
               <CountCard title="Products Sold" count={(String(totalProductsSold))} Icon={FaBox} />
             </div>
-            <div className="flex w-full gap-4">
+            <div ref={revenueChartRef} className="flex w-full gap-4">
               <BarChartComponent
                 chartData={chartData}
                 filter={chartFilter}
