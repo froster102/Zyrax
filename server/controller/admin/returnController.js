@@ -3,6 +3,7 @@ import { Order } from "../../model/order.js"
 import { Return } from "../../model/return.js"
 import { Wallet } from '../../model/wallet.js'
 import { Product } from "../../model/product.js"
+import { User } from "../../model/user.js"
 
 const getAllReturns = async (req, res) => {
     try {
@@ -34,7 +35,10 @@ const approveReturn = async (req, res) => {
             const size = orderedProduct.size
             const product = await Product.findOneAndUpdate(
                 { _id: productId, 'stock.size': size },
-                { $inc: { 'stock.$.quantity': orderedProduct.quantity } }
+                { $inc: { 'stock.$.quantity': orderedProduct.quantity, soldCount: -orderedProduct.quantity } }
+            )
+            const user = await User.findOneAndUpdate({ _id: order.userId },
+                { $inc: { totalSpent: -orderedProduct.orderPrice } }
             )
         }
         await return_.save()

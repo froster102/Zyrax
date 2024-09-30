@@ -3,6 +3,7 @@ import { Order } from "../../model/order.js"
 import { Product } from "../../model/product.js"
 import { Return } from "../../model/return.js"
 import { Wallet } from "../../model/wallet.js"
+import { User } from "../../model/user.js"
 
 const getUserOrders = async (req, res) => {
     try {
@@ -71,10 +72,16 @@ const cancelOrder = async (req, res) => {
                 },
                     {
                         $inc: {
-                            'stock.$.quantity': Number(quantity)
+                            'stock.$.quantity': Number(quantity),
+                            soldCount: -Number(quantity)
                         }
                     }
                 )
+                await User.findOneAndUpdate({
+                    _id: order.userId,
+                }, {
+                    $inc: { totalSpent: -cancelledProduct.orderPrice }
+                })
                 if (order.payment.method !== 'cash on delivery') {
                     const wallet = await Wallet.findOne({ user_id: req.userId })
                     const transaction = {

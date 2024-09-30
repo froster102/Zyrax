@@ -114,11 +114,11 @@ const handleCheckOut = async (req, res) => {
             })
             if (order) {
                 await Cart.findOneAndUpdate({ user_id: req.userId, }, { $set: { items: [] } }, { new: true })
-                await User.findOneAndUpdate({ _id: req.userId }, { $inc: { orderCount: 1, totalSpent: order.totalAmount } })
+                await User.findOneAndUpdate({ _id: req.userId }, { $inc: { totalSpent: order.totalAmount } })
                 for (const item of processedItems) {
                     await Product.findOneAndUpdate(
                         { _id: item.productId, 'stock.size': item.size },
-                        { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true }, { new: true })
+                        { $inc: { 'stock.$.quantity': -item.quantity, soldCount: item.quantity } }, { runValidators: true }, { new: true })
                 }
                 const createdOrder = await Order.findOne({ _id: order._id }).populate({
                     path: 'products.productId'
@@ -186,12 +186,12 @@ const handleCheckOut = async (req, res) => {
                 appliedCouponAmount
             })
             if (order) {
-                await User.findOneAndUpdate({ _id: req.userId }, { $inc: { orderCount: 1, totalSpent: order.totalAmount } })
+                await User.findOneAndUpdate({ _id: req.userId }, { $inc: { totalSpent: order.totalAmount } })
                 await Cart.findOneAndUpdate({ user_id: req.userId, }, { $set: { items: [] } }, { new: true })
                 for (const item of processedItems) {
                     await Product.findOneAndUpdate(
                         { _id: item.productId, 'stock.size': item.size },
-                        { $inc: { 'stock.$.quantity': -item.quantity } }, { runValidators: true })
+                        { $inc: { 'stock.$.quantity': -item.quantity, soldCount: item.quantity } }, { runValidators: true })
                 }
                 const createdOrder = await Order.findOne({ _id: order._id }).populate({
                     path: 'products.productId'

@@ -33,13 +33,13 @@ const verifyPayment = async (req, res) => {
             const bulkOps = products.map((item) => ({
                 updateOne: {
                     filter: { _id: item.productId._id, 'stock.size': item.size },
-                    update: { $inc: { 'stock.$.quantity': -item.quantity } },
+                    update: { $inc: { 'stock.$.quantity': -item.quantity, soldCount: item.quantity } },
                     options: { runValidators: true }
                 }
             }))
             if (bulkOps.length > 0) {
                 const response = await Product.bulkWrite(bulkOps)
-                await User.findOneAndUpdate({ _id: req.userId }, { $inc: { orderCount: 1, totalSpent: order.totalAmount } })
+                await User.findOneAndUpdate({ _id: req.userId }, { $inc: { totalSpent: order.totalAmount } })
                 await Cart.findOneAndUpdate({
                     user_id: req.userId,
                 }, {

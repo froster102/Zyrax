@@ -16,7 +16,7 @@ import { RotatingLines } from "react-loader-spinner";
 import Pagination from "./Pagination";
 
 
-function ProductTable({ filter,setFilter, products, isProductsLoading, refetch, totalCount }) {
+function ProductTable({ filter, setFilter, products, isProductsLoading, refetch, totalCount }) {
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
     const [blockProduct] = useBlockProductMutation()
@@ -101,6 +101,9 @@ function ProductTable({ filter,setFilter, products, isProductsLoading, refetch, 
                                     Status
                                 </th>
                                 <th className="px-6 py-3">
+                                    Sold Count
+                                </th>
+                                <th className="px-6 py-3">
                                     Action
                                 </th>
                             </tr>
@@ -137,6 +140,9 @@ function ProductTable({ filter,setFilter, products, isProductsLoading, refetch, 
                                         </td>
                                         <td className="px-6 py-4">
                                             <StatusChip status={product.status} />
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <StatusChip status={product.soldCount} />
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">
@@ -199,7 +205,7 @@ function ProductTable({ filter,setFilter, products, isProductsLoading, refetch, 
 
 ProductTable.propTypes = {
     filter: PropTypes.object,
-    setFilter:PropTypes.func,
+    setFilter: PropTypes.func,
     products: PropTypes.arrayOf(object),
     isProductsLoading: PropTypes.bool.isRequired,
     refetch: PropTypes.func.isRequired,

@@ -49,9 +49,6 @@ function UserTable({ users, blockUserById, isUserLoading, unblockUserById }) {
                             Last Login
                         </th>
                         <th className="px-6 py-3">
-                            Order Count
-                        </th>
-                        <th className="px-6 py-3">
                             Total Spent
                         </th>
                         <th className="px-6 py-3">
@@ -88,9 +85,6 @@ function UserTable({ users, blockUserById, isUserLoading, unblockUserById }) {
                                         </td>
                                         <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
                                             {formatISODate(user.lastLogin)}
-                                        </td>
-                                        <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
-                                            {user.orderCount}
                                         </td>
                                         <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
                                             {user.totalSpent}
