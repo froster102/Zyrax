@@ -149,8 +149,10 @@ const getAnalyticsChartData = async (req, res) => {
                 case 'week': {
                     const startOfWeek = new Date()
                     startOfWeek.setDate(startOfWeek.getDate() - (startOfWeek.getDay() + 6) % 7)
+                    startOfWeek.setHours(0, 0, 0, 0)
                     const endOfWeek = new Date()
-                    endOfWeek.setDate(endOfWeek.getDate() + (6 - startOfWeek.getDay()))
+                    endOfWeek.setDate(startOfWeek.getDate() + 7)
+                    endOfWeek.setHours(0, 0, 0, 0)
                     aggregationPipeline = [
                         {
                             $unwind: '$products'
@@ -188,6 +190,7 @@ const getAnalyticsChartData = async (req, res) => {
             }
         }
         const data = await Order.aggregate(aggregationPipeline)
+        console.log(data)
         const chartData = constructGraphData(period, data)
         return res.status(200).json({ chartData })
     } catch (error) {
