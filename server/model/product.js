@@ -89,7 +89,8 @@ const ProductSchema = new mongoose.Schema({
         validate: {
             validator: (v) => v >= 0,
             message: 'Product sold count should be a positive number'
-        }
+        },
+        default: 0  
     }
 }, { timestamps: true })
 

@@ -6,6 +6,7 @@ import { jsPDF } from 'jspdf'
 
 const getOverviewData = async (req, res) => {
     const { period, limit = 0, startDate = '', endDate = '' } = req.query
+
     let dateRange = {}
 
     if (period) {
@@ -28,7 +29,20 @@ const getOverviewData = async (req, res) => {
                 }
             },
             {
-                $count: 'totalProducts'
+                $sort: { soldCount: -1 }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalProducts: { $sum: 1 },
+                    products: { $push: '$$ROOT' }
+                }
+            },
+            {
+                $project: {
+                    totalProducts: 1,
+                    products: { $slice: ['$products', isNaN(Number(limit)) ? 0 : Number(limit)] }
+                }
             }
         ])
         const customersResult = await User.aggregate([
@@ -72,7 +86,7 @@ const getOverviewData = async (req, res) => {
             },
         ])
         const { totalCustomers } = customersResult[0] || 0
-        const { totalProducts } = productsResult[0] || 0
+        const { totalProducts, products } = productsResult[0] || 0
         const {
             totalProductsSold,
             totalRevenue,
@@ -88,7 +102,8 @@ const getOverviewData = async (req, res) => {
             totalProductsSold,
             totalOfferAmount,
             totalCouponAmount,
-            orders
+            orders,
+            products
         })
 
     } catch (error) {

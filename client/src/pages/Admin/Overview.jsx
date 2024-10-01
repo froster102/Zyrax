@@ -8,7 +8,7 @@ import { useState } from "react";
 import DateFilter from "@/components/DateFilter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import OrderTable from "@/components/OrderTable";
-import { useFetchProductsQuery, useGetAnalyticsGraphDataQuery, useGetOverviewDataQuery, useLazyGetSalesReportQuery } from "@/store/api/adminApiSlice";
+import { useGetAnalyticsGraphDataQuery, useGetOverviewDataQuery, useLazyGetSalesReportQuery } from "@/store/api/adminApiSlice";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ProductCard from "@/components/ProductCard";
 import { FaFilePdf } from "react-icons/fa";
@@ -32,9 +32,9 @@ function Overview() {
     totalCustomers = 0,
     totalRevenue = 0,
     totalProductsSold = 0,
-    orders = []
+    orders = [],
+    products = []
   } = {} } = useGetOverviewDataQuery({ filter, sort: '' })
-  const { data: { products = [] } = {} } = useFetchProductsQuery({ filter, sort: '' })
   const { data: { chartData = [] } = {} } = useGetAnalyticsGraphDataQuery({ filter: chartFilter, sort: '' })
 
   async function handleDownloadSalesReport(format) {
@@ -52,7 +52,6 @@ function Overview() {
       toast('Failed to download report')
     }
   }
-
   return (
     <>
       <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px] pb-10'>
@@ -64,27 +63,24 @@ function Overview() {
                 <FaFileDownload />
                 <p>Download report</p>
               </button>
-              <div className="">
-                {
-                  openDownloadDropdown &&
-                  <div className="absolute w-36">
-                    <div className="pt-2">
-                      <div className="bg-white border border-neutral-200 rounded-md">
-                        <span className="px-2 font-semibold text-sm">Select file type</span>
-                        <ul className="p-2 bg-white rounded-md">
-                          <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
-                            <FaFilePdf />
-                            <p>Pdf</p>
-                          </li>
-                          <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
-                            <FaFileExcel />
-                            <p>Excel</p>
-                          </li>
-                        </ul>
-                      </div>
+              <div className={`transition ease-in-out duration-300 ${openDownloadDropdown ? 'opacity-1' : 'opacity-0'} `}>
+                <div className="absolute w-36">
+                  <div className="pt-2">
+                    <div className="bg-white border border-neutral-200 rounded-md">
+                      <span className="px-2 font-semibold text-sm">Select file type</span>
+                      <ul className="p-2 bg-white rounded-md">
+                        <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
+                          <FaFilePdf />
+                          <p>Pdf</p>
+                        </li>
+                        <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
+                          <FaFileExcel />
+                          <p>Excel</p>
+                        </li>
+                      </ul>
                     </div>
                   </div>
-                }
+                </div>
               </div>
             </div>
             <DateFilter
@@ -118,7 +114,7 @@ function Overview() {
           </div>
           <Card className="border bg-stone-100 border-stone-200 shadow-lg rounded-lg max-w-[424px] w-full">
             <CardHeader>
-              <CardTitle>Notifications</CardTitle>
+              <CardTitle>Top 10 Categories</CardTitle>
               <CardContent>
               </CardContent>
             </CardHeader>
@@ -143,7 +139,7 @@ function Overview() {
           </Card>
           <Card className="max-w-[424px] w-full">
             <CardHeader>
-              <CardTitle>Top Products</CardTitle>
+              <CardTitle>Top 10 Products</CardTitle>
             </CardHeader>
             <CardContent>
               <ScrollArea className='max-w-full whitespace-nowrap'>
