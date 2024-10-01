@@ -1,16 +1,15 @@
 import UserTable from "../../components/UserTable";
-import { useBlockUserMutation, useFetchUsersQuery, useUnblockUserMutation } from "../../features/adminApiSlice";
+import { useBlockUserMutation, useFetchUsersQuery, useUnblockUserMutation } from "../../store/api/adminApiSlice";
 import toast, { Toaster } from "react-hot-toast";
 
 function Users() {
-    const { data: users, isLoading: isUsersLoading, refetch } = useFetchUsersQuery()
+    const { data: users, isLoading: isUsersLoading } = useFetchUsersQuery()
     const [blockUser] = useBlockUserMutation()
     const [unblockUser] = useUnblockUserMutation()
 
     async function blockUserById({ id }) {
         try {
             const res = await blockUser(id).unwrap()
-            refetch()
             toast(res?.message)
         } catch (e) {
             toast(e?.data?.message)
@@ -20,10 +19,9 @@ function Users() {
     async function unblockUserById(id) {
         try {
             const res = await unblockUser(id).unwrap()
-            refetch()
             toast(res?.message)
         } catch (error) {
-            console.log(error)
+            toast(error?.data?.message)
         }
     }
 

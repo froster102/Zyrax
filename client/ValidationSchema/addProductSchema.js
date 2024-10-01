@@ -24,7 +24,7 @@ const addProductSchema = z.object({
     gender: z.enum(['men', 'women'], { message: 'Select a valid gender' }),
     price: z.string().transform(val => parseInt(val)).pipe(z.number().min(100, 'Price must number at least 100 or greater')),
     stock: stockObjectSchema,
-    discount: z.string().optional(),
+    offer: z.string().optional(),
     category: z.string().min(1, 'Please select one category'),
     images: imagesSchema
 })

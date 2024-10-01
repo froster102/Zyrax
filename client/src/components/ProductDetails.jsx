@@ -5,7 +5,7 @@ import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import Row from './Row';
 import Ratings from './Ratings';
-import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetProductDeatilsQuery, useGetProductsQuery, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from '../features/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from '../store/api/userApiSlice';
 import { useEffect, useState } from 'react';
 import ProductImageModal from './ProductImageModal';
 import BreadCrumbs from './BreadCrumbs';
@@ -13,14 +13,16 @@ import _ from 'lodash'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, addToWishlist, removeFromWishlist, selectActiveGender, selectCartItems, selectWishlistItems } from '../features/userSlice';
-import { selectUserToken } from '../features/authSlice';
+import { addToCart, addToWishlist, removeFromWishlist, selectActiveGender, selectCartItems, selectWishlistItems } from '../store/slices/userSlice';
+import { selectUserToken } from '../store/slices/authSlice';
 import ProductDetailsAccordion from './ProductDetailsAccordion';
 import { IoCart, IoCartOutline } from "react-icons/io5";
 import Unavailable from './Unavailable';
 import StockOut from './StockOut';
 import { AnimatePresence } from 'framer-motion';
-
+import { useGetProductDeatilsQuery, useGetProductsQuery } from '../store/api/productApiSlice';
+import { toast } from 'react-toastify';
+import { calculateDiscount } from '../utils/helper'
 
 const RATINGS = [
     {
@@ -40,7 +42,6 @@ const CUSTOMER_IMAGES = []
 
 function ProductDetails() {
     const [selectedSize, setSelectedSize] = useState('')
-    const [selectedQty, setSelectedQty] = useState(1)
     const [error, setError] = useState(false)
     const { name } = useParams()
     const { pathname } = useLocation()
@@ -48,8 +49,8 @@ function ProductDetails() {
     const wishlistItems = useSelector(selectWishlistItems)
     const cartItems = useSelector(selectCartItems)
     const { data: product, isError: isProductDeatilsError, isLoading: isProductLoading, refetch: refetchProductDeatils } = useGetProductDeatilsQuery(name)
-    const { data: similiarProducts, isError: isSimilarProductsError, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
-    const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchUserWishlistItems } = useGetUserWishlistItemsQuery()
+    const { data: { products: similiarProducts = [] } = {}, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
+    const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading } = useGetUserWishlistItemsQuery()
     const [imageModal, setImageModal] = useState(false)
     const [productImgPrev, setProductImgPrev] = useState(product?.imageUrls[0])
     const [activeWishlistItem, setActiveWishlistItem] = useState(false)
@@ -73,13 +74,7 @@ function ProductDetails() {
 
     useEffect(() => {
         let wishlistItemIds = []
-        if (userAuth && !isUserWishlistItemsLoading && !isProductLoading) {
-            wishlistItemIds = userWishlistItems.map(item => item?._id)
-        } else {
-            if (wishlistItems.length > 0 && !isProductLoading) {
-                wishlistItemIds = wishlistItems.map(item => item?._id)
-            }
-        }
+        wishlistItemIds = wishlistItems.map(item => item?._id)
         wishlistItemIds.includes(product?._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
         if (cartItems.length > 0 && !isProductLoading) {
             const cartItemIds = cartItems.map(item => item?.product?._id)
@@ -91,7 +86,6 @@ function ProductDetails() {
         if (!activeWishlistItem) {
             try {
                 userAuth && await addToUserWishlist({ productId: product._id }).unwrap()
-                userAuth && refetchUserWishlistItems()
                 dispatch(addToWishlist({ product }))
             } catch (error) {
                 ''
@@ -99,7 +93,6 @@ function ProductDetails() {
         } else {
             userAuth && await removeFromUserWishlist({ itemId: product._id }).unwrap()
             dispatch(removeFromWishlist({ productId: product._id }))
-            userAuth && refetchUserWishlistItems()
             setActiveWishlistItem(false)
         }
     }
@@ -109,12 +102,14 @@ function ProductDetails() {
             setError(true)
             return
         }
+        // const currItemQty = cartItems.find(item => item.product._id === product._id)?.selectedQty
+        // console.log(currItemQty)
         if (!activeCartItem) {
-            dispatch(addToCart({ product, selectedSize, selectedQty }))
             try {
-                userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize, selectedQty }] }).unwrap()
+                userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize }] }).unwrap()
+                dispatch(addToCart({ product, selectedSize, selectedQty: 1 }))
             } catch (error) {
-                ''
+                toast(error?.data?.message)
             }
         }
     }
@@ -161,7 +156,16 @@ function ProductDetails() {
                         </div>
                         <div className='w-full h-[1px] bg-[#CFCBCB]'></div>
                         <div className='md:px-8 px-4 mt-4'>
-                            <p className='lg:text-2xl md:text-xl font-semibold w-full'>₹ {product?.price || <Skeleton width={'50px'} />}</p>
+                            {product?.offer ? <p className='flex items-center gap-2 lg:text-2xl md:text-xl font-semibold w-full'>
+                                {'₹' + parseInt(calculateDiscount(product.price, product.offer.discountPercentage))}
+                                <span className='block text-sm items-end relative text-neutral-500'>
+                                    ₹{product.price}
+                                    <span className='block absolute top-[5px]'>-----</span>
+                                    <span className='pl-2 text-lg text-green-500'>{product.offer.discountPercentage}%</span>
+                                </span>
+                            </p>
+                                : <p className='lg:text-2xl md:text-xl font-semibold w-full'>₹ {product?.price || <Skeleton width={'50px'} />}</p>
+                            }
                             <p className='font-light'>MRP incl. of all taxes</p>
                             <div className='h-[23px] bg-[#D9D9D9] w-fit rounded-lg border border-[#CFCBCB]'>
                                 <div className='flex text-sm px-2 justify-center items-center font-semibold gap-2'>
@@ -192,12 +196,12 @@ function ProductDetails() {
                                 <div className='sm:block hidden w-full'>
                                     {activeCartItem
                                         ? <Link to={'/cart'} >
-                                            <button className='md:px-4 md:py-2 md:text-base p-2 text-sm  border border-[#CFCBCB] uppercase rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center'>
+                                            <button className='md:px-4 md:py-2 md:text-base p-2 text-sm  border border-[#CFCBCB] uppercase rounded-lg font-medium text-white bg-neutral-800 inline-flex items-center justify-center'>
                                                 <IoCart /> Go to cart
                                             </button>
                                         </Link>
                                         : <button onClick={() => { handleCartItems(product) }}
-                                            className='md:px-4 md:py-2 md:text-base p-2 text-sm  border border-[#CFCBCB] rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'
+                                            className='md:px-4 md:py-2 md:text-base p-2 text-sm  border border-[#CFCBCB] rounded-lg font-medium text-white bg-neutral-800 inline-flex items-center justify-center uppercase'
                                         >
                                             <IoCartOutline /> Add to Cart</button>
                                     }
@@ -205,15 +209,15 @@ function ProductDetails() {
                                         {activeWishlistItem ? <><IoMdHeart /> Added</> : <><IoMdHeartEmpty /> Add</>} to Wishlist</button>
                                 </div>
                                 {
-                                    product && <div className='sm:hidden fixed flex w-full justify-center bottom-0 left-1/2 -translate-x-1/2 z-50 bg-stone-100'>
+                                    product && <div className='sm:hidden fixed flex w-full justify-center bottom-0 left-1/2 -translate-x-1/2 z-50 bg-neutral-100'>
                                         {activeCartItem
                                             ? <Link to={'/cart'} >
-                                                <button className='p-2 text-sm sm:text-lg w-full text-nowrap border border-[#CFCBCB] rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'>
+                                                <button className='p-2 text-sm sm:text-lg w-full text-nowrap border border-[#CFCBCB] rounded-lg font-medium text-white bg-neutral-800 inline-flex items-center justify-center uppercase'>
                                                     <IoCart /> Go to cart
                                                 </button>
                                             </Link>
                                             : <button onClick={() => { handleCartItems(product) }}
-                                                className='p-2 text-sm sm:text-lg w-full border border-[#CFCBCB] rounded-lg font-medium text-white bg-stone-800 inline-flex items-center justify-center uppercase'
+                                                className='p-2 text-sm sm:text-lg w-full border border-[#CFCBCB] rounded-lg font-medium text-white bg-neutral-800 inline-flex items-center justify-center uppercase'
                                             >
                                                 <IoCartOutline /> Add to Cart</button>
                                         }

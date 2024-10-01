@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
-import { useAddCategoryMutation, useGetCategoriesQuery } from '../features/adminApiSlice'
+import { useAddCategoryMutation, useGetCategoriesQuery } from '../store/api/adminApiSlice'
 import toast, { Toaster } from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,7 +18,6 @@ function AddCategoryModal({ closeModal, refetch }) {
     })
 
     async function onSubmit(data) {
-        console.log(data)
         try {
             const res = await addCategory(data).unwrap()
             toast(res?.message)
@@ -26,7 +25,6 @@ function AddCategoryModal({ closeModal, refetch }) {
             reset()
             closeModal()
         } catch (error) {
-            console.log(error)
             toast(error?.data?.message)
         }
     }
@@ -77,6 +75,11 @@ function AddCategoryModal({ closeModal, refetch }) {
                                     </select>
                                 }
                                 {errors.parentCategory && <span className='text-red-700 text-sm block w-full'>{errors.parentCategory?.message}</span>}
+                                <select {...register('categortyOffer')}>
+                                    {
+                                        
+                                    }
+                                </select>
                                 <div className='flex w-full justify-center'>
                                     <button disabled={isLoading} className='flex gap-1 items-center text-center mt-2 bg-black px-4 py-2 text-white rounded-full'> {isLoading ? <RotatingLines width='20' strokeColor='white' /> : 'Add'}</button>
                                 </div>

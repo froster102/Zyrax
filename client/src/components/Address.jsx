@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import AddAddressModal from "./AddAddressModal";
-import { useAddAddressMutation, useDeleteAddressMutation, useGetProfileQuery, useUpdateAddressMutation } from "../features/userApiSlice";
+import { useAddAddressMutation, useDeleteAddressMutation, useGetProfileQuery, useUpdateAddressMutation } from "../store/api/userApiSlice";
 import { CiEdit } from "react-icons/ci";
 import { LuDelete } from "react-icons/lu";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { addAddress } from "../features/userSlice";
+import { addAddress } from "../store/slices/userSlice";
 import PropsTypes from 'prop-types'
 import _ from "lodash";
 
@@ -67,17 +67,17 @@ function Address({ deliveryAddress, setDeliveryAddress, orderMode }) {
 
     return (
         <>
-            <div className="border border-stone-300 rounded-lg p-4 h-full flex gap-2 max-w-[1200px] w-fit flex-wrap pb-16">
+            <div className="border border-neutral-300 rounded-lg p-4 h-full flex gap-2 max-w-[1200px] w-fit flex-wrap pb-16">
                 {
                     !isLoading && profileData.addresses.map((address, i) => {
-                        return <div key={i} className="border border-stone-300 md:w-64 w-full rounded-lg p-4 font-medium relative">
+                        return <div key={i} className="border border-neutral-300 md:w-64 w-full rounded-lg p-4 font-medium relative">
                             <input name="address" checked={deliveryAddress === address} onChange={() => {
                                 if (orderMode) {
                                     setDeliveryAddress(address)
                                 }
                             }} className="absolute right-4" type="radio" />
                             <p className="font-semibold">{_.startCase(address.firstName)} {_.startCase(address.lastName)}</p>
-                            <p className="font-normal text-stone-700">
+                            <p className="font-normal text-neutral-700">
                                 {address.buildingName}
                                 <br />
                                 {address.street}
@@ -100,7 +100,7 @@ function Address({ deliveryAddress, setDeliveryAddress, orderMode }) {
                     }
                     )
                 }
-                <div className="border border-stone-300 md:w-64 w-full h-56 rounded-lg flex justify-center items-center">
+                <div className="border border-neutral-300 md:w-64 w-full h-56 rounded-lg flex justify-center items-center">
                     <div onClick={() => {
                         setMode('')
                         setOpenAddAddressModal(true)

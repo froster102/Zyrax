@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import { RotatingLines } from "react-loader-spinner";
 import ConfirmationModal from "./ConfirmationModal";
 import StatusChip from "./StatusChip";
+import { formatISODate } from '../utils/helper'
 
 function UserTable({ users, blockUserById, isUserLoading, unblockUserById }) {
     const [viewModal, setViewModal] = useState(false)
@@ -30,16 +31,25 @@ function UserTable({ users, blockUserById, isUserLoading, unblockUserById }) {
                 <thead className="text-xs text-gray-700 uppercase bg-neutral-300">
                     <tr>
                         <th className="px-6 py-3">
-                            User ID
-                        </th>
-                        <th>
                             Name
                         </th>
                         <th className="px-6 py-3">
                             Email
                         </th>
                         <th className="px-6 py-3">
+                            Phone Number
+                        </th>
+                        <th className="px-6 py-3">
                             Status
+                        </th>
+                        <th className="px-6 py-3">
+                            Created At
+                        </th>
+                        <th className="px-6 py-3">
+                            Last Login
+                        </th>
+                        <th className="px-6 py-3">
+                            Total Spent
                         </th>
                         <th className="px-6 py-3">
                             Action
@@ -59,32 +69,41 @@ function UserTable({ users, blockUserById, isUserLoading, unblockUserById }) {
                                 return (
                                     <tr key={i} className="border-b border-b-[#e7e0e0] text-black">
                                         <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
-                                            {user._id}
-                                        </td>
-                                        <td className="px-2 py-4">
                                             {user.firstName} {user.lastName}
                                         </td>
                                         <td className="px-6 py-4">
                                             {user.email}
                                         </td>
+                                        <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
+                                            {user?.phoneNumber}
+                                        </td>
                                         <td className="px-6 py-4">
                                             <StatusChip status={user.status} />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
+                                            {formatISODate(user.createdAt)}
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
+                                            {formatISODate(user.lastLogin)}
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
+                                            {user.totalSpent}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">
                                                 <div onClick={() => {
                                                     setViewUser(user)
                                                     setViewModal(true)
-                                                }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     <GrView size={20} />
                                                 </div>
-                                                <div className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                <div className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     {user.status === 'active' ? <TbUserCancel onClick={() => {
                                                         setConfirmModalState(prev => (
                                                             {
                                                                 ...prev,
                                                                 show: true,
-                                                                message: `Are you sure you want to block user ${user.firstName} ${user.lastName}`,
+                                                                message: `Are you sure you want to block user ${user.firstName} ${user?.lastName}`,
                                                                 action: `${user.status === 'active' ? 'block' : 'unblock'}`,
                                                                 onConfirm: () => blockUserById({ id: user._id })
                                                             }

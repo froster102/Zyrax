@@ -1,12 +1,15 @@
 import express from 'express'
-import { logout, signin } from '../controller/admin/adminAuthController.js'
-import { blockUser, deleteUser, getUsers, unblockUser, viewUser } from '../controller/admin/adminUserController.js'
-import { addProduct, blockProduct, deleteProduct, editProduct, getProducts, viewProduct } from '../controller/admin/adminProductController.js'
 import { adminAuth } from '../middlewares/authMiddleware.js'
 import multer from 'multer'
-import { addCategory, blockCategory, deleteCategory, editCategory, getCategories } from '../controller/admin/AdminCategoryController.js'
-import { changeProductOrderStatus, getAllOrders } from '../controller/admin/adminOrderController.js'
-import { approveReturn, getAllReturns } from '../controller/admin/adminReturnController.js'
+import * as authController from '../controller/admin/authController.js'
+import * as userController from '../controller/admin/userController.js'
+import * as orderController from '../controller/admin/orderController.js'
+import * as productController from '../controller/admin/productController.js'
+import * as categoryController from '../controller/admin/categoryController.js'
+import * as returnController from '../controller/admin/returnController.js'
+import * as couponController from '../controller/admin/couponController.js'
+import * as offerController from '../controller/admin/offerController.js'
+import * as analyticsController from '../controller/admin/analyticsController.js'
 
 const router = express.Router()
 
@@ -14,35 +17,48 @@ const upload = multer({
     storage: multer.memoryStorage(),
 })
 
-router.post('/auth/signin', signin)
+router.post('/auth/signin', authController.signin)
 
 router.use(adminAuth)
 
-router.get('/users', getUsers)
-router.get('/users/:id', viewUser)
-router.patch('/users/:id/block', blockUser)
-router.patch('/users/:id/unblock', unblockUser)
-router.delete('/users/:id', deleteUser)
+router.get('/analytics/overview', analyticsController.getOverviewData)
+router.get('/analytics/chart', analyticsController.getAnalyticsChartData)
+router.get('/analytics/downloads/salesReport', analyticsController.downloadAnalyticsReport)
 
-router.get('/products', getProducts)
-router.get('/products/:id', viewProduct)
-router.post('/products', upload.array('images'), addProduct)
-router.put('/products/:id', upload.array('images'), editProduct)
-router.patch('/products/:id/block', blockProduct)
-router.delete('/products/:id', deleteProduct)
+router.get('/users', userController.getUsers)
+router.get('/users/:id', userController.viewUser)
+router.patch('/users/:id/block', userController.blockUser)
+router.patch('/users/:id/unblock', userController.unblockUser)
+router.delete('/users/:id', userController.deleteUser)
 
-router.get('/orders/', getAllOrders)
-router.patch('/orders/:orderId/products/:productId/status', changeProductOrderStatus)
+router.get('/products', productController.getProducts)
+router.get('/products/:id', productController.viewProduct)
+router.post('/products', upload.array('images'), productController.addProduct)
+router.put('/products/:id', upload.array('images'), productController.editProduct)
+router.patch('/products/:id/block', productController.blockProduct)
+router.delete('/products/:id', productController.deleteProduct)
 
-router.get('/returns', getAllReturns)
-router.put('/returns', approveReturn)
+router.get('/orders/', orderController.getAllOrders)
+router.patch('/orders/:orderId/products/:itemId/status', orderController.changeProductOrderStatus)
 
-router.get('/categories', getCategories)
-router.post('/categories', addCategory)
-router.put('/categories/:id', editCategory)
-router.patch('/categories/:id/block', blockCategory)
-router.delete('/categories/:id', deleteCategory)
-router.get('/logout', logout)
+router.get('/returns', returnController.getAllReturns)
+router.put('/returns', returnController.approveReturn)
+
+router.get('/coupons', couponController.getCoupons)
+router.post('/coupons', couponController.addCoupon)
+router.delete('/coupons/:couponId', couponController.deleteCoupon)
+
+router.get('/offers', offerController.getOffers)
+router.post('/offers', offerController.addOffer)
+router.delete('/offers/:offerId', offerController.deleteOffer)
+
+router.get('/categories', categoryController.getCategories)
+router.post('/categories', categoryController.addCategory)
+router.put('/categories/:id', categoryController.editCategory)
+router.patch('/categories/:id/block', categoryController.blockCategory)
+router.delete('/categories/:id', categoryController.deleteCategory)
+
+router.get('/logout', authController.logout)
 
 
 export default router

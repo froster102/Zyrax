@@ -16,16 +16,17 @@ const OrderSchema = new mongoose.Schema({
             message: 'User id not found'
         }
     },
-    // status: {
-    //     type: String,
-    //     enum: {
-    //         values: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
-    //         message: 'Status not valid',
-    //         default: 'pending'
-    //     },
-    //     required: [true, 'Order status is required']
-    // },
-    order_id: { type: String },
+    status: {
+        type: String,
+        enum: {
+            values: ['initiated', 'pending', 'confirmed', 'failed'],
+            message: 'Status not valid',
+            default: 'pending'
+        },
+        required: [true, 'Order status is required']
+    },
+    orderId: { type: String },
+    payment_order_id: { type: String },
     totalAmount: {
         type: Number,
         validate: {
@@ -36,6 +37,7 @@ const OrderSchema = new mongoose.Schema({
     shipping: {
         addressId: {
             type: mongoose.SchemaTypes.ObjectId,
+            ref: 'Address',
             required: [true, 'Shipping address id is required'],
             validate: {
                 validator: async (v) => {
@@ -49,13 +51,17 @@ const OrderSchema = new mongoose.Schema({
     payment: {
         method: {
             type: String,
-            required: [true, 'Payment method is required'],
+            // required: [true, 'Payment method is required'],
             enum: {
                 values: [
                     'cash on delivery',
-                    'razorpay',
+                    'card',
+                    'upi',
+                    'wallet',
+                    'netbanking',
                     'zyraxWallet',
                     'paypal',
+
                 ],
                 message: 'Enter a valid payment method'
             }
@@ -92,8 +98,8 @@ const OrderSchema = new mongoose.Schema({
                 required: [true, 'Product quantity is required'],
                 default: 0,
                 validate: {
-                    validator: (v) => v > 0 && v <= 4,
-                    message: 'Minimum order quantity for a product is  4 per product',
+                    validator: (v) => v > 0 && v <= 5,
+                    message: 'Minimum order quantity for a product is 5 per product',
                 }
             },
             size: {
@@ -103,6 +109,9 @@ const OrderSchema = new mongoose.Schema({
                     message: 'Size not valid'
                 }
             },
+            orderPrice: {
+                type: Number,
+            },
             unitPrice: {
                 type: Number,
                 required: [true, 'Unit price is required'],
@@ -110,6 +119,9 @@ const OrderSchema = new mongoose.Schema({
                     validator: (v) => v > 100,
                     message: 'Unit price must be at a positive number greater than 100'
                 }
+            },
+            appliedOfferAmount: {
+                type: Number,
             },
             totalPrice: {
                 type: Number,
@@ -127,17 +139,23 @@ const OrderSchema = new mongoose.Schema({
             status: {
                 type: String,
                 enum: {
-                    values: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned', 'return requested'],
+                    values: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned', 'return requested', 'failed'],
                     message: 'Status not valid',
                     default: 'pending'
                 },
                 required: [true, 'Product order status is required']
             },
+            shippingDate: {
+                type: Date,
+            },
             cancelledDate: {
                 type: Date,
             },
         }
-    ]
+    ],
+    appliedCouponAmount: {
+        type: Number
+    }
 }, { timestamps: true })
 
 const Order = mongoose.model('Order', OrderSchema)

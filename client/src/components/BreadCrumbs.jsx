@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { selectActiveGender } from '../features/userSlice'
+import { selectActiveGender } from '../store/slices/userSlice'
 import PropTypes from 'prop-types'
 import { IoHomeSharp } from "react-icons/io5";
 

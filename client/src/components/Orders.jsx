@@ -1,16 +1,18 @@
 import { RotatingLines } from "react-loader-spinner"
-import { useFetchUserOrdersQuery } from "../features/userApiSlice"
+import { useFetchUserOrdersQuery } from "../store/api/userApiSlice"
 import _ from "lodash"
-import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { format, parseISO } from 'date-fns'
+import StatusChip from './StatusChip'
+import { useEffect } from "react"
 
 function Orders() {
-  const { data: orders, isLoading: isOrderLoading, refetch } = useFetchUserOrdersQuery()
+  const { data: orders, isLoading: isOrderLoading, refetch: refetchOrders } = useFetchUserOrdersQuery()
   const navigate = useNavigate()
 
   useEffect(() => {
-    refetch()
-  }, [refetch])
+    refetchOrders()
+  }, [refetchOrders])
 
   return (
     <>
@@ -18,15 +20,20 @@ function Orders() {
         <RotatingLines strokeColor='black' width='100' strokeWidth='2' />
       </div>
         : orders.map((order, i) => (
-          <div key={i} className="border border-stone-300 max-w-[824px]  pb-4 rounded-md mt-4">
-            <div className="bg-stone-200 rounded-t-md p-2 flex justify-between">
-              <p className="text-xs">Order ID: {order._id}</p>
-              <p className="text-xs">{order.createdAt.split(':')[0].split('T')[0].split('-').reverse().join('-')}</p>
+          <div key={i} className="border border-neutral-300 max-w-[824px] pb-4 rounded-md mt-4 relative">
+            <div className="bg-neutral-200 rounded-t-md p-2 flex justify-between">
+              <p className="text-sm">Order ID: {order.orderId}</p>
+              <div className="flex justify-center items-center gap-2">
+                <p className="text-sm">{format(parseISO(order.createdAt), 'dd MMM, yyy')}</p>
+                {
+                  order.status === 'failed' && <button className="px-4 py-2 rounded-lg text-sm bg-neutral-800 text-white">Retry Payment</button>
+                }
+              </div>
             </div>
             {
               order.products.map((product, i) => (
                 <div key={i} className="px-4">
-                  <div onClick={() => navigate(`/account/orders/details/${product.productId._id}`, { state: { product: product, orderId: order._id, orderDate: order.createdAt.split(':')[0].split('T')[0].split('-').reverse().join('-') } })} className="border border-stone-300 bg-stone-200 w-full min-h-[124px] rounded-md p-4 mt-4">
+                  <div onClick={() => navigate(`/account/orders/details?orderId=${order.orderId}&productId=${product.productId._id}`)} className="border border-neutral-300 bg-neutral-200 w-full min-h-[124px] rounded-md p-4 mt-4">
                     <div className="flex">
                       <img className="w-20" src={product.productId.imageUrls[0]} alt="" />
                       <div className="pl-4">
@@ -36,7 +43,7 @@ function Orders() {
                           <p className="text-xs font-light px-2">|</p>
                           <p className="text-xs font-light">Qty : {_.startCase(product.quantity)}</p>
                         </div>
-                        <p className="font-semibold text-sm">{_.startCase(product.status)}</p>
+                        <StatusChip status={product.status} />
                       </div>
                     </div>
                   </div>

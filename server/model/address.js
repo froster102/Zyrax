@@ -112,6 +112,9 @@ const AddressSchema = new mongoose.Schema({
             message: 'Enter a valid phone number'
         }
     },
+    default: {
+        type: Boolean
+    }
 })
 
 const Address = mongoose.model('Address', AddressSchema)

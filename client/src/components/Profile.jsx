@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useGetProfileQuery, useUpdateProfileMutation } from '../features/userApiSlice'
+import { useGetProfileQuery, useUpdateProfileMutation } from '../store/api/userApiSlice'
 import { useForm } from 'react-hook-form'
 import _ from 'lodash'
 import toast from 'react-hot-toast'
@@ -34,7 +34,7 @@ function Profile() {
     <>
       <h1>Profile</h1>
       <form action="" onSubmit={handleSubmit(onSubmit)}>
-        <div className="border border-[#CFCBCB] max-w-[754px] w-full rounded-md bg-stone-50 py-4 sm:px-8 px-4">
+        <div className="border border-[#CFCBCB] max-w-[754px] w-full rounded-md bg-neutral-50 py-4 sm:px-8 px-4">
           <div className='sm:flex sm:justify-between py-8'>
             <div>
               <label htmlFor="">Email Id</label>
@@ -44,7 +44,7 @@ function Profile() {
                   value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g,
                   message: 'Enter a valid email'
                 }
-              })} type="text" disabled className='w-full block p-2 bg-stone-200 rounded-md border border-[#CFCBCB] focus:outline-none' />
+              })} type="text" disabled className='w-full block p-2 bg-neutral-200 rounded-md border border-[#CFCBCB] focus:outline-none' />
               {errors.email && <span className='text-red-700 text-sm'>{errors.email?.message}</span>}
             </div>
           </div>
@@ -101,12 +101,12 @@ function Profile() {
                 <label className='flex justify-between items-center pt-8' htmlFor="">Default Address<Link to={'/account/profile-address'} ><span className='text-sm hover:underline'>Add/Edit</span></Link></label>
                 <textarea
                   value={`${profileData?.addresses[0]?.firstName || ''} ${profileData?.addresses[0]?.lastName || ''}\n${profileData?.addresses[0]?.buildingName || ''}\n${profileData?.addresses[0]?.street || ''},${profileData?.addresses[0]?.city || ''}\n${profileData?.addresses[0]?.state || ''} ${profileData?.addresses[0]?.pincode || ''}`}
-                  disabled className='w-full min-h-[100px] block p-2 border border-[#CFCBCB] focus:outline-none rounded-md bg-stone-300 text-sm' type="text" />
+                  disabled className='w-full min-h-[100px] block p-2 border border-[#CFCBCB] focus:outline-none rounded-md bg-neutral-300 text-sm' type="text" />
               </div>
             </div>
           </div>
           <div className='flex w-full justify-center mt-2'>
-            <button disabled={isProfileUpdating || !isDirty} className={`px-4 py-1 text-white ${isDirty ? 'bg-stone-900' : 'bg-stone-400'} rounded-md`} >{isProfileUpdating ? <RotatingLines strokeColor='white' width='20' /> : 'Save'}</button>
+            <button disabled={isProfileUpdating || !isDirty} className={`px-4 py-1 text-white ${isDirty ? 'bg-neutral-900' : 'bg-neutral-400'} rounded-md`} >{isProfileUpdating ? <RotatingLines strokeColor='white' width='20' /> : 'Save'}</button>
           </div>
         </div>
       </form>

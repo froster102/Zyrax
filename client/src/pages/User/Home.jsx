@@ -2,18 +2,18 @@ import { useEffect } from "react"
 import Banner from "../../components/Banner"
 import Newsletter from "../../components/Newsletter"
 import Row from "../../components/Row"
-import { useGetProductsQuery } from "../../features/userApiSlice"
+import { useGetProductsQuery } from "../../store/api/productApiSlice"
 import TrendingRow from "../../components/TrendingRow"
 import { Link, useLocation } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
-import { selectActiveGender, selectGender } from "../../features/userSlice"
+import { selectActiveGender, selectGender } from "../../store/slices/userSlice"
 
 function Home() {
   const { pathname } = useLocation()
   const activeGender = useSelector(selectActiveGender)
   const gender = pathname.replace(/\//g, '')
-  const { data: topwears, isError: isTopwearsError, isLoading: isTopwearsLoading } = useGetProductsQuery({ category: 'topwears', gender })
-  const { data: bottomwears, isError: isBottomwearsError, isLoading: isBottomwearsLoading } = useGetProductsQuery({ category: 'bottomwears', gender })
+  const { data: { products: topwears = [] } = {}, isError: isTopwearsError, isLoading: isTopwearsLoading } = useGetProductsQuery({ filter: { category: 'topwears', gender } })
+  const { data: { products: bottomwears = [] } = {}, isError: isBottomwearsError, isLoading: isBottomwearsLoading } = useGetProductsQuery({ filter: { category: 'bottomwears', gender } })
   const dispatch = useDispatch()
 
   useEffect(() => {

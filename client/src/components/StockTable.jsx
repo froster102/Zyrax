@@ -6,7 +6,7 @@ function StockTable({ stock }) {
         <div className='border border-neutral-400 rounded-md w-fit'>
             <table>
                 <thead className='bg-neutral-300-300'>
-                    <tr className='border-b border-stone-400'>
+                    <tr className='border-b border-neutral-400'>
                         {stock.map(({ size },i) => <th className='px-2 text-center' key={i}><p>{size}</p></th>)}
                     </tr>
                 </thead>

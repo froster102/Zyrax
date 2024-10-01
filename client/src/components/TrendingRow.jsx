@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import TrendingCard from './TrendingCard'
-import { useGetProductsQuery } from '../features/userApiSlice'
+import { useGetProductsQuery } from '../store/api/productApiSlice'
 import TrendingRowSkeleton from './TrendingRowSkeleton'
 import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 import { Link, useLocation } from 'react-router-dom'
@@ -8,7 +8,7 @@ import { Link, useLocation } from 'react-router-dom'
 function TrendingRow() {
     const [showProducts, setShowProducts] = useState('topwears')
     const { pathname } = useLocation()
-    const { data: products, error, isLoading: isProductsLoading } = useGetProductsQuery({ latest: true, category: showProducts, gender: pathname.replace(/\//g, '') })
+    const { data: { products = [] } = {}, error, isLoading: isProductsLoading } = useGetProductsQuery({ filter: { latest: true, category: showProducts, gender: pathname.replace(/\//g, '') } })
     const sliderRef = useRef(null)
 
     function scrollLeft() {

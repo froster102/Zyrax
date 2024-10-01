@@ -22,7 +22,7 @@ function WishlistProductCard({ product, removeItemFromWishlist, moveItemToCart }
                                 e.preventDefault()
                                 e.stopPropagation()
                                 moveItemToCart(product)
-                            }} className='w-full md:text-base text-sm font-medium bg-stone-100 rounded-md hover:bg-black transition ease-in duration-200 hover:text-white'>Move to Cart</button>
+                            }} className='w-full md:text-base text-sm font-medium bg-neutral-100 rounded-md hover:bg-black transition ease-in duration-200 hover:text-white'>Move to Cart</button>
                         </div>
                     </div>
                 </Link>

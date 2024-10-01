@@ -50,12 +50,32 @@ const UserSchema = new mongoose.Schema({
     status: { type: String, enum: ['active', 'blocked', 'deleted'] },
     addresses: { type: [mongoose.SchemaTypes.ObjectId], ref: ('Address'), default: [] },
     verification_status: { type: Boolean },
-    createdAt: {
-        type: Date, default: Date.now(), index: {
+    verification_started: {
+        type: Date,
+        default: Date.now(),
+        index: {
             expires: '10m'
         }
+    },
+    lastLogin: {
+        type: Date,
+        default: Date.now()
+    },
+    orderCount: {
+        type: Number,
+        default: 0
+    },
+    totalSpent: {
+        type: Number,
+        default: 0
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
     }
-})
+
+
+}, { timestamps: true })
 
 const User = mongoose.model('User', UserSchema)
 

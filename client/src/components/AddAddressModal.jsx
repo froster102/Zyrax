@@ -2,7 +2,7 @@ import { IoMdClose } from "react-icons/io"
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import _ from "lodash"
-import { useGetProfileQuery } from "../features/userApiSlice"
+import { useGetProfileQuery } from "../store/api/userApiSlice"
 import { useEffect } from "react"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { addAddressSchema } from "../../ValidationSchema/addAddressSchema"
@@ -85,40 +85,40 @@ function AddAddressModal({ closeModal, mode, editData, onSubmit, isAddressAdding
                             <form className="font-light" onSubmit={handleSubmit(onSubmit)}>
                                 <div className="flex justify-between w-full">
                                     <div>
-                                        <input {...register('firstName')} type="text" className='border border-stone-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2' placeholder="First Name" />
+                                        <input {...register('firstName')} type="text" className='border border-neutral-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2' placeholder="First Name" />
                                         {errors.firstName && <span className='text-red-700 text-sm block w-full'>{errors.firstName?.message}</span>}
                                     </div>
                                     <div className="pl-6">
-                                        <input {...register('lastName')} type="text" className='border border-stone-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2' placeholder="Last Name" />
+                                        <input {...register('lastName')} type="text" className='border border-neutral-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2' placeholder="Last Name" />
                                         {errors.lastName && <span className='text-red-700 text-sm block w-full'>{errors.lastName?.message}</span>}
                                     </div>
                                 </div>
-                                <input {...register('buildingName')} type="text" className='border border-stone-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2 mt-4' placeholder="House no, Building name" />
+                                <input {...register('buildingName')} type="text" className='border border-neutral-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2 mt-4' placeholder="House no, Building name" />
                                 {errors.buildingName && <span className='text-red-700 text-sm block w-full'>{errors.buildingName?.message}</span>}
-                                <input {...register('street')} type="text" className='border border-stone-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2 mt-4' placeholder="Street name ,Area" />
+                                <input {...register('street')} type="text" className='border border-neutral-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2 mt-4' placeholder="Street name ,Area" />
                                 {errors.street && <span className='text-red-700 text-sm block w-full'>{errors.street?.message}</span>}
                                 <div className="flex justify-between w-full pt-4">
                                     <div>
-                                        <input {...register('pincode')} type="text" className='border border-stone-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2' placeholder="Pincode" />
+                                        <input {...register('pincode')} type="text" className='border border-neutral-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2' placeholder="Pincode" />
                                         {errors.pincode && <span className='text-red-700 text-sm block w-full'>{errors.pincode?.message}</span>}
                                     </div>
                                     <div className="pl-4">
-                                        <input {...register('city')} type="text" className='border border-stone-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2' placeholder="City / District" />
+                                        <input {...register('city')} type="text" className='border border-neutral-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2' placeholder="City / District" />
                                         {errors.city && <span className='text-red-700 text-sm block w-full'>{errors.city?.message}</span>}
                                     </div>
                                 </div>
-                                <select className='border border-stone-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2 mt-4' {...register('state')}>
+                                <select className='border border-neutral-500 focus:outline-none h-[42px] w-full rounded-[12px] p-2 mt-4' {...register('state')}>
                                     <option value="">Select State</option>
                                     {states.map((state, i) => <option key={i} value={state} >{_.startCase(state)}</option>)}
                                 </select>
                                 {errors.state && <span className='text-red-700 text-sm block w-full'>{errors.state?.message}</span>}
                                 <div className="flex mt-4">
-                                    <div className="border border-stone-500 focus:outline-none h-[42px] rounded-l-[12px] p-2">+91</div>
-                                    <input {...register('phoneNumber')} type="text" className='border-l-0 border border-stone-500 focus:outline-none h-[42px] w-full rounded-r-[12px] p-2 ' placeholder="Phone Number" />
+                                    <div className="border border-neutral-500 focus:outline-none h-[42px] rounded-l-[12px] p-2">+91</div>
+                                    <input {...register('phoneNumber')} type="text" className='border-l-0 border border-neutral-500 focus:outline-none h-[42px] w-full rounded-r-[12px] p-2 ' placeholder="Phone Number" />
                                 </div>
                                 <div className='flex w-full justify-center'>
                                     {
-                                        mode === 'edit' ? <button disabled={!isDirty || isAddressUpdating} className={`flex gap-1 items-center text-center mt-2 ${isDirty ? 'bg-black' : 'bg-stone-400'} px-4 py-2 text-white rounded-md`}> {isAddressUpdating ? <RotatingLines strokeColor='white' width='20' /> : 'Edit'}</button>
+                                        mode === 'edit' ? <button disabled={!isDirty || isAddressUpdating} className={`flex gap-1 items-center text-center mt-2 ${isDirty ? 'bg-black' : 'bg-neutral-400'} px-4 py-2 text-white rounded-md`}> {isAddressUpdating ? <RotatingLines strokeColor='white' width='20' /> : 'Edit'}</button>
                                             : <button disabled={isAddressAdding} className='flex gap-1 items-center text-center mt-2 bg-black px-4 py-2 text-white rounded-md'> {isAddressAdding ? <RotatingLines strokeColor='white' width='20' /> : 'Add'}</button>
                                     }
                                 </div>

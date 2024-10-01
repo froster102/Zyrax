@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import Zyrax_icon from '../assets/options-list.png'
 import { useSelector } from 'react-redux'
-import { selectActiveGender } from '../features/userSlice'
+import { selectActiveGender } from '../store/slices/userSlice'
 
 function Header() {
     const gender = useSelector(selectActiveGender)

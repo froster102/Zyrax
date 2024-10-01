@@ -18,7 +18,8 @@ const TransactionSchema = new mongoose.Schema({
         }
     },
     date: {
-        type: mongoose.SchemaTypes.Date
+        type: mongoose.SchemaTypes.Date,
+        default: Date.now()
     },
     status: {
         type: String,

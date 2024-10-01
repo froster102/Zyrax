@@ -1,16 +1,17 @@
 import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom';
-import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useSigninMutation } from '../../features/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery } from '../../store/api/userApiSlice';
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
-import { selectUserToken, setUserCredentials } from '../../features/authSlice';
+import { selectUserToken, setUserCredentials } from '../../store/slices/authSlice';
 import { FaGoogle } from 'react-icons/fa6';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { addToWishlist, selectActiveGender, selectCartItems, selectWishlistItems } from '../../features/userSlice';
+import { addToWishlist, selectActiveGender, selectCartItems, selectWishlistItems } from '../../store/slices/userSlice';
 import { loginSchema } from '../../../ValidationSchema/loginSchema';
 import toast from 'react-hot-toast'
 import { RotatingLines } from 'react-loader-spinner'
+import { useSigninMutation } from '../../store/api/authApiSlice';
 
 function Login() {
     const dispatch = useDispatch()
@@ -48,7 +49,7 @@ function Login() {
                     refetchCart()
                 }
             } catch (error) {
-                console.log(error)
+                ''
             }
         }
         if (user) {

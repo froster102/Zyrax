@@ -2,7 +2,7 @@ import { MdDelete } from "react-icons/md";
 import { GrView } from "react-icons/gr";
 import { FaEdit } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useBlockProductMutation, useDeleteProductMutation } from "../features/adminApiSlice";
+import { useBlockProductMutation, useDeleteProductMutation } from "../store/api/adminApiSlice";
 import toast, { Toaster } from 'react-hot-toast'
 import { TbBarrierBlock, TbBarrierBlockOff } from "react-icons/tb";
 import { useState } from "react";
@@ -13,9 +13,10 @@ import StatusChip from "./StatusChip";
 import StockTable from "./StockTable";
 import ConfirmationModal from './ConfirmationModal'
 import { RotatingLines } from "react-loader-spinner";
+import Pagination from "./Pagination";
 
 
-function ProductTable({ products, isProductsLoading, refetch }) {
+function ProductTable({ filter, setFilter, products, isProductsLoading, refetch, totalCount }) {
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
     const [blockProduct] = useBlockProductMutation()
@@ -53,6 +54,13 @@ function ProductTable({ products, isProductsLoading, refetch }) {
         }
     }
 
+    function setPage(page) {
+        setFilter(prev => ({
+            ...prev,
+            page: page
+        }))
+    }
+
     return (
         <>
             <Toaster
@@ -74,7 +82,7 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                     <Link to='/admin/dashboard/products/add' ><button className="bg-black text-sm text-white font-medium rounded-3xl w-fit h-fit px-4 py-2">Add new product</button></Link>
                 </div>
                 <div className="pt-4">
-                    <table className="w-full text-sm text-left rtl:text-right shadow-xl text-gray-500 bg-neutral-200">
+                    <table className="w-full text-sm text-left rtl:text-right text-gray-500 bg-neutral-200">
                         <thead className="text-xs text-gray-700 uppercase bg-neutral-300 ">
                             <tr>
                                 <th className="px-6 py-3">
@@ -91,6 +99,9 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                                 </th>
                                 <th className="px-6 py-3">
                                     Status
+                                </th>
+                                <th className="px-6 py-3">
+                                    Sold Count
                                 </th>
                                 <th className="px-6 py-3">
                                     Action
@@ -131,11 +142,14 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                                             <StatusChip status={product.status} />
                                         </td>
                                         <td className="px-6 py-4">
+                                            <StatusChip status={product.soldCount} />
+                                        </td>
+                                        <td className="px-6 py-4">
                                             <div className="flex gap-2">
-                                                <div className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                <div className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     <GrView size={20} className="hover:text-white" />
                                                 </div>
-                                                <div onClick={() => { navigate(`/admin/dashboard/products/${product._id}/edit`) }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                <div onClick={() => { navigate(`/admin/dashboard/products/${product._id}/edit`) }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     <FaEdit size={20} />
                                                 </div>
                                                 <div onClick={() => {
@@ -146,7 +160,7 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                                                         message: `Are you sure to ${product.status === 'active' ? 'block' : 'unblock'} product ${product.name} ?`,
                                                         onConfirm: () => handleBlockProduct({ id: product._id })
                                                     }))
-                                                }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     {product.status === 'active' ? <TbBarrierBlock size={20} /> : <TbBarrierBlockOff size={20} />}
                                                 </div>
                                                 <div onClick={() => {
@@ -157,7 +171,7 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                                                         message: `Are you sure you want to delete product ${product.name} ?`,
                                                         onConfirm: () => handleDelete({ id: product._id })
                                                     }))
-                                                }} className="w-fit p-1 rounded-md hover:bg-zinc-900 hover:text-white transition ease-in">
+                                                }} className="w-fit p-1 rounded-md hover:bg-neutral-900 hover:text-white transition ease-in">
                                                     <MdDelete size={20} />
                                                 </div>
                                             </div>
@@ -167,8 +181,17 @@ function ProductTable({ products, isProductsLoading, refetch }) {
                             })}
                         </tbody>
                     </table>
+                    <div className="flex w-full h-fit items-center justify-between px-4">
+                        <p className="justify-self-start font-medium">Total {totalCount} products</p>
+                        <Pagination
+                            totalPages={Math.ceil(totalCount / filter.limit)}
+                            currentPage={filter.page}
+                            onPageChange={setPage}
+                        />
+                    </div>
                 </div>
             </div>
+
             <ConfirmationModal
                 show={confirmModalState.show}
                 action={confirmModalState.action}
@@ -181,9 +204,12 @@ function ProductTable({ products, isProductsLoading, refetch }) {
 }
 
 ProductTable.propTypes = {
+    filter: PropTypes.object,
+    setFilter: PropTypes.func,
     products: PropTypes.arrayOf(object),
     isProductsLoading: PropTypes.bool.isRequired,
-    refetch: PropTypes.func.isRequired
+    refetch: PropTypes.func.isRequired,
+    totalCount: PropTypes.number
 }
 
 export default ProductTable
