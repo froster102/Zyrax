@@ -27,6 +27,7 @@ function constructQueryParams(params) {
     addParam('limit', params?.limit)
     addParam('gender', params?.gender)
     addParam('sort', params?.sort)
+    addParam('format', params?.format)
     addParam('minPrice', params?.minPrice)
     addParam('maxPrice', params?.maxPrice)
     addParam('startDate', params?.startDate)

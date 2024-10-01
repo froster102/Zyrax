@@ -53,7 +53,6 @@ const adminApiSlice = apiSlice.injectEndpoints({
         }),
         fetchProducts: builder.query({
             query: ({ filter, sort }) => {
-                console.log('filter')
                 const params = { ...filter, sort }
                 const query = constructQueryParams(params)
                 return `/admin/products?${query}`
@@ -188,8 +187,8 @@ const adminApiSlice = apiSlice.injectEndpoints({
             })
         }),
         getOverviewData: builder.query({
-            query: ({ filter, sort }) => {
-                const params = { ...filter, sort }
+            query: ({ filter, sort, format }) => {
+                const params = { ...filter, sort, format }
                 const query = constructQueryParams(params)
                 return `/admin/analytics/overview/?${query}`
             }
@@ -200,6 +199,18 @@ const adminApiSlice = apiSlice.injectEndpoints({
                 const query = constructQueryParams(params)
                 return `/admin/analytics/chart?${query}`
             }
+        }),
+        getSalesReport: builder.query({
+            query: ({ filter, format }) => {
+                const params = { ...filter, format }
+                const query = constructQueryParams(params)
+                return {
+                    url: `/admin/analytics/downloads/salesReport?${query}`,
+                    method: 'GET',
+                    responseHandler: (response) => response.blob()
+                }
+            },
+
         })
     })
 })
@@ -232,5 +243,6 @@ export const {
     useAddOfferMutation,
     useDeleteOfferMutation,
     useGetOverviewDataQuery,
-    useGetAnalyticsGraphDataQuery
+    useGetAnalyticsGraphDataQuery,
+    useLazyGetSalesReportQuery,
 } = adminApiSlice

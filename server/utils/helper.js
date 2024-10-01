@@ -1,3 +1,5 @@
+import { format, parseISO } from 'date-fns'
+
 function calculateDiscount(originalPrice, offerPercentage) {
     const discountAmount = parseInt((offerPercentage / 100) * originalPrice)
     return originalPrice - discountAmount
@@ -78,11 +80,18 @@ function constructGraphData(dataType, data) {
     }
 }
 
+function formatISODate(isoTime) {
+    const parsedIso = parseISO(String(isoTime))
+    const formattedValue = format(parseISO(isoTime.toISOString()), 'dd MMM, yyy hh:mm a')
+    return formattedValue
+}
+
 export {
     calculateDiscount,
     constructGraphData,
     getLastDay,
     getLastWeek,
     getLastMonth,
-    getLastYear
+    getLastYear,
+    formatISODate
 }

@@ -23,6 +23,7 @@ router.use(adminAuth)
 
 router.get('/analytics/overview', analyticsController.getOverviewData)
 router.get('/analytics/chart', analyticsController.getAnalyticsChartData)
+router.get('/analytics/downloads/salesReport', analyticsController.downloadAnalyticsReport)
 
 router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.viewUser)

@@ -1,7 +1,8 @@
 import { Order } from "../../model/order.js"
 import { Product } from "../../model/product.js"
 import { User } from "../../model/user.js"
-import { getLastDay, getLastWeek, getLastMonth, getLastYear, constructGraphData } from "../../utils/helper.js"
+import { getLastDay, getLastWeek, getLastMonth, getLastYear, constructGraphData, formatISODate } from "../../utils/helper.js"
+import { jsPDF } from 'jspdf'
 
 const getOverviewData = async (req, res) => {
     const { period, limit = 0, startDate = '', endDate = '' } = req.query
@@ -9,28 +10,15 @@ const getOverviewData = async (req, res) => {
 
     if (period) {
         switch (period) {
-            case 'lastDay': {
-                dateRange = getLastDay()
-                break
-            }
-            case 'lastWeek': {
-                dateRange = getLastWeek()
-                break
-            }
-            case 'lastMonth': {
-                dateRange = getLastMonth()
-                break
-            }
-            case 'lastYear': {
-                dateRange = getLastYear()
-            }
-            default:
-                dateRange = {}
+            case 'lastDay': dateRange = getLastDay(); break
+            case 'lastWeek': dateRange = getLastWeek(); break
+            case 'lastMonth': dateRange = getLastMonth(); break
+            case 'lastYear': dateRange = getLastYear()
+            default: dateRange = {}
         }
     } else if (startDate && endDate) {
         dateRange = { start: new Date(startDate), end: new Date(endDate) }
     }
-
 
     try {
         const productsResult = await Product.aggregate([
@@ -92,6 +80,7 @@ const getOverviewData = async (req, res) => {
             totalOfferAmount,
             totalCouponAmount
         } = ordersResult[0] || 0
+
         return res.status(200).json({
             totalProducts,
             totalCustomers,
@@ -190,7 +179,6 @@ const getAnalyticsChartData = async (req, res) => {
             }
         }
         const data = await Order.aggregate(aggregationPipeline)
-        console.log(data)
         const chartData = constructGraphData(period, data)
         return res.status(200).json({ chartData })
     } catch (error) {
@@ -198,7 +186,145 @@ const getAnalyticsChartData = async (req, res) => {
     }
 }
 
+const downloadAnalyticsReport = async (req, res) => {
+    const { period, format, startDate, endDate } = req.query
+    let dateRange = {}
+    if (period) {
+        switch (period) {
+            case 'lastDay': dateRange = getLastDay(); break
+            case 'lastWeek': dateRange = getLastWeek(); break
+            case 'lastMonth': dateRange = getLastMonth(); break
+            case 'lastYear': dateRange = getLastYear()
+            default: dateRange = {}
+        }
+    } else if (startDate && endDate) {
+        dateRange = { start: new Date(startDate), end: new Date(endDate) }
+    }
+    try {
+        const productsResult = await Product.aggregate([
+            {
+                $match: {
+                    ...(dateRange.start && dateRange.end ? { createdAt: { $gte: dateRange.start, $lte: dateRange.end } } : {})
+                }
+            },
+            {
+                $count: 'totalProducts'
+            }
+        ])
+        const customersResult = await User.aggregate([
+            {
+                $match: {
+                    ...(dateRange.start && dateRange.end ? { createdAt: { $gte: dateRange.start, $lte: dateRange.end } } : {})
+                }
+            },
+            {
+                $count: 'totalCustomers'
+            }
+        ])
+        const ordersResult = await Order.aggregate([
+            {
+                $match: {
+                    status: { $in: ['confirmed', 'shipped', 'delivered'] },
+                    ...(dateRange.start && dateRange.end ? { createdAt: { $gte: dateRange.start, $lte: dateRange.end } } : {})
+                }
+            },
+            {
+                $unwind: '$products'
+            },
+            {
+                $match: {
+                    $or: [
+                        { 'products.status': 'confirmed' },
+                        { 'products.status': 'delivered' },
+                        { 'products.status': 'shipped' }
+                    ]
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: '$totalAmount' },
+                    totalProductsSold: { $sum: '$products.quantity' },
+                    totalOfferAmount: { $sum: '$products.appliedOfferAmount' },
+                    totalCouponAmount: { $sum: '$appliedCouponAmount' },
+                    orders: { $push: '$$ROOT' }
+                }
+            },
+        ])
+        const { totalCustomers } = customersResult[0] || 0
+        const { totalProducts } = productsResult[0] || 0
+        const {
+            totalProductsSold,
+            totalRevenue,
+            orders,
+            totalOfferAmount,
+            totalCouponAmount
+        } = ordersResult[0] || 0
+        if (format === 'pdf') {
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4',
+                putOnlyUsedFonts: true,
+                floatPrecision: 16
+            })
+
+            pdf.setFontSize(25)
+            pdf.text('Sales Report', 10, 10)
+
+            pdf.setFontSize(14)
+            pdf.text(`Total Products: ${totalProducts || 0}`, 10, 30)
+            pdf.text(`Total Customers: ${totalCustomers || 0}`, 10, 40)
+            pdf.text(`Total Revenue: ${totalRevenue || 0}`, 10, 50)
+            pdf.text(`Total Products Sold: ${totalProductsSold || 0}`, 10, 60)
+            pdf.text(`Total Offer Amount: ${totalOfferAmount || 0}`, 10, 70)
+            pdf.text(`Total Coupon Amount: ${totalCouponAmount || 0}`, 10, 80)
+
+            pdf.text('Orders', 10, 100)
+
+            const startY = 110
+            const rowHeight = 10
+
+            pdf.setFontSize(12);
+            const headers = ['Order ID', 'Total Amount', 'Payment Status', 'Payment Method', 'Date'];
+            const headerWidths = [40, 40, 40, 40, 40];
+
+            headers.forEach((header, index) => {
+                pdf.text(header, 10 + index * headerWidths[index], startY);
+            });
+
+            orders.forEach((order, index) => {
+                const yPosition = startY + (index + 1) * rowHeight;
+                pdf.text(order.orderId, 10, yPosition);
+                pdf.text(`${order.totalAmount}`, 10 + headerWidths[0], yPosition);
+                pdf.text(order.payment.status, 10 + headerWidths[0] + headerWidths[1], yPosition);
+                pdf.text(order.payment.method, 10 + headerWidths[0] + headerWidths[1] + headerWidths[2], yPosition);
+                pdf.text(formatISODate(order.createdAt), 10 + headerWidths[0] + headerWidths[1] + headerWidths[2] + headerWidths[3], yPosition);
+            });
+            const pdfOutput = pdf.output()
+            res.set({
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': 'attachment; filename="report.pdf"',
+                'Content-Length': pdfOutput.byteLength,
+            })
+            return res.send(Buffer.from(pdfOutput));
+        }
+        return res.status(200).json({
+            totalProducts,
+            totalCustomers,
+            totalRevenue,
+            totalProductsSold,
+            totalOfferAmount,
+            totalCouponAmount,
+            orders
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export {
     getOverviewData,
-    getAnalyticsChartData
+    getAnalyticsChartData,
+    downloadAnalyticsReport
 }

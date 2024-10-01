@@ -39,8 +39,6 @@ function DateFilter({ filter, setFilter }) {
         }
     }
 
-    console.log(filter)
-
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

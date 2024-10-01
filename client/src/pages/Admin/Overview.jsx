@@ -1,20 +1,23 @@
-import { FaBox, FaUsers } from "react-icons/fa";
+import { FaBox, FaFileDownload, FaFileExcel, FaUsers } from "react-icons/fa";
 import CountCard from "../../components/CountCard";
 import { RiShoppingBag3Line } from "react-icons/ri";
 import { RiMoneyDollarCircleFill } from "react-icons/ri";
 import RadarChartComponent from "@/components/RadarChartComponent";
 import BarChartComponent from "@/components/BarChartComponent";
-import { useRef, useState } from "react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { useState } from "react";
 import DateFilter from "@/components/DateFilter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import OrderTable from "@/components/OrderTable";
-import { useFetchProductsQuery, useGetAnalyticsGraphDataQuery, useGetOverviewDataQuery } from "@/store/api/adminApiSlice";
+import { useFetchProductsQuery, useGetAnalyticsGraphDataQuery, useGetOverviewDataQuery, useLazyGetSalesReportQuery } from "@/store/api/adminApiSlice";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ProductCard from "@/components/ProductCard";
+import { FaFilePdf } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 function Overview() {
+  const [triggerDownloadSalesReport] = useLazyGetSalesReportQuery()
+  const [downloadFormat, setDownloadFormat] = useState('pdf')
+  const [openDownloadDropdown, setopenDownloadDropdown] = useState(false)
   const [filter, setFilter] = useState({
     limit: 10,
     period: '',
@@ -24,63 +27,30 @@ function Overview() {
     period: 'month'
   })
 
-  const revenueChartRef = useRef()
-
   const { data: {
     totalProducts = 0,
     totalCustomers = 0,
     totalRevenue = 0,
     totalProductsSold = 0,
-    totalOfferAmount = 0,
-    totalCouponAmount = 0,
     orders = []
   } = {} } = useGetOverviewDataQuery({ filter, sort: '' })
   const { data: { products = [] } = {} } = useFetchProductsQuery({ filter, sort: '' })
   const { data: { chartData = [] } = {} } = useGetAnalyticsGraphDataQuery({ filter: chartFilter, sort: '' })
 
-  function generatePdf() {
-
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'mm',
-      format: 'a4',
-      putOnlyUsedFonts: true,
-      floatPrecision: 16
-    })
-
-    pdf.setFontSize(25)
-    pdf.text('Sales Report', 10, 10)
-
-    pdf.setFontSize(14)
-    pdf.text(`Total Products: ${totalProducts}`, 10, 30)
-    pdf.text(`Total Customers: ${totalCustomers}`, 10, 40)
-    pdf.text(`Total Revenue: ${totalRevenue}`, 10, 50)
-    pdf.text(`Total Products Sold: ${totalProductsSold}`, 10, 60)
-    pdf.text(`Total Offer Amount: ${totalOfferAmount}`, 10, 70)
-    pdf.text(`Total Coupon Amount: ${totalCouponAmount}`, 10, 80)
-
-    pdf.text('Orders', 10, 100)
-
-    const startY = 110
-    const rowHeight = 10
-
-    pdf.setFontSize(12);
-    const headers = ['Order ID', 'Total Amount', 'Status', 'Date'];
-    const headerWidths = [40, 40, 40, 40];
-
-    headers.forEach((header, index) => {
-      pdf.text(header, 10 + index * headerWidths[index], startY);
-    });
-
-    orders.forEach((order, index) => {
-      const yPosition = startY + (index + 1) * rowHeight;
-      pdf.text(order.orderId, 10, yPosition);
-      pdf.text(`${order.totalAmount}`, 10 + headerWidths[0], yPosition);
-      pdf.text(order.status, 10 + headerWidths[0] + headerWidths[1], yPosition);
-      pdf.text(new Date(order.createdAt).toLocaleDateString(), 10 + headerWidths[0] + headerWidths[1] + headerWidths[2], yPosition);
-    });
-
-    pdf.save('report.pdf')
+  async function handleDownloadSalesReport(format) {
+    setDownloadFormat(format)
+    try {
+      const salesReport = await triggerDownloadSalesReport({ filter, format: downloadFormat }).unwrap()
+      const url = window.URL.createObjectURL(new Blob([salesReport]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Sales Report.pdf');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      toast('Failed to download report')
+    }
   }
 
   return (
@@ -88,8 +58,35 @@ function Overview() {
       <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px] pb-10'>
         <h1 className='text-3xl font-semibold'>Overview</h1>
         <div className="flex w-full justify-end">
-          <div>
-            <button className="mr-4 text-sm font-medium rounded-md bg-stone-300 px-4 py-2" onClick={generatePdf} >Generate report</button>
+          <div className="flex items-center">
+            <div onMouseEnter={() => setopenDownloadDropdown(!openDownloadDropdown)} onMouseLeave={() => setopenDownloadDropdown(!openDownloadDropdown)}>
+              <button className="flex items-center hover:bg-white relative mr-4 text-sm font-medium rounded-md bg-stone-300 px-4 py-2">
+                <FaFileDownload />
+                <p>Download report</p>
+              </button>
+              <div className="">
+                {
+                  openDownloadDropdown &&
+                  <div className="absolute w-36">
+                    <div className="pt-2">
+                      <div className="bg-white border border-neutral-200 rounded-md">
+                        <span className="px-2 font-semibold text-sm">Select file type</span>
+                        <ul className="p-2 bg-white rounded-md">
+                          <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
+                            <FaFilePdf />
+                            <p>Pdf</p>
+                          </li>
+                          <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
+                            <FaFileExcel />
+                            <p>Excel</p>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
             <DateFilter
               filter={filter}
               setFilter={setFilter}
@@ -105,7 +102,7 @@ function Overview() {
               <CountCard title="Total Products" count={(String(totalProducts))} Icon={FaBox} />
               <CountCard title="Products Sold" count={(String(totalProductsSold))} Icon={FaBox} />
             </div>
-            <div ref={revenueChartRef} className="flex w-full gap-4">
+            <div className="flex w-full gap-4">
               <BarChartComponent
                 chartData={chartData}
                 filter={chartFilter}
@@ -132,9 +129,9 @@ function Overview() {
             <CardHeader>
               <CardTitle>Recent orders</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent onClick={() => window.print()}>
               <ScrollArea className='h-[324px]'>
-                <div className="relative overflow-x-auto shadow-xl mt-4 bg-neutral-200 rounded-lg">
+                <div className="relative overflow-x-auto overflow-y-auto shadow-xl mt-4 bg-neutral-200 rounded-lg">
                   <OrderTable
                     orders={orders}
                   />
