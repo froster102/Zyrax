@@ -70,7 +70,8 @@ function ProductDetails() {
         if (!isProductLoading) {
             setFilter(prev => ({
                 ...prev,
-                category: product?.category.name
+                category: product?.category.name,
+                exclude : product?.name
             }))
         }
     }, [isProductLoading, product, setFilter])
