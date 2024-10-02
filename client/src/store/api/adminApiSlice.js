@@ -27,36 +27,22 @@ const adminApiSlice = apiSlice.injectEndpoints({
                 url: `/admin/users/${id}/block`,
                 method: 'PATCH',
             }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                try {
-                    const res = await queryFulfilled
-                    console.log(res)
-                    dispatch(adminApiSlice.util.invalidateTags([{ type: 'Users', id: 'LIST' }]))
-                } catch (error) {
-                    console.warn('Failed to invalidate cache')
-                }
-            },
+            invalidatesTags: [{ type: 'Users', id: 'LIST' }]
         }),
         unblockUser: builder.mutation({
             query: ({ id }) => ({
                 url: `/admin/users/${id}/unblock`,
                 method: 'PATCH',
             }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                try {
-                    const res = await queryFulfilled
-                    dispatch(adminApiSlice.util.invalidateTags([{ type: 'Users', id: 'LIST' }]))
-                } catch (error) {
-                    console.warn('Failed to invalidate cache')
-                }
-            },
+            invalidatesTags: [{ type: 'Users', id: 'LIST' }]
         }),
         fetchProducts: builder.query({
             query: ({ filter, sort }) => {
                 const params = { ...filter, sort }
                 const query = constructQueryParams(params)
                 return `/admin/products?${query}`
-            }
+            },
+            providesTags: (result) => result ? [{ type: 'Products', id: 'LIST' }] : []
         }),
         fetchProduct: builder.query({
             query: ({ id }) => `/admin/products/${id}`
@@ -66,61 +52,76 @@ const adminApiSlice = apiSlice.injectEndpoints({
                 url: '/admin/products',
                 method: 'POST',
                 body: productData
-            })
+            }),
+            invalidatesTags: [{ type: 'Products', id: 'LIST' }]
         }),
         editProduct: builder.mutation({
             query: ({ id, productData }) => ({
                 url: `/admin/products/${id}`,
                 method: 'PUT',
                 body: productData
-            })
+            }),
+            invalidatesTags: [{ type: 'Products', id: 'LIST' }]
         }),
         blockProduct: builder.mutation({
             query: ({ id }) => ({
                 url: `/admin/products/${id}/block`,
                 method: 'PATCH',
-            })
+            }),
+            invalidatesTags: [{ type: 'Products', id: 'LIST' }]
         }),
         deleteProduct: builder.mutation({
             query: ({ id }) => ({
                 url: `/admin/products/${id}`,
                 method: 'DELETE',
-            })
+            }),
+            invalidatesTags: [{ type: 'Products', id: 'LIST' }]
         }),
         getCategories: builder.query({
-            query: () => '/admin/categories'
+            query: ({ filter }) => {
+                const params = { ...filter }
+                const query = constructQueryParams(params)
+                return `/admin/categories?${query}`
+            },
+            providesTags: (result) => result ? [{ type: 'Categories', id: 'LIST' }] : []
         }),
         addCategory: builder.mutation({
             query: (data) => ({
                 url: '/admin/categories/',
                 method: 'POST',
                 body: data
-            })
+            }),
+            invalidatesTags: [{ type: 'Categories', id: 'LIST' }]
         }),
         editCategory: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/admin/categories/${id}`,
                 method: 'PUT',
                 body: data
-            })
+            }),
+            invalidatesTags: [{ type: 'Categories', id: 'LIST' }]
         }),
         blockCategory: builder.mutation({
             query: (id) => ({
                 url: `/admin/categories/${id}/block`,
                 method: 'PATCH',
-            })
+            }),
+            invalidatesTags: [{ type: 'Categories', id: 'LIST' }]
         }),
         deleteCategory: builder.mutation({
             query: (id) => ({
                 url: `/admin/categories/${id}`,
                 method: 'DELETE',
-            })
+            }),
+            invalidatesTags: [{ type: 'Categories', id: 'LIST' }]
         }),
         fetchOrders: builder.query({
-            query: (params) => {
+            query: ({ filter }) => {
+                const params = { ...filter }
                 const query = constructQueryParams(params)
                 return `/admin/orders?${query}`
-            }
+            },
+            providesTags: (result) => result ? [{ type: 'Orders', id: 'LIST' }] : []
         }),
         getAllReturns: builder.query({
             query: () => '/admin/returns'
@@ -139,8 +140,8 @@ const adminApiSlice = apiSlice.injectEndpoints({
                     method: 'PATCH',
                     body: { status }
                 }
-
-            }
+            },
+            invalidatesTags: [{ type: 'Orders', id: 'LIST' }]
         }),
         getAllCoupons: builder.query({
             query: () => '/admin/coupons',
@@ -152,39 +153,36 @@ const adminApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: { code, discount, expirationDate, minPurchaseAmount, maxDiscountAmount }
             }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                try {
-                    await queryFulfilled
-                    dispatch(adminApiSlice.util.invalidateTags([{ type: 'Coupons', id: 'LIST' }]))
-                } catch (error) {
-                    console.warn('Failed to invalidate cachel')
-                }
-            }
+            invalidatesTags: [{ type: 'Coupons', id: 'LIST' }]
         }),
         deleteCoupon: builder.mutation({
             query: ({ couponId }) => ({
                 url: `/admin/coupons/${couponId}`,
                 method: 'DELETE'
-            })
+            }),
+            invalidatesTags: [{ type: 'Coupons', id: 'LIST' }]
         }),
         getOffers: builder.query({
             query: ({ offerType = '' }) => {
                 if (offerType) return `/admin/offers?offerType=${offerType}`
                 else return `/admin/offers`
-            }
+            },
+            providesTags: (result) => result ? [{ type: 'Offers', id: 'LIST' }] : []
         }),
         addOffer: builder.mutation({
             query: ({ name, discountPercentage, startDate, endDate, offerType }) => ({
                 url: '/admin/offers',
                 method: 'POST',
                 body: { name, discountPercentage, startDate, endDate, offerType }
-            })
+            }),
+            invalidatesTags: [{ type: 'Offers', id: 'LIST' }]
         }),
         deleteOffer: builder.mutation({
             query: ({ offerId }) => ({
                 url: `/admin/offers/${offerId}`,
                 method: 'DELETE',
-            })
+            }),
+            invalidatesTags: [{ type: 'Offers', id: 'LIST' }]
         }),
         getOverviewData: builder.query({
             query: ({ filter, sort, format }) => {

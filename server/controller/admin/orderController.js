@@ -1,9 +1,10 @@
 import { Order } from "../../model/order.js"
 
 const getAllOrders = async (req, res) => {
-    const { limit = 0, startDate, endDate, date } = req.query
+    const { page = 1, limit = 0, startDate, endDate, date } = req.query
+    const skip = (page - 1) * limit
     const totalCount = await Order.countDocuments()
-    const orders = await Order.find({ status: { $ne: 'initiated' } }).limit(limit).populate('products.productId').populate({
+    const orders = await Order.find({ status: { $ne: 'initiated' } }).skip(skip).limit(limit).populate('products.productId').populate({
         path: 'userId',
         select: 'firstName email phoneNumber'
     }).populate('shipping.addressId')

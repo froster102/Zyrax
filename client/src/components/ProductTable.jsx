@@ -16,7 +16,7 @@ import { RotatingLines } from "react-loader-spinner";
 import Pagination from "./Pagination";
 
 
-function ProductTable({ filter, setFilter, products, isProductsLoading, refetch, totalCount }) {
+function ProductTable({ filter, setFilter, products, isProductsLoading, totalCount }) {
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
     const [blockProduct] = useBlockProductMutation()
@@ -38,7 +38,6 @@ function ProductTable({ filter, setFilter, products, isProductsLoading, refetch,
         try {
             const res = await blockProduct(id).unwrap()
             toast(res?.message)
-            refetch()
         } catch (error) {
             toast(error?.data?.message)
         }
@@ -47,7 +46,6 @@ function ProductTable({ filter, setFilter, products, isProductsLoading, refetch,
     async function handleDelete({ id }) {
         try {
             const res = await deleteProduct({ id }).unwrap()
-            refetch()
             toast(res?.message)
         } catch (error) {
             toast(error?.data?.message)
@@ -208,7 +206,6 @@ ProductTable.propTypes = {
     setFilter: PropTypes.func,
     products: PropTypes.arrayOf(object),
     isProductsLoading: PropTypes.bool.isRequired,
-    refetch: PropTypes.func.isRequired,
     totalCount: PropTypes.number
 }
 

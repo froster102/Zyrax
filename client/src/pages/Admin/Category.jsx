@@ -6,15 +6,18 @@ import { useBlockCategoryMutation, useDeleteCategoryMutation, useGetCategoriesQu
 import toast, { Toaster } from 'react-hot-toast'
 
 function Category() {
+    const [filter, setFilter] = useState({
+        limit: 10,
+        page: 1
+    })
     const [addCategoryModal, setAddCategoryModal] = useState(false)
-    const { data: categories, isLoading: isCategoriesLoading, refetch } = useGetCategoriesQuery()
+    const { data: { categories = [], totalCount = 0 } = {}, isLoading: isCategoriesLoading } = useGetCategoriesQuery({ filter })
     const [deleteCategory] = useDeleteCategoryMutation()
     const [blockCategory] = useBlockCategoryMutation()
 
     async function handleDelete(id) {
         try {
             const res = await deleteCategory(id).unwrap()
-            refetch()
             toast(res?.message)
         } catch (error) {
             toast(error?.data?.message)
@@ -24,7 +27,6 @@ function Category() {
     async function handleBlockCategory(id) {
         try {
             const res = await blockCategory(id).unwrap()
-            refetch()
             toast(res?.message)
         } catch (error) {
             toast(error?.data?.message)
@@ -51,9 +53,11 @@ function Category() {
                     </div>
                     <div className='bg-neutral-200 rounded-lg shadow-xl mt-4 w-full'>
                         <CategoryTable
+                            filter={filter}
+                            setFilter={setFilter}
+                            totalCount={totalCount}
                             categories={categories}
                             isCategoriesLoading={isCategoriesLoading}
-                            refetch={refetch}
                             setAddCategoryModal={setAddCategoryModal}
                             handleBlockCategory={handleBlockCategory}
                             handleDelete={handleDelete}
@@ -61,7 +65,7 @@ function Category() {
                     </div>
                 </div>
                 {
-                    addCategoryModal && <AddCategoryModal closeModal={() => { setAddCategoryModal(false) }} refetch={refetch}></AddCategoryModal>
+                    addCategoryModal && <AddCategoryModal closeModal={() => { setAddCategoryModal(false) }}></AddCategoryModal>
                 }
             </div>
         </>

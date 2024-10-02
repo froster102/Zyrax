@@ -9,7 +9,7 @@ import PropTypes from 'prop-types'
 import AddCategoryschema from '../../ValidationSchema/addCategorySchema'
 import { RotatingLines } from 'react-loader-spinner'
 
-function AddCategoryModal({ closeModal, refetch }) {
+function AddCategoryModal({ closeModal }) {
     const [categoryType, setCategoryType] = useState('')
     const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery()
     const [addCategory, { isLoading }] = useAddCategoryMutation()
@@ -21,7 +21,6 @@ function AddCategoryModal({ closeModal, refetch }) {
         try {
             const res = await addCategory(data).unwrap()
             toast(res?.message)
-            refetch()
             reset()
             closeModal()
         } catch (error) {
@@ -94,7 +93,6 @@ function AddCategoryModal({ closeModal, refetch }) {
 
 AddCategoryModal.propTypes = {
     closeModal: PropTypes.func.isRequired,
-    refetch: PropTypes.func.isRequired
 }
 
 export default AddCategoryModal

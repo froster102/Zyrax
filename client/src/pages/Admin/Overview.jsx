@@ -20,6 +20,7 @@ function Overview() {
   const [openDownloadDropdown, setopenDownloadDropdown] = useState(false)
   const [filter, setFilter] = useState({
     limit: 10,
+    page: 1,
     period: '',
   })
 
@@ -130,6 +131,7 @@ function Overview() {
                 <div className="relative overflow-x-auto overflow-y-auto shadow-xl mt-4 bg-neutral-200 rounded-lg">
                   <OrderTable
                     orders={orders}
+                    filter={filter}
                   />
                 </div>
                 <ScrollBar orientation="vertical"

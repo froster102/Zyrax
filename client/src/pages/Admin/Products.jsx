@@ -8,7 +8,7 @@ function Products() {
     limit: 10,
     page: 1
   })
-  const { data: { products = [], totalCount = 0 } = {}, isLoading: isProductsLoading, refetch } = useFetchProductsQuery({ filter, sort:'' })
+  const { data: { products = [], totalCount = 0 } = {}, isLoading: isProductsLoading } = useFetchProductsQuery({ filter, sort:'' })
 
   return (
     <>
@@ -30,7 +30,6 @@ function Products() {
           products={products}
           totalCount={totalCount}
           isProductsLoading={isProductsLoading}
-          refetch={refetch}
         />
       </div>
 

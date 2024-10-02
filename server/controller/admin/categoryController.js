@@ -1,9 +1,12 @@
 import { Category } from "../../model/category.js"
 
 const getCategories = async (req, res) => {
+    const { page = 1, limit = 0 } = req.query
+    const skip = (page - 1) * limit
     try {
-        const categories = await Category.find({}).populate('parent').populate('children')
-        return res.status(200).json(categories)
+        const totalCount = await Category.countDocuments()
+        const categories = await Category.find({}).populate('parent').populate('children').skip(skip).limit(limit)
+        return res.status(200).json({ categories, totalCount })
     } catch (error) {
         console.log(error)
     }

@@ -22,7 +22,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
             {totalPages > 1 && <button className='p-2 h-[32px] rounded-l-md bg-neutral-300 shadow-xl' onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
                 <SlArrowLeft size={12} />
             </button>}
-            {renderPageNumbers()}
+            {totalPages > 1 && renderPageNumbers()}
             {totalPages > 1 && <button className='p-2 h-[32px] rounded-r-md bg-neutral-300 shadow-xl' onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
                 <SlArrowRight size={12} />
             </button>}
