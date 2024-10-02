@@ -138,12 +138,19 @@ function Checkout() {
             <div className="md:flex w-full mt-8 m-auto gap-10 px-4 pb-20">
                 <div className="w-full">
                     <p>Select payment method</p>
-                    <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
+                    <div className='w-full relative border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div className='flex w-full justify-between gap-1'>
                             <p>
                                 Cash on delivery
                             </p>
-                            <input name='payment' onClick={() => setPaymentMethod('cash on delivery')} type="radio" />
+                            <input name='payment' onClick={(e) => {
+                                if (totalCartAmount < 1000) {
+                                    e.preventDefault()
+                                    toast('Cash on delivery only for order above 1000')
+                                } else {
+                                    setPaymentMethod('cash on delivery')
+                                }
+                            }} type="radio" />
                         </div>
                     </div>
                     <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>

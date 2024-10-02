@@ -3,6 +3,7 @@ import { Product } from "../../model/product.js"
 import { User } from "../../model/user.js"
 import { getLastDay, getLastWeek, getLastMonth, getLastYear, constructGraphData, formatISODate } from "../../utils/helper.js"
 import { jsPDF } from 'jspdf'
+import ExcelJS from 'exceljs'
 
 const getOverviewData = async (req, res) => {
     const { period, limit = 0, startDate = '', endDate = '' } = req.query
@@ -337,6 +338,43 @@ const downloadAnalyticsReport = async (req, res) => {
                 'Content-Length': pdfOutput.byteLength,
             })
             return res.send(Buffer.from(pdfOutput));
+        } else if (format === 'excel') {
+            const workbook = new ExcelJS.Workbook()
+            const worksheet = workbook.addWorksheet('Sales Report')
+
+            worksheet.columns = [
+                { header: 'Order ID', key: 'orderId' },
+                { header: 'Total Amount', key: 'totalAmount' },
+                { header: 'Payment Status', key: 'paymentStatus' },
+                { header: 'Payment Method', key: 'paymentMethod' },
+                { header: 'Date', key: 'date' },
+            ]
+
+            orders.forEach(order => {
+                worksheet.addRow({
+                    orderId: order.orderId,
+                    totalAmount: order.totalAmount,
+                    paymentStatus: order.payment.status,
+                    paymentMethod: order.payment.method,
+                    date: formatISODate(order.createdAt),
+                })
+            })
+
+            worksheet.addRow([]);
+            worksheet.addRow(['Total Products', totalProducts || 0]);
+            worksheet.addRow(['Total Customers', totalCustomers || 0]);
+            worksheet.addRow(['Total Revenue', totalRevenue || 0]);
+            worksheet.addRow(['Total Products Sold', totalProductsSold || 0]);
+            worksheet.addRow(['Total Offer Amount', totalOfferAmount || 0]);
+            worksheet.addRow(['Total Coupon Amount', totalCouponAmount || 0]);
+
+            const buffer = await workbook.xlsx.writeBuffer()
+            res.set({
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition': 'attachment; filename="report.xlsx"',
+                'Content-Length': buffer.length,
+            })
+            return res.send(Buffer.from(buffer))
         }
         return res.status(200).json({
             totalProducts,

@@ -94,6 +94,7 @@ const handleCheckOut = async (req, res) => {
             }
         }
         if (paymentMethod === 'cash on delivery') {
+            if (totalAmount < 1000) return res.status(400).json({ message: 'Cash on delivery only for order above 1000' })
             for (let item of processedItems) {
                 item.status = 'confirmed'
             }

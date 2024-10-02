@@ -8,7 +8,6 @@ const productApiSlice = apiSlice.injectEndpoints({
         }),
         getProducts: builder.query({
             query: ({ filter, sort }) => {
-                console.log(filter)
                 const params = { ...filter, sort }
                 const query = constructQueryParams(params)
                 return `/products?${query}`

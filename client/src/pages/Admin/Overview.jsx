@@ -45,7 +45,7 @@ function Overview() {
       const url = window.URL.createObjectURL(new Blob([salesReport]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'Sales Report.pdf');
+      link.setAttribute('download', `${downloadFormat === 'pdf' ? 'Sales Report.pdf':'Sales Report.xlsx'}`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -53,6 +53,7 @@ function Overview() {
       toast('Failed to download report')
     }
   }
+
   return (
     <>
       <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner pt-[40px] px-[20px] pb-10'>
@@ -74,7 +75,7 @@ function Overview() {
                           <FaFilePdf />
                           <p>Pdf</p>
                         </li>
-                        <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
+                        <li onClick={() => handleDownloadSalesReport('excel')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
                           <FaFileExcel />
                           <p>Excel</p>
                         </li>
