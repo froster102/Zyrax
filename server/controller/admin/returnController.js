@@ -4,6 +4,7 @@ import { Return } from "../../model/return.js"
 import { Wallet } from '../../model/wallet.js'
 import { Product } from "../../model/product.js"
 import { User } from "../../model/user.js"
+import { Category } from "../../model/category.js"
 
 const getAllReturns = async (req, res) => {
     try {
@@ -38,6 +39,7 @@ const approveReturn = async (req, res) => {
                 { _id: productId, 'stock.size': size },
                 { $inc: { 'stock.$.quantity': orderedProduct.quantity, soldCount: -orderedProduct.quantity } }
             )
+            await Category.findOneAndUpdate({ _id: product.category }, { $inc: { soldCount: -orderedProduct.quantity } })
             const user = await User.findOneAndUpdate({ _id: order.userId },
                 { $inc: { totalSpent: -orderedProduct.orderPrice } }
             )

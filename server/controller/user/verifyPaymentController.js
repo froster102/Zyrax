@@ -4,6 +4,7 @@ import { Product } from '../../model/product.js'
 import razorpay from '../../config/razorpayConfig.js'
 import { Cart } from '../../model/cart.js'
 import { User } from '../../model/user.js'
+import { Category } from '../../model/category.js'
 
 const verifyPayment = async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, error } = req.body
@@ -37,6 +38,17 @@ const verifyPayment = async (req, res) => {
                     options: { runValidators: true }
                 }
             }))
+            const categoryOps = products.reduce((acc, item) => {
+                acc[item.productId.category] = (acc[item.productId.category] || 0) + item.quantity
+                return acc
+            }, {})
+            const bulkCategoryOps = Object.entries(categoryOps).map(([categoryId, quantity]) => ({
+                updateOne: {
+                    filter: { _id: categoryId },
+                    update: { $inc: { soldCount: quantity } },
+                    options: { new: true }
+                }
+            }))
             if (bulkOps.length > 0) {
                 const response = await Product.bulkWrite(bulkOps)
                 await User.findOneAndUpdate({ _id: req.userId }, { $inc: { totalSpent: order.totalAmount } })
@@ -45,6 +57,9 @@ const verifyPayment = async (req, res) => {
                 }, {
                     $set: { items: [] }
                 }, { new: true })
+                if (bulkCategoryOps.length > 0) {
+                   await Category.bulkWrite(bulkCategoryOps)
+                }
             }
             const payment = await razorpay.payments.fetch(razorpay_payment_id)
             order.status = 'confirmed'

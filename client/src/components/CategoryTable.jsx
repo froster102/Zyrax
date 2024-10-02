@@ -49,6 +49,9 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                             Status
                         </th>
                         <th className="px-6 py-3">
+                            Products Sold
+                        </th>
+                        <th className="px-6 py-3">
                             Action
                         </th>
                     </tr>
@@ -71,13 +74,16 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                         }).map((category, i) => {
                             return (
                                 <tr key={i} className="border-b ">
-                                    <td className="px-6 py-4 ">
+                                    <td className="px-6 py-2">
                                         <p className='text-neutral-900 font-medium text-base'>{_.startCase(category.name)}</p>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 py-2">
                                         <StatusChip status={category.status} />
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 py-2">
+                                        <p className='font-semibold text-base text-black'>{category.soldCount}</p>
+                                    </td>
+                                    <td className="px-6 py-2">
                                         <div className="flex gap-2">
                                             <div onClick={() => {
                                                 setViewCategory(category)

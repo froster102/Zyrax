@@ -7,6 +7,7 @@ import { Wallet } from "../../model/wallet.js"
 import { nanoid } from "nanoid"
 import { calculateDiscount } from "../../utils/helper.js"
 import { Coupon } from "../../model/coupon.js"
+import { Category } from "../../model/category.js"
 
 const handleCheckOut = async (req, res) => {
     const { paymentMethod, shippingAddressId } = req.body
@@ -116,9 +117,10 @@ const handleCheckOut = async (req, res) => {
                 await Cart.findOneAndUpdate({ user_id: req.userId, }, { $set: { items: [] } }, { new: true })
                 await User.findOneAndUpdate({ _id: req.userId }, { $inc: { totalSpent: order.totalAmount } })
                 for (const item of processedItems) {
-                    await Product.findOneAndUpdate(
+                    const product = await Product.findOneAndUpdate(
                         { _id: item.productId, 'stock.size': item.size },
                         { $inc: { 'stock.$.quantity': -item.quantity, soldCount: item.quantity } }, { runValidators: true }, { new: true })
+                    await Category.findOneAndUpdate({ _id: product.category }, { $inc: { soldCount: item.quantity } }, { new: true })
                 }
                 const createdOrder = await Order.findOne({ _id: order._id }).populate({
                     path: 'products.productId'
@@ -189,9 +191,10 @@ const handleCheckOut = async (req, res) => {
                 await User.findOneAndUpdate({ _id: req.userId }, { $inc: { totalSpent: order.totalAmount } })
                 await Cart.findOneAndUpdate({ user_id: req.userId, }, { $set: { items: [] } }, { new: true })
                 for (const item of processedItems) {
-                    await Product.findOneAndUpdate(
+                    const product = await Product.findOneAndUpdate(
                         { _id: item.productId, 'stock.size': item.size },
                         { $inc: { 'stock.$.quantity': -item.quantity, soldCount: item.quantity } }, { runValidators: true })
+                    await Category.findOneAndUpdate({ _id: product.category }, { $inc: { soldCount: item.quantity } }, { new: true })
                 }
                 const createdOrder = await Order.findOne({ _id: order._id }).populate({
                     path: 'products.productId'

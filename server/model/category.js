@@ -28,7 +28,14 @@ const CategorySchema = new mongoose.Schema({
     parent: { type: mongoose.SchemaTypes.ObjectId, ref: ('Category'), default: null },
     children: { type: [mongoose.SchemaTypes.ObjectId], ref: ('Category'), default: [] },
     imageUrl: { type: String },
-    status: { type: String, enum: ['active', 'blocked'] }
+    status: { type: String, enum: ['active', 'blocked'] },
+    soldCount: {
+        type: Number,
+        validate: {
+            validator: (v) => v >= 0,
+            message: 'Sold count should be positive'
+        }
+    }
 })
 
 const Category = mongoose.model('Category', CategorySchema)
