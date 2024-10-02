@@ -299,6 +299,7 @@ const downloadAnalyticsReport = async (req, res) => {
 
             const startY = 110
             const rowHeight = 10
+            const pageHeight = pdf.internal.pageSize.height
 
             pdf.setFontSize(12);
             const headers = ['Order ID', 'Total Amount', 'Payment Status', 'Payment Method', 'Date'];
@@ -308,13 +309,26 @@ const downloadAnalyticsReport = async (req, res) => {
                 pdf.text(header, 10 + index * headerWidths[index], startY);
             });
 
+            let currentY = startY + rowHeight
+
             orders.forEach((order, index) => {
-                const yPosition = startY + (index + 1) * rowHeight;
-                pdf.text(order.orderId, 10, yPosition);
-                pdf.text(`${order.totalAmount}`, 10 + headerWidths[0], yPosition);
-                pdf.text(order.payment.status, 10 + headerWidths[0] + headerWidths[1], yPosition);
-                pdf.text(order.payment.method, 10 + headerWidths[0] + headerWidths[1] + headerWidths[2], yPosition);
-                pdf.text(formatISODate(order.createdAt), 10 + headerWidths[0] + headerWidths[1] + headerWidths[2] + headerWidths[3], yPosition);
+
+                if (currentY + rowHeight > pageHeight) {
+                    pdf.addPage()
+                    currentY = 20
+                    headers.forEach((header, index) => {
+                        pdf.text(header, 10 + index * headerWidths[index], currentY)
+                    })
+                    currentY += rowHeight
+                }
+
+                pdf.text(order.orderId, 10, currentY);
+                pdf.text(`${order.totalAmount}`, 10 + headerWidths[0], currentY);
+                pdf.text(order.payment.status, 10 + headerWidths[0] + headerWidths[1], currentY);
+                pdf.text(order.payment.method, 10 + headerWidths[0] + headerWidths[1] + headerWidths[2], currentY);
+                pdf.text(formatISODate(order.createdAt), 10 + headerWidths[0] + headerWidths[1] + headerWidths[2] + headerWidths[3], currentY);
+
+                currentY += rowHeight
             });
             const pdfOutput = pdf.output()
             res.set({

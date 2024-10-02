@@ -17,7 +17,7 @@ function AddProduct({ mode }) {
     const [modalOpen, setModalOpen] = useState(false)
     const [preview, setPreview] = useState(null)
     const navigate = useNavigate()
-    const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery()
+    const { data: { categories = [] } = {}, isLoading: isCategoriesLoading } = useGetCategoriesQuery()
     const [addProduct, { isLoading: isUploading }] = useAddProductMutation()
     const [editProduct, { isLoading: isUpdating }] = useEditProductMutation()
     const { id } = useParams()

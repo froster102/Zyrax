@@ -42,6 +42,8 @@ const OfferSchema = new mongoose.Schema({
     }
 })
 
+OfferSchema.index({ endDate: 1 }, { expireAfterSeconds: 0 })
+
 const Offer = mongoose.model('Offer', OfferSchema)
 
 export {
