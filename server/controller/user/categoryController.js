@@ -4,7 +4,8 @@ const getAllCategories = async (req, res) => {
     try {
         const categories = await Category.find({}).populate({
             path: 'children',
-            select: 'name'
+            select: 'name',
+            match: { status: 'active' }
         })
         return res.status(200).json(categories)
     } catch (error) {

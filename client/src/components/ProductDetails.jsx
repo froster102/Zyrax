@@ -48,8 +48,9 @@ function ProductDetails() {
     const gender = useSelector(selectActiveGender)
     const wishlistItems = useSelector(selectWishlistItems)
     const cartItems = useSelector(selectCartItems)
+    const [filter, setFilter] = useState({ exclude: '', category: '', gender })
     const { data: product, isError: isProductDeatilsError, isLoading: isProductLoading, refetch: refetchProductDeatils } = useGetProductDeatilsQuery(name)
-    const { data: { products: similiarProducts = [] } = {}, isLoading: isProductsLoading } = useGetProductsQuery({ category: product?.category.name, exclude: product?.name, gender })
+    const { data: { products: similiarProducts = [] } = {}, isLoading: isProductsLoading } = useGetProductsQuery({ filter })
     const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading } = useGetUserWishlistItemsQuery()
     const [imageModal, setImageModal] = useState(false)
     const [productImgPrev, setProductImgPrev] = useState(product?.imageUrls[0])
@@ -64,6 +65,15 @@ function ProductDetails() {
     useEffect(() => {
         setProductImgPrev(product?.imageUrls[0])
     }, [pathname, product])
+
+    useEffect(() => {
+        if (!isProductLoading) {
+            setFilter(prev => ({
+                ...prev,
+                category: product?.category.name
+            }))
+        }
+    }, [isProductLoading, product, setFilter])
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' })

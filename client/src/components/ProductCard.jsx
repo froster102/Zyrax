@@ -40,7 +40,7 @@ function ProductCard({ product }) {
                             <div className="flex justify-between items-center">
                                 <div className=" truncate ... whitespace-nowrap">
                                     <p className="lg:text-sm md:text-xs sm:text-[10px] text-[10px] font-semibold">{_.startCase(product?.name)}</p>
-                                    <p className="lg:text-xs md:text-xs sm:text-[10px] text-[10px] font-normal">{_.startCase(product?.category.name)}</p>
+                                    <p className="lg:text-xs md:text-xs sm:text-[10px] text-[10px] font-normal">{_.startCase(product?.category?.name)}</p>
                                     <p className="lg:text-sm  md:text-xs sm:text-[10px] text-[10px] font-medium">₹ {_.startCase(product?.price)}</p>
                                 </div>
                             </div>

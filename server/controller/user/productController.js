@@ -22,8 +22,16 @@ const getProducts = async (req, res) => {
             query.name = { $ne: exclude }
         }
         if (category) {
-            const foundCategory = await Category.findOne({ name: category }).populate()
-            const categoryIds = [foundCategory._id, ...foundCategory.children]
+            const foundCategory = await Category.findOne({ name: category, status: 'active' }).populate({
+                path: 'parent',
+                match: {
+                    status: 'active'
+                }
+            }).populate({
+                path: 'children',
+                match: { status: 'active' }
+            })
+            const categoryIds = [foundCategory?._id, ...foundCategory.children]
             query.category = { $in: categoryIds }
         }
         if (minPrice || maxPrice) {

@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { getAllCategories } from "../controller/user/categoryiesController.js"
+import { getAllCategories } from "../controller/user/categoryController.js"
 import { getProductDeatils, getProducts } from "../controller/user/productController.js"
 import { searchProducts } from "../controller/user/searchController.js"
 import { validateGetProducts } from "../middlewares/validationMiddleware.js"
