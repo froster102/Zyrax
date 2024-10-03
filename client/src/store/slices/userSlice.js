@@ -30,22 +30,17 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         addToWishlist: (state, action) => {
-            const { product, sync = false, items = [] } = action.payload
-            if (sync) {
-                const itemMap = new Map(state.wishlist.items.map(item => [item._id, item]))
-                for (const item of items) {
-                    if (!itemMap.has(item._id)) {
-                        state.wishlist.items.push(item)
-                    }
+            const { items = [] } = action.payload
+            const itemMap = new Map(state.wishlist.items.map(item => [item._id, item]))
+            for (const item of items) {
+                if (!itemMap.has(item._id)) {
+                    state.wishlist.items.push(item)
                 }
-                saveToLocalStorage(state)
-            } else {
-                state.wishlist.items.push(product)
-                saveToLocalStorage(state)
             }
+            saveToLocalStorage(state)
         },
         removeFromWishlist: (state, action) => {
-            state.wishlist.items = state.wishlist.items.filter((item) => item._id !== action.payload.productId)
+            state.wishlist.items = state.wishlist.items.filter((item) => item._id !== action.payload.itemId)
             saveToLocalStorage(state)
         },
         moveToCart: (state, action) => {
@@ -77,7 +72,7 @@ const userSlice = createSlice({
         },
         updateCartItems: (state, action) => {
             const { itemId, selectedQty, selectedSize, index } = action.payload
-            const existingItemIndex = state.cart.items.findIndex(item => item.product._id === itemId && item.selectedSize === selectedSize)
+            const existingItemIndex = state.cart.items.findIndex(item => item.productId._id === itemId && item.selectedSize === selectedSize)
             if (existingItemIndex !== -1) {
                 state.cart.items[existingItemIndex].selectedQty = selectedQty
                 if (existingItemIndex !== index) {
@@ -91,7 +86,7 @@ const userSlice = createSlice({
         },
         removeFromCart: (state, action) => {
             const { productId, selectedSize } = action.payload
-            state.cart.items = state.cart.items.filter((item) => !(item?.product._id === productId && item?.selectedSize === selectedSize))
+            state.cart.items = state.cart.items.filter((item) => !(item?.productId._id === productId && item?.selectedSize === selectedSize))
             if (state.cart.items.length === 0) state.cart.appliedCoupon = {
                 code: '',
                 discount: 0,
