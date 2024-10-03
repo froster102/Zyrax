@@ -36,7 +36,7 @@ const CategorySchema = new mongoose.Schema({
             message: 'Sold count should be positive'
         }
     }
-})
+}, { timestamps: true })
 
 const Category = mongoose.model('Category', CategorySchema)
 

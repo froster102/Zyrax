@@ -4,9 +4,12 @@ import { User } from "../../model/user.js"
 import { getLastDay, getLastWeek, getLastMonth, getLastYear, constructGraphData, formatISODate } from "../../utils/helper.js"
 import { jsPDF } from 'jspdf'
 import ExcelJS from 'exceljs'
+import { Category } from "../../model/category.js"
 
 const getOverviewData = async (req, res) => {
-    const { period, limit = 0, startDate = '', endDate = '' } = req.query
+    const { period, startDate = '', endDate = '' } = req.query
+    let { limit } = req.query
+    limit = isNaN(Number(limit)) ? 0 : Number(limit)
 
     let dateRange = {}
 
@@ -43,6 +46,25 @@ const getOverviewData = async (req, res) => {
                 $project: {
                     totalProducts: 1,
                     products: { $slice: ['$products', isNaN(Number(limit)) ? 0 : Number(limit)] }
+                }
+            }
+        ])
+        const categoryResults = await Category.aggregate([
+            {
+                $match: {
+                    ...(dateRange.start && dateRange.end ? { createdAt: { $gte: dateRange.start, $lte: dateRange.end } } : {})
+                },
+            },
+            {
+                $sort: { soldCount: -1 }
+            },
+            {
+                $limit: limit
+            },
+            {
+                $group: {
+                    _id: null,
+                    categories: { $push: '$$ROOT' }
                 }
             }
         ])
@@ -95,7 +117,7 @@ const getOverviewData = async (req, res) => {
             totalOfferAmount,
             totalCouponAmount
         } = ordersResult[0] || 0
-
+        const { categories } = categoryResults[0] || []
         return res.status(200).json({
             totalProducts,
             totalCustomers,
@@ -104,7 +126,8 @@ const getOverviewData = async (req, res) => {
             totalOfferAmount,
             totalCouponAmount,
             orders,
-            products
+            products,
+            categories
         })
 
     } catch (error) {

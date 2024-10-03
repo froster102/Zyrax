@@ -188,7 +188,7 @@ const adminApiSlice = apiSlice.injectEndpoints({
             query: ({ filter, sort, format }) => {
                 const params = { ...filter, sort, format }
                 const query = constructQueryParams(params)
-                return `/admin/analytics/overview/?${query}`
+                return `/admin/analytics/overview?${query}`
             }
         }),
         getAnalyticsGraphData: builder.query({

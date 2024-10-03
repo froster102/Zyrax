@@ -24,9 +24,10 @@ function DateFilter({ filter, setFilter }) {
     const [date, setDate] = useState({ from: '', to: '' })
 
     function handlePeriodChange(period) {
-        setFilter({
+        setFilter(prev => ({
+            ...prev,
             period: period
-        })
+        }))
     }
 
     function handleDateRangeChange(dateRange) {
