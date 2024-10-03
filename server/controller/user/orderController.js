@@ -52,6 +52,10 @@ const cancelOrder = async (req, res) => {
         const product = await Order.findOne({ orderId: orderId, 'products.productId': productId })
         if (!order) return res.status(404).json({ message: `Order with ${orderId} not found` })
         if (!product) return res.status(404).json({ message: `Product ID ${productId} not found in order ${orderId}` })
+        if (order.payment.method !== 'cash on delivery') {
+            const wallet = await Wallet.findOne({ user_id: req.userId })
+            if (!wallet) return res.status(400).json({ message: 'Wallet should be created to proceed with cancellation' })
+        }
         await Order.findOneAndUpdate({
             orderId: orderId,
             'products.productId': productId
@@ -122,9 +126,10 @@ const returnOrder = async (req, res) => {
         'order placed by mistake',
         'doesnt liked the fit'
     ]
-
     if (!validReasons.includes(reason)) return res.status(400).json({ message: 'Enter a valid reason' })
     try {
+        const wallet = Wallet.findOne({ user_id: req.userId })
+        if (!wallet) return res.status(400).json({ message: 'Wallet should be created to proceed with returns' })
         const order = await Order.findOne({ orderId: orderId })
         const existingReturn = await Return.findOne({ user_id: req.userId, productId: productId, orderId: order._id })
         if (existingReturn) return res.status(409).json({ message: 'Return already request , in processing' })
