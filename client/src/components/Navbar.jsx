@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../store/slices/authSlice';
 import UserDropdown from './UserDropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender, addToWishlist, applyCoupon } from '../store/slices/userSlice';
+import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender, applyCoupon } from '../store/slices/userSlice';
 import { useGetAllCategoriesQuery } from '../store/api/productApiSlice';
 import { useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery } from '../store/api/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
@@ -32,7 +32,7 @@ function Navbar() {
   const [userSignOut] = useLogoutUserMutation()
   const { data: categories, isLoading: isCategoriesLoading } = useGetAllCategoriesQuery()
   const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
-  const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading, refetch: refetchUserWishlistItems } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
+  const { data: { userWishlistItems = [] } = {} } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -55,10 +55,9 @@ function Navbar() {
 
   }, [])
 
+  const wishlistItems = userAuth ? userWishlistItems : localWishlistItems
+  
   useEffect(() => {
-    if (!isUserCartItemsLoading && userAuth && userWishlistItems) {
-      dispatch(addToWishlist({ sync: true, items: userWishlistItems }))
-    }
     if (!isUserCartItemsLoading && userAuth && userCartItems) {
       const dispatchCartState = userCartItems?.items.map(item => {
         return {
@@ -69,11 +68,11 @@ function Navbar() {
       })
       dispatch(syncCart(dispatchCartState))
       if (userCartItems?.appliedCoupon?.code) {
-        dispatch(applyCoupon({coupon:userCartItems.appliedCoupon}))
+        dispatch(applyCoupon({ coupon: userCartItems.appliedCoupon }))
       }
       refetchCart()
     }
-  }, [dispatch, userAuth, userCartItems, isUserCartItemsLoading, userWishlistItems, isUserWishlistItemsLoading, refetchCart, refetchUserWishlistItems])
+  }, [dispatch, userAuth, userCartItems, isUserCartItemsLoading, refetchCart])
 
 
   async function logoutUser() {
@@ -116,8 +115,8 @@ function Navbar() {
               </div></Link>
               <Link to={'/wishlist'} ><div className='w-fit p-2 rounded-full h-fit flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in relative'>
                 {
-                  localWishlistItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>
-                    {localWishlistItems.length}
+                  wishlistItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>
+                    {wishlistItems.length}
                   </div>
                 }
                 <BiHeart size={25} />

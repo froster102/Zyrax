@@ -1,27 +1,14 @@
 import { Wishlist } from "../../model/wishlist.js"
 
 const addWishlistItems = async (req, res) => {
-    const { productId, action, productIds } = req.body
+    const { items = [] } = req.body
     try {
-        if (action === 'sync') {
-            if (!productIds) return res.status(400).json({ message: 'Products IDs not found for sync action' })
-            if (!Array.isArray(productIds)) {
-                return res.status(400).json({ message: 'Invalid array given for sync action' })
-            }
-        }
         let wishlist = await Wishlist.findOne({ user_id: req.userId })
         if (!wishlist) {
             wishlist = new Wishlist({ user_id: req.userId, items: [] })
         }
-        if (action === 'sync') {
-            wishlist.items = [...new Set([...wishlist.items, ...productIds])]
-            await wishlist.save()
-            const newWishlist = await Wishlist.findOne({ user_id: req.userId }).populate('items')
-            return res.status(201).json(newWishlist.items)
-        } else {
-            wishlist.items = [...new Set([...wishlist.items, productId])]
-            await wishlist.save()
-        }
+        wishlist.items = [...new Set([...wishlist.items, ...items])]
+        await wishlist.save()
         return res.status(201).json({ message: 'Products added to wishlist' })
     } catch (e) {
         const message = []
@@ -48,7 +35,7 @@ const getWishlistItems = async (req, res) => {
         const wishlist = await Wishlist.findOne({ user_id: req.userId }, { items: true, _id: false }).populate({
             path: 'items',
         })
-        return res.status(200).json(wishlist.items)
+        return res.status(200).json({ userWishlistItems: wishlist.items })
     } catch (error) {
         return res.status(500).json({ message: 'Failed to get products' })
     }

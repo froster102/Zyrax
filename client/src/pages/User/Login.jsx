@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom';
-import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery } from '../../store/api/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation } from '../../store/api/userApiSlice';
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { selectUserToken, setUserCredentials } from '../../store/slices/authSlice';
 import { FaGoogle } from 'react-icons/fa6';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { addToWishlist, selectActiveGender, selectCartItems, selectWishlistItems } from '../../store/slices/userSlice';
+import { selectActiveGender, selectCartItems, selectWishlistItems } from '../../store/slices/userSlice';
 import { loginSchema } from '../../../ValidationSchema/loginSchema';
 import toast from 'react-hot-toast'
 import { RotatingLines } from 'react-loader-spinner'
@@ -25,7 +25,6 @@ function Login() {
     const localCartItems = useSelector(selectCartItems)
     const [addItemsToUserWislist] = useAddItemsToUserWishlistMutation()
     const [addItemsToUserCart] = useAddItemsToUserCartMutation()
-    const { refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !user })
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(loginSchema)
     })
@@ -33,20 +32,18 @@ function Login() {
     useEffect(() => {
         const syncUserData = async () => {
             try {
-                const productIds = localWishlistItems.map((item => item?._id))
-                const items = await addItemsToUserWislist({ productIds, action: 'sync' }).unwrap()
-                dispatch(addToWishlist({ sync: true, items }))
+                const ItemIds = localWishlistItems.map((item => item?._id))
+                await addItemsToUserWislist({ items: ItemIds }).unwrap()
 
                 if (localCartItems.length > 0) {
                     const items = localCartItems.map(item => (
                         {
-                            productId: item?.product._id,
+                            productId: item?.productId._id,
                             selectedSize: item?.selectedSize,
                             selectedQty: item?.selectedQty
                         }
                     ))
                     await addItemsToUserCart({ items: items })
-                    refetchCart()
                 }
             } catch (error) {
                 ''
@@ -90,8 +87,9 @@ function Login() {
     }
 
     function signInWithGoogle() {
-        window.open('http://localhost:3000/api/v1/users/auth/google', '_blank', 'width=600,height=600')
+        window.open(import.meta.env.VITE_GOOGLE_SIGNIN_URL, '_blank', 'width=600,height=600')
     }
+
 
     return (
         <>

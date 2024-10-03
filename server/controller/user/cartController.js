@@ -30,6 +30,7 @@ export const addCartItems = async (req, res) => {
             await newCart.save()
             return res.status(201).json({ message: 'Cart created sucessfully' })
         }
+        
         return res.status(201).json({ message: 'Product added to cart' })
     } catch (e) {
         const message = []

@@ -9,24 +9,27 @@ import EmptyCart from "../../components/EmptyCart"
 import toast, { Toaster } from "react-hot-toast"
 
 function Wishlist() {
-  const items = useSelector(selectWishlistItems)
+  const localWishlistItems = useSelector(selectWishlistItems)
   const dispatch = useDispatch()
   const userAuth = useSelector(selectUserToken)
+  const { data: { userWishlistItems = [] } = {} } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
   const [selectedSize, setSelectedSize] = useState('')
   const [openSelectSizeModal, setOpenSelectSizeModal] = useState(false)
   const [removeUserWishlistItem] = useRemoveItemFromUserWishlistMutation()
   const [addToUserCart] = useAddItemsToUserCartMutation()
-  const { refetch: refetchUserWishlistItems } = useGetUserWishlistItemsQuery()
   const [productToMove, setProductToMove] = useState(null)
 
   async function removeItemFromWishlist({ e, product }) {
     e.preventDefault()
     e.stopPropagation()
     try {
-      userAuth && await removeUserWishlistItem({ itemId: product._id })
-      dispatch(removeFromWishlist({ productId: product._id }))
-      userAuth && refetchUserWishlistItems()
-      toast('Product removed from your wishlist')
+      if (userAuth) {
+        await removeUserWishlistItem({ itemId: product._id })
+        toast('Product removed from your wishlist')
+      } else {
+        dispatch(removeFromWishlist({ itemId: product._id }))
+        toast('Product removed from your wishlist')
+      }
     } catch (error) {
       ''
     }
@@ -36,19 +39,25 @@ function Wishlist() {
     if (!selectedSize) {
       setProductToMove(product)
       setOpenSelectSizeModal(true)
-      console.log(selectedSize)
       return
     }
     try {
-      userAuth && await removeUserWishlistItem({ itemId: product._id })
-      userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize }] }).unwrap()
-      toast('Product added to your cart')
-      dispatch(moveToCart({ itemToMove: product, selectedSize }))
-      setSelectedSize('')
+      if (userAuth) {
+        userAuth && await removeUserWishlistItem({ itemId: product._id })
+        userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize }] }).unwrap()
+        setSelectedSize('')
+      } else {
+        toast('Product added to your cart')
+        dispatch(moveToCart({ itemToMove: product, selectedSize }))
+        setSelectedSize('')
+      }
     } catch (error) {
       ''
     }
   }
+
+  const wishlistItems = userAuth ? userWishlistItems : localWishlistItems
+
   return (
     <>
       <Toaster
@@ -62,10 +71,10 @@ function Wishlist() {
         }}
       />
       <div className="max-w-[1120px] m-auto mt-8 px-8">
-        <h1 className="mt-10 font-semibold text-lg">My Wishlist <span className="font-light">({items.length} Items)</span></h1>
-        {items.length === 0 && <EmptyCart />}
+        <h1 className="mt-10 font-semibold text-lg">My Wishlist <span className="font-light">({wishlistItems.length} Items)</span></h1>
+        {wishlistItems.length === 0 && <EmptyCart />}
         <div className="flex gap-4 mt-4 flex-wrap">
-          {items.map((item, i) => <WishlistProductCard key={i} product={item} removeItemFromWishlist={removeItemFromWishlist} moveItemToCart={moveItemToCart}></WishlistProductCard>)}
+          {wishlistItems.map((item, i) => <WishlistProductCard key={i} product={item} removeItemFromWishlist={removeItemFromWishlist} moveItemToCart={moveItemToCart}></WishlistProductCard>)}
         </div>
         {openSelectSizeModal && <PickSizeModal
           sizes={productToMove?.stock || []}
