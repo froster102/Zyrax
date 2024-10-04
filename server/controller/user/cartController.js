@@ -30,7 +30,7 @@ export const addCartItems = async (req, res) => {
             await newCart.save()
             return res.status(201).json({ message: 'Cart created sucessfully' })
         }
-        
+
         return res.status(201).json({ message: 'Product added to cart' })
     } catch (e) {
         const message = []
@@ -53,14 +53,14 @@ export const addCartItems = async (req, res) => {
 // @access Private
 export const getCartItems = async (req, res) => {
     try {
-        const items = await Cart.findOne({ user_id: req.userId }, { items: true, _id: false, appliedCoupon: true }).populate({
+        const { items } = await Cart.findOne({ user_id: req.userId }, { items: true, _id: false, appliedCoupon: true }).populate({
             path: 'items.productId',
             populate: {
                 path: 'category',
                 path: 'offer'
             }
         })
-        return res.status(200).json(items)
+        return res.status(200).json({ userCartItems: items })
     } catch (error) {
         return res.status(500).json({ message: 'Failed get cart items' })
     }

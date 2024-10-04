@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "../../components/CartProductCard"
 import { moveToWishlist, removeFromCart, selectAppliedCoupon, selectCartItems, updateCartItems } from "../../store/slices/userSlice";
 import EmptyCart from "../../components/EmptyCart";
-import { useAddItemsToUserWishlistMutation, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../store/api/userApiSlice";
+import { useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../store/api/userApiSlice";
 import { selectUserToken } from "../../store/slices/authSlice";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast'
@@ -12,7 +12,7 @@ import ApplyCoupon from "../../components/ApplyCoupon";
 import { calculateDiscount } from "../../utils/helper";
 
 function Cart() {
-  const cartItems = useSelector(selectCartItems)
+  const localCartItems = useSelector(selectCartItems)
   const dispatch = useDispatch()
   const [removeUserCartItem] = useRemoveItemFromUserCartMutation()
   const [addToUserWishlist] = useAddItemsToUserWishlistMutation()
@@ -24,6 +24,8 @@ function Cart() {
   const appliedCoupon = useSelector(selectAppliedCoupon)
   const [offerAmount, setOfferAmount] = useState(0)
   const navigate = useNavigate()
+  const { data: { userCartItems = [] } = {} } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
+  const cartItems = userAuth ? userCartItems : localCartItems
 
   useEffect(() => {
     function calculateCartTotal() {
@@ -31,11 +33,11 @@ function Cart() {
       let totalOffer = 0
 
       cartItems.forEach((item) => {
-        const price = Number(item.product.price)
+        const price = Number(item.productId.price)
         const selectedQty = Number(item.selectedQty)
         totalMrp += price * selectedQty
-        if (item.product.offer) {
-          const offerDeduction = calculateDiscount(price, item.product.offer.discountPercentage)
+        if (item.productId.offer) {
+          const offerDeduction = calculateDiscount(price, item.productId.offer.discountPercentage)
           totalOffer += (price - offerDeduction) * selectedQty
         }
 
@@ -54,14 +56,18 @@ function Cart() {
       setOfferAmount(totalOffer)
       setTotalCartAmount(finalTotal)
     }
-    calculateCartTotal()
+    if (cartItems.length > 0) calculateCartTotal()
   }, [cartItems, totalCouponDiscount, appliedCoupon])
 
   async function removeItemFromCart({ productId, moveToCart, selectedSize }) {
     try {
-      userAuth && await removeUserCartItem({ itemId: productId, selectedSize }).unwrap()
-      !moveToCart && toast('Product removed from cart sucessfully')
-      dispatch(removeFromCart({ productId, selectedSize }))
+      if (userAuth) {
+        await removeUserCartItem({ itemId: productId, selectedSize }).unwrap()
+        !moveToCart && toast('Product removed from cart sucessfully')
+      } else {
+        dispatch(removeFromCart({ productId, selectedSize }))
+        !moveToCart && toast('Product removed from cart sucessfully')
+      }
     } catch (error) {
       toast(error?.data?.message)
     }
@@ -69,10 +75,14 @@ function Cart() {
 
   async function moveItemToWishlist(item) {
     try {
-      userAuth && await removeUserCartItem({ itemId: item?.product?._id, selectedSize: item.selectedSize })
-      userAuth && await addToUserWishlist({ productId: item?.product._id }).unwrap()
-      dispatch(moveToWishlist({ itemToMove: item.product }))
-      toast('Product added to your wishlist')
+      if (userAuth) {
+        userAuth && await removeUserCartItem({ itemId: item?.productId?._id, selectedSize: item.selectedSize })
+        userAuth && await addToUserWishlist({ productId: item?.productId._id }).unwrap()
+        toast('Product added to your wishlist')
+      } else {
+        dispatch(moveToWishlist({ itemToMove: item.productId }))
+        toast('Product added to your wishlist')
+      }
     } catch (error) {
       toast(error?.data?.message)
     }
@@ -80,8 +90,11 @@ function Cart() {
 
   async function updateCartItem({ itemId, selectedSize, selectedQty, index }) {
     try {
-      userAuth && await updateUserCartItem({ itemId, selectedSize, selectedQty, index }).unwrap()
-      dispatch(updateCartItems({ itemId, selectedSize, selectedQty, index }))
+      if (userAuth) {
+        await updateUserCartItem({ itemId, selectedSize, selectedQty, index }).unwrap()
+      } else {
+        dispatch(updateCartItems({ itemId, selectedSize, selectedQty, index }))
+      }
     } catch (error) {
       toast(error?.data?.message)
     }

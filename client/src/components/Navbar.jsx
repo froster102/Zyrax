@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUserToken, userLogout } from '../store/slices/authSlice';
 import UserDropdown from './UserDropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { syncCart, resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender, applyCoupon } from '../store/slices/userSlice';
+import { resetCartAndWishlist, selectCartItems, selectWishlistItems, selectActiveGender } from '../store/slices/userSlice';
 import { useGetAllCategoriesQuery } from '../store/api/productApiSlice';
 import { useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery } from '../store/api/userApiSlice';
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
@@ -31,7 +31,7 @@ function Navbar() {
   const localWishlistItems = useSelector(selectWishlistItems)
   const [userSignOut] = useLogoutUserMutation()
   const { data: categories, isLoading: isCategoriesLoading } = useGetAllCategoriesQuery()
-  const { data: userCartItems, isLoading: isUserCartItemsLoading, refetch: refetchCart } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
+  const { data: { userCartItems = [] } = {} } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
   const { data: { userWishlistItems = [] } = {} } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
   const navigate = useNavigate()
 
@@ -56,23 +56,24 @@ function Navbar() {
   }, [])
 
   const wishlistItems = userAuth ? userWishlistItems : localWishlistItems
-  
-  useEffect(() => {
-    if (!isUserCartItemsLoading && userAuth && userCartItems) {
-      const dispatchCartState = userCartItems?.items.map(item => {
-        return {
-          product: item.productId,
-          selectedSize: item.selectedSize,
-          selectedQty: item.selectedQty
-        }
-      })
-      dispatch(syncCart(dispatchCartState))
-      if (userCartItems?.appliedCoupon?.code) {
-        dispatch(applyCoupon({ coupon: userCartItems.appliedCoupon }))
-      }
-      refetchCart()
-    }
-  }, [dispatch, userAuth, userCartItems, isUserCartItemsLoading, refetchCart])
+  const cartItems = userAuth ? userCartItems : localCartItems
+
+  // useEffect(() => {
+  //   if (!isUserCartItemsLoading && userAuth && userCartItems) {
+  //     const dispatchCartState = userCartItems?.items.map(item => {
+  //       return {
+  //         product: item.productId,
+  //         selectedSize: item.selectedSize,
+  //         selectedQty: item.selectedQty
+  //       }
+  //     })
+  //     dispatch(syncCart(dispatchCartState))
+  //     if (userCartItems?.appliedCoupon?.code) {
+  //       dispatch(applyCoupon({ coupon: userCartItems.appliedCoupon }))
+  //     }
+  //     refetchCart()
+  //   }
+  // }, [dispatch, userAuth, userCartItems, isUserCartItemsLoading, refetchCart])
 
 
   async function logoutUser() {
@@ -110,7 +111,7 @@ function Navbar() {
               <SearchBar></SearchBar>
               <UserDropdown user={userAuth} logoutUser={logoutUser}></UserDropdown>
               <Link to={'/cart'}><div className='w-fit p-3 rounded-full h-fit flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in relative'>
-                {localCartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localCartItems.length}</div>}
+                {cartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{cartItems.length}</div>}
                 <FaShoppingCart size={20} />
               </div></Link>
               <Link to={'/wishlist'} ><div className='w-fit p-2 rounded-full h-fit flex items-center justify-items-center hover:bg-[#cacaca] transition ease-in relative'>
@@ -137,13 +138,13 @@ function Navbar() {
                   </div>
                 </Link>
                 <Link to={'/cart'}><div className='w-[35px] h-[35px] flex items-center justify-items-center relative'>
-                  {localCartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{localCartItems.length}</div>}
+                  {cartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>{cartItems.length}</div>}
                   <FaShoppingCart size={20} />
                 </div></Link>
                 <Link to={'/wishlist'}><div className='w-[35px] h-[35px] flex items-center justify-items-center relative'>
                   {
-                    localWishlistItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>
-                      {localWishlistItems.length}
+                    cartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>
+                      {cartItems.length}
                     </div>
                   }
                   <BiHeart size={20} />
