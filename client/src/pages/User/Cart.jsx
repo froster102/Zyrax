@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "../../components/CartProductCard"
-import { moveToWishlist, removeFromCart, selectAppliedCoupon, selectCartItems, updateCartItems } from "../../store/slices/userSlice";
+import { moveToWishlist, removeFromCart, selectCartItems, updateCartItems } from "../../store/slices/userSlice";
 import EmptyCart from "../../components/EmptyCart";
 import { useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../store/api/userApiSlice";
 import { selectUserToken } from "../../store/slices/authSlice";
@@ -21,10 +21,9 @@ function Cart() {
   const [mrpTotal, setMrpTotal] = useState(0)
   const [totalCartAmount, setTotalCartAmount] = useState(0)
   const [totalCouponDiscount, setTotalCouponDiscount] = useState(0)
-  const appliedCoupon = useSelector(selectAppliedCoupon)
   const [offerAmount, setOfferAmount] = useState(0)
   const navigate = useNavigate()
-  const { data: { userCartItems = [] } = {} } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
+  const { data: { userCartItems = [], appliedCoupon = {} } = {} } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
   const cartItems = userAuth ? userCartItems : localCartItems
 
   useEffect(() => {
@@ -138,9 +137,12 @@ function Cart() {
                   navigateToSelectAddress={() => navigate('/select-address', { state: { mrpTotal, offerAmount, couponDiscountAmount: totalCouponDiscount, cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })}
                 />
               }
-              <ApplyCoupon
-                cartItems={cartItems}
-              />
+              {
+                userAuth && <ApplyCoupon
+                  cartItems={cartItems}
+                  appliedCoupon={appliedCoupon}
+                />
+              }
             </div>
           </div>
         }
