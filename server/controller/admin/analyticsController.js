@@ -9,7 +9,7 @@ import { Category } from "../../model/category.js"
 const getOverviewData = async (req, res) => {
     const { period, startDate = '', endDate = '' } = req.query
     let { limit } = req.query
-    limit = isNaN(Number(limit)) ? 0 : Number(limit)
+    limit = isNaN(Number(limit)) ? 10 : Number(limit)
 
     let dateRange = {}
 
@@ -24,7 +24,6 @@ const getOverviewData = async (req, res) => {
     } else if (startDate && endDate) {
         dateRange = { start: new Date(startDate), end: new Date(endDate) }
     }
-
     try {
         const productsResult = await Product.aggregate([
             {
@@ -45,7 +44,7 @@ const getOverviewData = async (req, res) => {
             {
                 $project: {
                     totalProducts: 1,
-                    products: { $slice: ['$products', isNaN(Number(limit)) ? 0 : Number(limit)] }
+                    products: { $slice: ['$products', limit] }
                 }
             }
         ])
@@ -104,7 +103,7 @@ const getOverviewData = async (req, res) => {
                     totalProductsSold: { $sum: '$products.quantity' },
                     totalOfferAmount: { $sum: '$products.appliedOfferAmount' },
                     totalCouponAmount: { $sum: '$appliedCouponAmount' },
-                    orders: { $push: '$$ROOT' }
+                    orders: { $push: '$$ROOT' },
                 }
             },
         ])
@@ -115,9 +114,11 @@ const getOverviewData = async (req, res) => {
             totalRevenue,
             orders,
             totalOfferAmount,
-            totalCouponAmount
+            totalCouponAmount,
+            orderProducts
         } = ordersResult[0] || 0
         const { categories } = categoryResults[0] || []
+
         return res.status(200).json({
             totalProducts,
             totalCustomers,
