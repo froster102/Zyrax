@@ -28,7 +28,7 @@ function CartProductCard({ item, removeFromCart, moveItemToWishlist, updateCartI
     return (
         <>
             <div className="relative">
-                <Link to={`/productId/${item?.productId?.name}`} >
+                <Link to={`/product/${item?.productId?.name}`} >
                     <div className="bg-neutral-200 w-full rounded-lg border border-[#CFCBCB] flex p-[10px] relative mt-2 px-4">
                         <img className="w-[127px] h-[146px] rounded-[20px]" src={item?.productId?.imageUrls[0]} alt="" />
                         <div className="flex justify-between w-full md:pl-4 pl-2">
