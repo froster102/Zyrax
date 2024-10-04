@@ -1,4 +1,5 @@
 import { Cart } from "../../model/cart.js"
+import { Coupon } from "../../model/coupon.js"
 
 // @desc Add item/items to cart
 // @route POST api/v1/user/cart
@@ -53,14 +54,14 @@ export const addCartItems = async (req, res) => {
 // @access Private
 export const getCartItems = async (req, res) => {
     try {
-        const { items } = await Cart.findOne({ user_id: req.userId }, { items: true, _id: false, appliedCoupon: true }).populate({
+        const { items, appliedCoupon } = await Cart.findOne({ user_id: req.userId }, { items: true, _id: false, appliedCoupon: true }).populate({
             path: 'items.productId',
             populate: {
                 path: 'category',
                 path: 'offer'
             }
         })
-        return res.status(200).json({ userCartItems: items })
+        return res.status(200).json({ userCartItems: items, appliedCoupon })
     } catch (error) {
         return res.status(500).json({ message: 'Failed get cart items' })
     }
@@ -76,8 +77,12 @@ export const updateCartItems = async (req, res) => {
     if (isNaN(index) || index < 0) return res.status(400).json({ message: 'Index must be a positive integer' })
     try {
         const cart = await Cart.findOne({ user_id: req.userId })
+            .populate({
+                path: 'items.productId',
+                populate: 'offer'
+            })
         if (!cart) return res.status(404).json({ message: 'Cart not found for the user' })
-        const existingItemIndex = cart.items.findIndex(item => item.productId.toString() === itemId && item.selectedSize === selectedSize)
+        const existingItemIndex = cart.items.findIndex(item => item.productId._id.toString() === itemId && item.selectedSize === selectedSize)
         if (existingItemIndex !== -1) {
             cart.items[existingItemIndex].selectedQty = selectedQty
             if (existingItemIndex !== index) {
@@ -86,6 +91,24 @@ export const updateCartItems = async (req, res) => {
         } else {
             cart.items[index].selectedQty = selectedQty
             cart.items[index].selectedSize = selectedSize
+        }
+        let cartTotal = 0
+        for (let item of cart.items) {
+            const itemPrice = item.productId.price
+            const selectedQty = item.selectedQty
+
+            const finalPrice = item.productId.offer
+                ? calculateDiscount(itemPrice, item.productId.offer.discountPercentage)
+                : itemPrice
+
+            let itemTotalPrice = finalPrice * selectedQty
+            cartTotal += itemTotalPrice
+        }
+        if (cart.appliedCoupon.code) {
+            const coupon = await Coupon.findOne({ code: cart.appliedCoupon.code })
+            if (cartTotal < coupon.minPurchaseAmount) {
+                cart.appliedCoupon = {}
+            }
         }
         await cart.save()
         return res.status(200).json({ message: 'Cart updated sucessfully' })

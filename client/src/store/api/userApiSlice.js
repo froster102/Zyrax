@@ -69,7 +69,10 @@ const userApiSlice = apiSlice.injectEndpoints({
                 method: 'PUT',
                 body: { selectedQty, selectedSize, index }
             }),
-            invalidatesTags: [{ type: 'CartItems', id: 'LIST' }]
+            invalidatesTags: [
+                { type: 'CartItems', id: 'LIST' },
+                { type: 'Coupons', id: 'LIST' }
+            ]
         }),
         removeItemFromUserCart: builder.mutation({
             query: ({ itemId, selectedSize }) => ({
@@ -77,7 +80,10 @@ const userApiSlice = apiSlice.injectEndpoints({
                 method: 'DELETE',
                 body: { selectedSize }
             }),
-            invalidatesTags: [{ type: 'CartItems', id: 'LIST' }]
+            invalidatesTags: [
+                { type: 'CartItems', id: 'LIST' },
+                { type: 'Coupons', id: 'LIST' }
+            ]
         }),
         chekout: builder.mutation({
             query: ({ paymentMethod, shippingAddressId, cardDetails }) => {

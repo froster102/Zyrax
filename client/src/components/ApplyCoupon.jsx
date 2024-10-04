@@ -1,18 +1,16 @@
 import { useApplyCouponMutation, useGetCouponsQuery, useRemoveCouponMutation } from '../store/api/couponApiSlice'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { selectUserToken } from '../store/slices/authSlice'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 import { IoIosArrowDown, IoIosClose } from 'react-icons/io'
-import { useEffect, useState } from 'react'
-import { applyCoupon, removeAppliedCoupon, selectAppliedCoupon } from '@/store/slices/userSlice'
+import { useState } from 'react'
 
-function ApplyCoupon({ cartItems }) {
+function ApplyCoupon({ appliedCoupon }) {
     const userAuth = useSelector(selectUserToken)
-    const appliedCoupon = useSelector(selectAppliedCoupon)
     const navigate = useNavigate()
-    const { data: { coupons = [] } = {}, isLoading: isCouponsLoading, refetch: refetchCoupons, isError } = useGetCouponsQuery(undefined, { skip: !userAuth })
+    const { data: { coupons = [] } = {} } = useGetCouponsQuery(undefined, { skip: !userAuth })
     const [couponCode, setCouponCode] = useState({
         code: ''
     })
@@ -20,13 +18,11 @@ function ApplyCoupon({ cartItems }) {
     const [removeUserCoupon] = useRemoveCouponMutation()
     const [openSelectCoupon, setOpenSelectCoupon] = useState(false)
     const [error, setError] = useState('')
-    const dispatch = useDispatch()
 
     async function handleApplyCoupon(coupon) {
         try {
-            if (coupon.code !== appliedCoupon.code) {
+            if (coupon.code !== appliedCoupon?.code) {
                 const res = await applyUserCoupon({ code: coupon.code }).unwrap()
-                dispatch(applyCoupon({ coupon }))
                 toast(res?.message)
             }
         } catch (error) {
@@ -37,32 +33,11 @@ function ApplyCoupon({ cartItems }) {
     async function handleRemoveCoupon() {
         try {
             const res = await removeUserCoupon().unwrap()
-            dispatch(removeAppliedCoupon())
             toast(res?.message)
         } catch (error) {
             toast(error?.data?.message)
         }
     }
-
-    useEffect(() => {
-        function checkCouponAvailablity(couponCode) {
-            if (coupons.length > 0) {
-                const availableCoupons = coupons.map(coupon => coupon.code)
-                if (availableCoupons.includes(couponCode)) return true
-            }
-            return false
-        }
-        if (isError) {
-            navigate('/login')
-        }
-        const isCouponAvailable = checkCouponAvailablity(appliedCoupon.code)
-        if (!isCouponAvailable) {
-            if (appliedCoupon.code) {
-                dispatch(removeAppliedCoupon())
-            }
-        }
-        userAuth && refetchCoupons()
-    }, [refetchCoupons, userAuth, navigate, isError, cartItems, appliedCoupon, isCouponsLoading, coupons, dispatch])
 
     return (
         <div>
@@ -74,7 +49,8 @@ function ApplyCoupon({ cartItems }) {
                     value={couponCode.code}
                     onChange={(e) => {
                         setError('')
-                        setCouponCode({ code: e.target.value })
+                        let value = e.target.value.toUpperCase()
+                        setCouponCode({ code: value })
                     }}
                 />
                 <button
@@ -96,7 +72,7 @@ function ApplyCoupon({ cartItems }) {
                 </button>
                 {error && <span className='text-red-600 text-xs font-medium'>{error}</span>}
                 {
-                    appliedCoupon.code && <button
+                    appliedCoupon?.code && <button
                         className='bg-neutral-600 text-white text-sm px-2 py-1 rounded-md mt-2 flex items-center'
                         onClick={handleRemoveCoupon}
                     >
@@ -118,7 +94,7 @@ function ApplyCoupon({ cartItems }) {
                                 {
                                     coupons.map((coupon, i) => (
                                         <div key={i}
-                                            className={`w-full mt-2 text-sm rounded-lg border border-neutral-300 ${coupon.code === appliedCoupon.code ? 'bg-neutral-700 text-white' : ''} p-2`}
+                                            className={`w-full mt-2 text-sm rounded-lg border border-neutral-300 ${coupon.code === appliedCoupon?.code ? 'bg-neutral-700 text-white' : ''} p-2`}
                                             onClick={() => handleApplyCoupon(coupon)}
                                         >
                                             <p>{coupon.code}</p>
@@ -137,7 +113,7 @@ function ApplyCoupon({ cartItems }) {
 }
 
 ApplyCoupon.propTypes = {
-    cartItems: PropTypes.array
+    appliedCoupon: PropTypes.object,
 }
 
 export default ApplyCoupon

@@ -22,7 +22,6 @@ export const getCoupons = async (req, res) => {
             let itemTotalPrice = finalPrice * selectedQty
             cartTotal += itemTotalPrice
         }
-
         const currentDate = new Date()
         const activeCoupons = await Coupon.find({ expirationDate: { $gt: currentDate } }, { _id: false, code: true, discount: true, maxDiscountAmount: true, minPurchaseAmount: true })
         const applicableCoupons = activeCoupons.filter((coupon) => coupon.minPurchaseAmount <= cartTotal)
@@ -31,7 +30,6 @@ export const getCoupons = async (req, res) => {
         console.log(error)
         return res.status(500).json({ message: 'Failed to get coupons' })
     }
-
 }
 
 export const applyCoupon = async (req, res) => {
@@ -41,7 +39,26 @@ export const applyCoupon = async (req, res) => {
         const coupon = await Coupon.findOne({ code })
         if (!coupon) return res.status(404).json({ message: 'Coupon not valid' })
         const cart = await Cart.findOne({ user_id: req.userId })
+            .populate({
+                path: 'items.productId',
+                populate: 'offer'
+            })
+        if (code === cart.appliedCoupon.code) return res.status(400).json({ message: 'Coupon already applied' })
         if (!cart) return res.status(404).json({ message: 'Cart with not found for the user' })
+        let cartTotal = 0
+        for (let item of cart.items) {
+            const itemPrice = item.productId.price
+            const selectedQty = item.selectedQty
+
+            const finalPrice = item.productId.offer
+                ? calculateDiscount(itemPrice, item.productId.offer.discountPercentage)
+                : itemPrice
+
+            let itemTotalPrice = finalPrice * selectedQty
+            cartTotal += itemTotalPrice
+        }
+        if (cartTotal < coupon.minPurchaseAmount) return res.status(400).json({ message: 'Coupon code not applicable' })
+        if (cartTotal < coupon.maxDiscountAmount) return res.status(400).json({ message: 'Coupon not valid' })
         cart.appliedCoupon = {
             code: coupon.code,
             discount: coupon.discount,
@@ -50,6 +67,7 @@ export const applyCoupon = async (req, res) => {
         const newCart = await cart.save()
         return res.status(200).json({ message: 'Coupon applied sucessfully' })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: 'Failed to apply coupon' })
     }
 

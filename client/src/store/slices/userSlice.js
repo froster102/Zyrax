@@ -96,24 +96,6 @@ const userSlice = createSlice({
         },
         resetCart: (state) => {
             state.cart.items = []
-            state.cart.appliedCoupon = {
-                code: '',
-                discount: 0,
-                maxDiscountAmount: 0
-            }
-            saveToLocalStorage(state)
-        },
-        applyCoupon: (state, action) => {
-            const { coupon } = action.payload
-            state.cart.appliedCoupon = coupon
-            saveToLocalStorage(state)
-        },
-        removeAppliedCoupon: (state) => {
-            state.cart.appliedCoupon = {
-                code: '',
-                discount: 0,
-                maxDiscountAmount: 0
-            }
             saveToLocalStorage(state)
         },
         moveToWishlist: (state, action) => {
