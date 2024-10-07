@@ -37,10 +37,9 @@ function OrderDetails() {
     async function cancelOrder({ orderId, productId }) {
         try {
             const res = await cancelUserOrder({ orderId, productId }).unwrap()
-            navigate('/account/orders')
             toast(res?.message)
         } catch (error) {
-            toast('Failed to canel order please try after some time')
+            toast(error?.data?.message)
         }
     }
 
@@ -111,7 +110,6 @@ function OrderDetails() {
                                                                             message: `Are you sure that you want to cancel ${orderDetails.orderItem.productId.name}`,
                                                                             onConfirm: () => cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
                                                                         }))
-                                                                        // cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
                                                                     }}
                                                                     className="mt-4 px-2 py-1 border border-neutral-500 rounded-md text-sm hover:bg-neutral-900 hover:text-white transition ease-in" >Cancel
                                                                 </button>
