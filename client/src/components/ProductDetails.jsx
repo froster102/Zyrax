@@ -5,7 +5,7 @@ import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import Row from './Row';
 import Ratings from './Ratings';
-import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from '../store/api/userApiSlice';
+import { useAddItemsToUserCartMutation, useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from '../store/api/userApiSlice';
 import { useEffect, useState } from 'react';
 import ProductImageModal from './ProductImageModal';
 import BreadCrumbs from './BreadCrumbs';
@@ -46,12 +46,12 @@ function ProductDetails() {
     const { name } = useParams()
     const { pathname } = useLocation()
     const gender = useSelector(selectActiveGender)
-    const wishlistItems = useSelector(selectWishlistItems)
-    const cartItems = useSelector(selectCartItems)
     const [filter, setFilter] = useState({ exclude: '', category: '', gender })
+    const userAuth = useSelector(selectUserToken)
     const { data: product, isError: isProductDeatilsError, isLoading: isProductLoading, refetch: refetchProductDeatils } = useGetProductDeatilsQuery(name)
     const { data: { products: similiarProducts = [] } = {}, isLoading: isProductsLoading } = useGetProductsQuery({ filter })
-    const { data: userWishlistItems, isLoading: isUserWishlistItemsLoading } = useGetUserWishlistItemsQuery()
+    const { data: { userWishlistItems = [] } = {}, isLoading: isUserWishlistItemsLoading } = useGetUserWishlistItemsQuery(undefined, { skip: !userAuth })
+    const { data: { userCartItems = [] } = {} } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
     const [imageModal, setImageModal] = useState(false)
     const [productImgPrev, setProductImgPrev] = useState(product?.imageUrls[0])
     const [activeWishlistItem, setActiveWishlistItem] = useState(false)
@@ -60,7 +60,11 @@ function ProductDetails() {
     const [addToUserWishlist] = useAddItemsToUserWishlistMutation()
     const [removeFromUserWishlist] = useRemoveItemFromUserWishlistMutation()
     const [addToUserCart] = useAddItemsToUserCartMutation()
-    const userAuth = useSelector(selectUserToken)
+    const localWishlistItems = useSelector(selectWishlistItems)
+    const localCartItems = useSelector(selectCartItems)
+
+    const wishlistItems = userAuth ? userWishlistItems : localWishlistItems
+    const cartItems = userAuth ? userCartItems : localCartItems
 
     useEffect(() => {
         setProductImgPrev(product?.imageUrls[0])
@@ -71,7 +75,7 @@ function ProductDetails() {
             setFilter(prev => ({
                 ...prev,
                 category: product?.category.name,
-                exclude : product?.name
+                exclude: product?.name
             }))
         }
     }, [isProductLoading, product, setFilter])
@@ -85,26 +89,38 @@ function ProductDetails() {
 
     useEffect(() => {
         let wishlistItemIds = []
-        wishlistItemIds = wishlistItems.map(item => item?._id)
+        if (userAuth) {
+            wishlistItemIds = userWishlistItems.map(item => item?._id)
+        } else {
+            wishlistItemIds = wishlistItems.map(item => item?._id)
+        }
         wishlistItemIds.includes(product?._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
         if (cartItems.length > 0 && !isProductLoading) {
-            const cartItemIds = cartItems.map(item => item?.product?._id)
-            cartItemIds.includes(product?._id) ? setActiveCartItem(true) : setActiveCartItem(false)
+            const activeItem = cartItems.find(item => item?.productId?._id && selectedSize === item.selectedSize)
+            activeItem ? setActiveCartItem(true) : setActiveCartItem(false)
         }
-    }, [product, wishlistItems, isProductLoading, cartItems, isUserWishlistItemsLoading, userAuth, userWishlistItems])
+    }, [product, wishlistItems, isProductLoading, cartItems, isUserWishlistItemsLoading, userAuth, userWishlistItems, selectedSize])
 
+    
     async function handleWishlistItems(product) {
         if (!activeWishlistItem) {
             try {
-                userAuth && await addToUserWishlist({ productId: product._id }).unwrap()
-                dispatch(addToWishlist({ product }))
+                if (userAuth) {
+                    userAuth && await addToUserWishlist({ items: [product._id] }).unwrap()
+                } else {
+                    dispatch(addToWishlist({ items: [product] }))
+                }
             } catch (error) {
                 ''
             }
         } else {
-            userAuth && await removeFromUserWishlist({ itemId: product._id }).unwrap()
-            dispatch(removeFromWishlist({ productId: product._id }))
-            setActiveWishlistItem(false)
+            if (userAuth) {
+                userAuth && await removeFromUserWishlist({ itemId: product._id }).unwrap()
+                setActiveWishlistItem(false)
+            } else {
+                dispatch(removeFromWishlist({ itemId: product._id }))
+                setActiveWishlistItem(false)
+            }
         }
     }
 
@@ -113,12 +129,13 @@ function ProductDetails() {
             setError(true)
             return
         }
-        // const currItemQty = cartItems.find(item => item.product._id === product._id)?.selectedQty
-        // console.log(currItemQty)
         if (!activeCartItem) {
             try {
-                userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize }] }).unwrap()
-                dispatch(addToCart({ product, selectedSize, selectedQty: 1 }))
+                if (userAuth) {
+                    userAuth && await addToUserCart({ items: [{ productId: product._id, selectedSize }] }).unwrap()
+                } else {
+                    dispatch(addToCart({ productId: product, selectedSize, selectedQty: 1 }))
+                }
             } catch (error) {
                 toast(error?.data?.message)
             }
@@ -132,7 +149,6 @@ function ProductDetails() {
         }
         return null
     }
-
     return (
         <>
             {
