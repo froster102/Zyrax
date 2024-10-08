@@ -4,18 +4,12 @@ import { useChekoutMutation, useVerifyPaymentMutation } from '../../store/api/us
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { removeFromCart, resetCart, selectActiveGender, selectCartSummary, selectDefaultDeliveryAddress } from '../../store/slices/userSlice'
-import { RotatingLines } from 'react-loader-spinner'
-import { FaGooglePay, FaPaypal, FaWallet } from "react-icons/fa";
-import { SiPhonepe } from "react-icons/si";
-import { MdOutlinePayment } from "react-icons/md";
-import { motion, AnimatePresence } from 'framer-motion'
+import { SiRazorpay } from "react-icons/si";
+import { FaPaypal, FaWallet } from "react-icons/fa";
 import CartSummary from '../../components/CartSummary'
+import { RotatingLines } from 'react-loader-spinner'
+import { HiOutlineCash } from "react-icons/hi";
 
-const paymentIcons = [
-    <SiPhonepe key={'phonepe'} />,
-    < MdOutlinePayment key={'card'} />,
-    <FaGooglePay key={'gpay'} />
-]
 
 function Checkout() {
     const navigate = useNavigate()
@@ -28,17 +22,6 @@ function Checkout() {
     const [paymentMethod, setPaymentMethod] = useState('')
     const [checkout, { isLoading }] = useChekoutMutation()
     const [verifyPayment] = useVerifyPaymentMutation()
-    const [activeIconIndex, setActiveIndex] = useState(0)
-    // useEffect(() => {
-    //     const iconSlideInterval = setInterval(() => {
-    //         setActiveIndex(activeIconIndex)
-    //         setActiveIndex(activeIconIndex + 1)
-    //         if (activeIconIndex >= paymentIcons.length - 1) setActiveIndex(0)
-    //         console.log(activeIconIndex)
-    //     }, 2000)
-
-    //     return () => clearInterval(iconSlideInterval)
-    // }, [activeIconIndex])
 
     useEffect(() => {
         if (from !== 'cart') {
@@ -134,7 +117,8 @@ function Checkout() {
                     <p>Select payment method</p>
                     <div className='w-full relative border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div className='flex w-full justify-between gap-1'>
-                            <p>
+                            <p className='flex items-center justify-center gap-1'>
+                                <HiOutlineCash />
                                 Cash on delivery
                             </p>
                             <input name='payment' onClick={(e) => {
@@ -150,18 +134,8 @@ function Checkout() {
                     <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div className='flex w-full justify-between'>
                             <p className='flex items-center justify-center gap-1'>
-                                <AnimatePresence>
-                                    <motion.span
-                                        key={activeIconIndex}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.5 }}
-                                    >
-                                        {paymentIcons[activeIconIndex]}
-                                    </motion.span>
-                                </AnimatePresence>
-                                UPI/Card/Net Banking
+                                <SiRazorpay />
+                                Razorpay
                             </p>
                             <input name='payment' onClick={() => setPaymentMethod('razorpay')} type="radio" />
                         </div>
@@ -299,9 +273,14 @@ function Checkout() {
                 <div>
                     <CartSummary />
                     <div className='px-4'>
-                        <button onClick={() => {
-                            proceedToCheckOut()
-                        }} className="bg-black w-full py-2 text-white mt-2 rounded-lg font-medium">Proceed to order</button>
+                        <button
+                            onClick={() => {
+                                proceedToCheckOut()
+                            }}
+                            disabled={isLoading}
+                            className='bg-black w-full py-2 text-white mt-2 rounded-lg font-medium flex justify-center items-center' >
+                            {isLoading ? <RotatingLines strokeColor='white' width='20' /> : 'Proceed to order'}
+                        </button>
                     </div>
                 </div>
             </div>
