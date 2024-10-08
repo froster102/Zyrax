@@ -1,27 +1,26 @@
 import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "../../components/CartProductCard"
-import { moveToWishlist, removeFromCart, selectCartItems, updateCartItems } from "../../store/slices/userSlice";
+import { moveToWishlist, removeFromCart, selectCartItems, selectDefaultDeliveryAddress, updateCartItems, updateCartSummary } from "../../store/slices/userSlice";
 import EmptyCart from "../../components/EmptyCart";
 import { useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../store/api/userApiSlice";
 import { selectUserToken } from "../../store/slices/authSlice";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import toast, { Toaster } from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";
-import CartToatalCard from "../../components/CartToatalCard";
 import ApplyCoupon from "../../components/ApplyCoupon";
 import { calculateDiscount } from "../../utils/helper";
+import CartSummary from "../../components/CartSummary";
+import _ from "lodash";
+
 
 function Cart() {
   const localCartItems = useSelector(selectCartItems)
+  const defaultDeliveryAddress = useSelector(selectDefaultDeliveryAddress)
   const dispatch = useDispatch()
   const [removeUserCartItem] = useRemoveItemFromUserCartMutation()
   const [addToUserWishlist] = useAddItemsToUserWishlistMutation()
   const [updateUserCartItem] = useUpdateUserCartItemsMutation()
   const userAuth = useSelector(selectUserToken)
-  const [mrpTotal, setMrpTotal] = useState(0)
-  const [totalCartAmount, setTotalCartAmount] = useState(0)
-  const [totalCouponDiscount, setTotalCouponDiscount] = useState(0)
-  const [offerAmount, setOfferAmount] = useState(0)
   const navigate = useNavigate()
   const { data: { userCartItems = [], appliedCoupon = {} } = {} } = useGetItemsFromUserCartQuery(undefined, { skip: !userAuth })
   const cartItems = userAuth ? userCartItems : localCartItems
@@ -30,6 +29,7 @@ function Cart() {
     function calculateCartTotal() {
       let totalMrp = 0
       let totalOffer = 0
+      let totalCouponDiscount = 0
 
       cartItems.forEach((item) => {
         const price = Number(item.productId.price)
@@ -45,18 +45,21 @@ function Cart() {
       if (appliedCoupon?.code) {
         const couponDiscountAmount = parseInt((appliedCoupon.discount / 100) * totalPrice)
         const applicableCouponDiscount = Math.min(couponDiscountAmount, appliedCoupon.maxDiscountAmount)
-        setTotalCouponDiscount(applicableCouponDiscount)
-      } else {
-        setTotalCouponDiscount(0)
+        totalCouponDiscount = applicableCouponDiscount
+        dispatch(updateCartSummary({
+          totalCouponDiscount: applicableCouponDiscount
+        }))
       }
       const finalTotal = (totalMrp - totalOffer) - totalCouponDiscount
-
-      setMrpTotal(totalMrp)
-      setOfferAmount(totalOffer)
-      setTotalCartAmount(finalTotal)
+      dispatch(updateCartSummary({
+        mrpTotal: totalMrp,
+        totalCouponDiscount,
+        totalCartAmount: finalTotal,
+        offerAmount: totalOffer
+      }))
     }
     if (cartItems.length > 0) calculateCartTotal()
-  }, [cartItems, totalCouponDiscount, appliedCoupon])
+  }, [cartItems, appliedCoupon, dispatch])
 
   async function removeItemFromCart({ productId, moveToCart, selectedSize }) {
     try {
@@ -111,11 +114,25 @@ function Cart() {
           duration: 1000
         }}
       />
+
       <div className="sm:max-w-[1040px] w-full m-auto">
         {cartItems.length === 0 ? <EmptyCart />
           : <div className="md:flex w-full mt-8 m-auto gap-10 px-4">
             <div className="w-full">
-
+              {
+                defaultDeliveryAddress &&
+                <div className="sm:max-w-[1040px] w-full m-auto mt-2 px-4 py-2 rounded-md border">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p>Deliver to: <span className="font-semibold">{_.startCase(defaultDeliveryAddress.firstName) + ' ' + _.startCase(defaultDeliveryAddress.lastName)}, {defaultDeliveryAddress.pincode}</span> </p>
+                      <p className="text-xs font-medium">{_.startCase(defaultDeliveryAddress.buildingName)},{_.startCase(defaultDeliveryAddress.street)}, {_.startCase(defaultDeliveryAddress.city)}</p>
+                    </div>
+                    <button onClick={() => {
+                      navigate('/select-address', { state: { from: 'cart' } })
+                    }} className="font-semibold">Change</button>
+                  </div>
+                </div>
+              }
               {cartItems.map((item, i) => (<CartProductCard
                 key={i} item={item}
                 removeFromCart={removeItemFromCart}
@@ -129,13 +146,19 @@ function Cart() {
             </div>
             <div>
               {
-                cartItems.length !== 0 && <CartToatalCard
-                  priceTotal={mrpTotal}
-                  cartTotal={totalCartAmount}
-                  offerDiscount={offerAmount}
-                  couponDiscount={totalCouponDiscount}
-                  navigateToSelectAddress={() => navigate('/select-address', { state: { mrpTotal, offerAmount, couponDiscountAmount: totalCouponDiscount, cartItems, totalCartAmount, selectAddress: true, orderProcess: true } })}
-                />
+                cartItems.length !== 0 &&
+                <div>
+                  <CartSummary />
+                  <div className='px-4'>
+                    <button onClick={() => {
+                      if (defaultDeliveryAddress) {
+                        navigate('/checkout', { state: { from: 'cart' } })
+                      } else {
+                        navigate('/select-address', { state: { from: 'cart' } })
+                      }
+                    }} className="bg-black w-full py-2 text-white mt-2 rounded-lg font-medium">Proceed to order</button>
+                  </div>
+                </div>
               }
               {
                 userAuth && <ApplyCoupon

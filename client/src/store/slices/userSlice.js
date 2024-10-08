@@ -12,16 +12,23 @@ const initialState = localStorage.getItem('user') ? JSON.parse(localStorage.getI
             maxDiscountAmount: 0
         }
     },
-    addresses: [],
-    selected_gender: 'men'
+    selected_gender: 'men',
+    cartSummary: {
+        mrpTotal: 0,
+        totalCartAmount: 0,
+        totalCouponDiscount: 0,
+        offerAmount: 0
+    },
+    defaultDeliveryAddress: ''
 }
 
 function saveToLocalStorage(state) {
     localStorage.setItem('user', JSON.stringify({
         wishlist: state.wishlist,
         cart: state.cart,
-        addresses: state.addresses,
-        selected_gender: state.selected_gender
+        selected_gender: state.selected_gender,
+        cartSummary: state.cartSummary,
+        defaultDeliveryAddress : state.defaultDeliveryAddress
     }))
 }
 
@@ -114,8 +121,14 @@ const userSlice = createSlice({
             state.addresses = []
             saveToLocalStorage(state)
         },
-        addAddress: (state, action) => {
-            state.addresses = action.payload.addresses
+        updateCartSummary: (state, action) => {
+            state.cartSummary = {
+                ...state.cartSummary,
+                ...action.payload
+            }
+        },
+        setDefaultDeliveryAddress: (state, action) => {
+            state.defaultDeliveryAddress = action.payload
             saveToLocalStorage(state)
         }
     }
@@ -136,7 +149,8 @@ export const {
     resetCart,
     selectGender,
     resetCartAndWishlist,
-    addAddress
+    updateCartSummary,
+    setDefaultDeliveryAddress
 } = userSlice.actions
 export default userSlice.reducer
 
@@ -144,3 +158,5 @@ export const selectActiveGender = state => state.user.selected_gender
 export const selectWishlistItems = state => state.user.wishlist.items
 export const selectCartItems = state => state.user.cart.items
 export const selectAppliedCoupon = state => state.user.cart.appliedCoupon
+export const selectCartSummary = state => state.user.cartSummary
+export const selectDefaultDeliveryAddress = state => state.user.defaultDeliveryAddress

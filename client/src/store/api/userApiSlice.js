@@ -92,7 +92,8 @@ const userApiSlice = apiSlice.injectEndpoints({
                     method: 'POST',
                     body: { paymentMethod, shippingAddressId, cardDetails }
                 }
-            }
+            },
+            invalidatesTags: [{ type: 'CartItems', id: 'LIST' }]
         }),
         verifyPayment: builder.mutation({
             query: (paymentDetails) => ({

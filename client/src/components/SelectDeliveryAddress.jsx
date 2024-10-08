@@ -1,40 +1,36 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import Address from "./Address"
-import CartToatalCard from "./CartToatalCard"
-import { useEffect, useState } from "react"
-import { RotatingLines } from "react-loader-spinner"
+// import { RotatingLines } from "react-loader-spinner"
+import CartSummary from "./CartSummary"
+import { useSelector } from "react-redux"
+import { selectDefaultDeliveryAddress } from "@/store/slices/userSlice"
+import toast from "react-hot-toast"
+import { useEffect } from "react"
 
 function SelectDeliveryAddress() {
-    const location = useLocation()
     const navigate = useNavigate()
-    const [pageLoading, setPageLoading] = useState(true)
-    const [deliveryAddress, setDeliveryAddress] = useState({})
-    const { totalCartAmount, cartItems, orderProcess, mrpTotal, offerAmount, couponDiscountAmount } = location.state || {}
+    const defaultDeliveryAddress = useSelector(selectDefaultDeliveryAddress)
+    const location = useLocation()
+    const { from } = location.state || ''
 
     useEffect(() => {
-        if (!orderProcess) {
+        if (from !== 'cart') {
             navigate('/cart')
-        } else {
-            setPageLoading(false)
         }
-    }, [navigate, orderProcess])
-
-    if (pageLoading) {
-        return <div className='h-screen flex justify-center items-center'>
-            <RotatingLines />
-        </div>
-    }
+    }, [navigate,from])
 
     return (
         <div className="my-20 px-4 md:flex gap-4 w-full justify-evenly">
-            <Address deliveryAddress={deliveryAddress} setDeliveryAddress={setDeliveryAddress} orderMode={true} />
-            <CartToatalCard
-                cartTotal={totalCartAmount}
-                priceTotal={mrpTotal}
-                offerDiscount={offerAmount}
-                couponDiscount={couponDiscountAmount}
-                proceedToCheckout={() => navigate('/checkout', { state: { mrpTotal, offerAmount, couponDiscountAmount, cartItems, totalCartAmount, selectedAddress: deliveryAddress } })}
-            />
+            <Address orderMode={true} />
+            <div>
+                <CartSummary />
+                <div className='px-4'>
+                    <button onClick={() => {
+                        if (defaultDeliveryAddress) navigate('/checkout', { state: { from: 'cart' } })
+                        else toast('Select a delivery address')
+                    }} className="bg-black w-full py-2 text-white mt-2 rounded-lg font-medium">Proceed to order</button>
+                </div>
+            </div>
         </div>
     )
 }

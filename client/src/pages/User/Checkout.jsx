@@ -1,15 +1,15 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import CardToatalCard from '../../components/CartToatalCard'
 import { useEffect, useState } from 'react'
 import { useChekoutMutation, useVerifyPaymentMutation } from '../../store/api/userApiSlice'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
-import { removeFromCart, resetCart, selectActiveGender } from '../../store/slices/userSlice'
+import { removeFromCart, resetCart, selectActiveGender, selectCartSummary, selectDefaultDeliveryAddress } from '../../store/slices/userSlice'
 import { RotatingLines } from 'react-loader-spinner'
 import { FaGooglePay, FaPaypal, FaWallet } from "react-icons/fa";
 import { SiPhonepe } from "react-icons/si";
 import { MdOutlinePayment } from "react-icons/md";
 import { motion, AnimatePresence } from 'framer-motion'
+import CartSummary from '../../components/CartSummary'
 
 const paymentIcons = [
     <SiPhonepe key={'phonepe'} />,
@@ -18,12 +18,13 @@ const paymentIcons = [
 ]
 
 function Checkout() {
-    const location = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const activeGender = useSelector(selectActiveGender)
-    const [pageLoading, setPageLoading] = useState(true)
-    const { mrpTotal, offerAmount, couponDiscountAmount, cartItems, totalCartAmount, selectedAddress } = location.state || ''
+    const defaultDeliveryAddress = useSelector(selectDefaultDeliveryAddress)
+    const location = useLocation()
+    const { from } = location.state || ''
+    const cartSummary = useSelector(selectCartSummary)
     const [paymentMethod, setPaymentMethod] = useState('')
     const [checkout, { isLoading }] = useChekoutMutation()
     const [verifyPayment] = useVerifyPaymentMutation()
@@ -40,12 +41,11 @@ function Checkout() {
     // }, [activeIconIndex])
 
     useEffect(() => {
-        if (!location?.state) {
+        if (from !== 'cart') {
             navigate('/cart')
-        } else {
-            setPageLoading(false)
+            return
         }
-    }, [navigate, cartItems, location])
+    }, [navigate, from])
 
     async function proceedToCheckOut() {
         if (!paymentMethod) {
@@ -53,11 +53,11 @@ function Checkout() {
             return
         }
         try {
-            const res = await checkout({ cartItems, paymentMethod, shippingAddressId: selectedAddress._id }).unwrap()
+            const res = await checkout({ paymentMethod, shippingAddressId: defaultDeliveryAddress._id }).unwrap()
             if (paymentMethod === 'cash on delivery' || paymentMethod === 'zyraxWallet') {
                 dispatch(resetCart())
                 toast(res.message)
-                navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails } })
+                navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails }, replace: true })
             }
             if (paymentMethod === 'razorpay') {
                 loadRazorpayCheckout(res)
@@ -127,12 +127,6 @@ function Checkout() {
         }
     }
 
-    if (pageLoading) {
-        return <div className='h-screen flex justify-center items-center'>
-            <RotatingLines />
-        </div>
-    }
-
     return (
         <div className="sm:max-w-[1040px] w-full m-auto">
             <div className="md:flex w-full mt-8 m-auto gap-10 px-4 pb-20">
@@ -144,7 +138,7 @@ function Checkout() {
                                 Cash on delivery
                             </p>
                             <input name='payment' onClick={(e) => {
-                                if (totalCartAmount < 1000) {
+                                if (cartSummary.totalCartAmount < 1000) {
                                     e.preventDefault()
                                     toast('Cash on delivery only for order above 1000')
                                 } else {
@@ -302,14 +296,14 @@ function Checkout() {
                         </div>
                     </div>
                 </div>
-                <CardToatalCard
-                    cartTotal={totalCartAmount}
-                    priceTotal={mrpTotal}
-                    offerDiscount={offerAmount}
-                    couponDiscount={couponDiscountAmount}
-                    proceedToCheckout={proceedToCheckOut}
-                    checkoutLoading={isLoading}
-                />
+                <div>
+                    <CartSummary />
+                    <div className='px-4'>
+                        <button onClick={() => {
+                            proceedToCheckOut()
+                        }} className="bg-black w-full py-2 text-white mt-2 rounded-lg font-medium">Proceed to order</button>
+                    </div>
+                </div>
             </div>
         </div>
     )
