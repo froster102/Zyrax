@@ -61,11 +61,15 @@ const ProductSchema = new mongoose.Schema({
     discount: { type: String },
     offer: {
         type: mongoose.Schema.Types.ObjectId,
+        required: false,
         ref: 'Offer',
         validate: {
             validator: async (v) => {
-                const offer = await Offer.findById(v)
-                return !!offer
+                if (!v || v === '') return true
+                else {
+                    const offer = await Offer.findById(v)
+                    return !!offer
+                }
             },
             message: 'Offer not found'
         },
@@ -90,7 +94,7 @@ const ProductSchema = new mongoose.Schema({
             validator: (v) => v >= 0,
             message: 'Product sold count should be a positive number'
         },
-        default: 0  
+        default: 0
     }
 }, { timestamps: true })
 

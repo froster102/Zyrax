@@ -1,14 +1,9 @@
 import { Product } from '../../model/product.js'
-import { Category } from '../../model/category.js'
 import { storage } from '../../config/firebaseConfig.js'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 
 const addProduct = async (req, res) => {
     try {
-        // const categories = await Catergory.find({}, { name: true })
-        // if (!categories.includes(req.body.Catergory)) {
-        //     return res.status(400).json({ message: 'Bad request' })
-        // }
         const { name, description, category, price, offer, stock, gender } = req.body
         function tranformStockData(stock) {
             const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
@@ -41,7 +36,7 @@ const addProduct = async (req, res) => {
             description: description,
             category: category,
             price: price,
-            offer,
+            offer: offer || null,
             stock: transformedStockObj,
             gender: gender,
             imageUrls: imageUrls,
@@ -101,10 +96,6 @@ const viewProduct = async (req, res) => {
 const editProduct = async (req, res) => {
     try {
         const { id } = req.params
-        // const categories = await Category.find({}, { name: true })
-        // if (!categories.includes(req.body.Category)) {
-        //     return res.status(400).json({ message: 'Bad request' })
-        // }
         const { name, description, category, price, offer, stock, gender } = req.body
         function tranformStockData(stock) {
             const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
@@ -130,16 +121,20 @@ const editProduct = async (req, res) => {
                 console.log(err)
             }
         }
-        const product = await Product.findByIdAndUpdate(id, {
-            name: name,
-            description: description,
-            category: category,
-            price: price,
-            offer,
-            stock: transformedStockObj,
-            gender: gender,
-            imageUrls: imageUrls
-        }, { new: true })
+        const product = await Product.findById(id)
+
+        product.name = name
+        product.description = description
+        product.category = category
+        product.price = price
+        product.offer = offer || null
+        product.stock = transformedStockObj
+        product.gender = gender
+        product.imageUrls = imageUrls
+
+        await product.save()
+        
+
         return res.status(200).json({ message: 'Product edited sucessfully' })
     } catch (err) {
         console.log(err)

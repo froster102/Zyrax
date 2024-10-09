@@ -45,7 +45,8 @@ const adminApiSlice = apiSlice.injectEndpoints({
             providesTags: (result) => result ? [{ type: 'Products', id: 'LIST' }] : []
         }),
         fetchProduct: builder.query({
-            query: ({ id }) => `/admin/products/${id}`
+            query: ({ id }) => `/admin/products/${id}`,
+            providesTags: (result) => result ? [{ type: 'Product', id: 'singleProduct' }] : []
         }),
         addProduct: builder.mutation({
             query: (productData) => ({
@@ -61,7 +62,7 @@ const adminApiSlice = apiSlice.injectEndpoints({
                 method: 'PUT',
                 body: productData
             }),
-            invalidatesTags: [{ type: 'Products', id: 'LIST' }]
+            invalidatesTags: [{ type: 'Products', id: 'LIST' }, { type: 'Product', id: 'singleProduct' }]
         }),
         blockProduct: builder.mutation({
             query: ({ id }) => ({
