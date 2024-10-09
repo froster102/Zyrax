@@ -12,7 +12,7 @@ import _ from "lodash";
 function Address() {
     const dispatch = useDispatch()
     const [openAddAddressModal, setOpenAddAddressModal] = useState(false)
-    const { data: profileData, isLoading, refetch } = useGetProfileQuery()
+    const { data: { addresses = [] } = {}, refetch } = useGetProfileQuery()
     const [addUserAddress, { isLoading: isAddressAdding }] = useAddAddressMutation()
     const [updateUserAddress, { isLoading: isAddressUpdating }] = useUpdateAddressMutation()
     const [deleteUserAddress] = useDeleteAddressMutation()
@@ -58,9 +58,9 @@ function Address() {
         <>
             <div className="border border-neutral-300 rounded-lg p-4 h-full flex gap-2 max-w-[1200px] w-fit flex-wrap pb-16">
                 {
-                    !isLoading && profileData.addresses.map((address, i) => {
+                    addresses.map((address, i) => {
                         return <div key={i} className="border border-neutral-300 md:w-64 w-full rounded-lg p-4 font-medium relative">
-                            <input name="address" checked={defaultDeliveryAddress._id === address._id} onChange={() => {
+                            <input name="address" checked={defaultDeliveryAddress?._id === address._id} onChange={() => {
                                 dispatch(setDefaultDeliveryAddress(address))
                             }} className="absolute right-4" type="radio" />
                             <p className="font-semibold">{_.startCase(address.firstName)} {_.startCase(address.lastName)}</p>
