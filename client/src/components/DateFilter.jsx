@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
+import { format, startOfDay, toDate } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -34,12 +34,12 @@ function DateFilter({ filter, setFilter }) {
         setDate(dateRange)
         if (date?.from && date?.to) {
             setFilter({
-                startDate: date.from.toISOString(),
-                endDate: date.to.toISOString()
+                startDate: startOfDay(toDate(dateRange.from)).toISOString(),
+                endDate: startOfDay(toDate(dateRange.to)).toISOString()
             })
         }
     }
-
+    
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
