@@ -1,5 +1,6 @@
 import { Cart } from "../../model/cart.js"
 import { Coupon } from "../../model/coupon.js"
+import { calculateDiscount } from "../../utils/helper.js"
 
 // @desc Add item/items to cart
 // @route POST api/v1/user/cart
