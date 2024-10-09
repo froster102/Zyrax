@@ -17,6 +17,7 @@ import Zyrax_icon from '../assets/options-list.png'
 import SidebarAccordion from './SidebarAccordion';
 import _ from 'lodash';
 import { useLogoutUserMutation } from '../store/api/authApiSlice';
+import { apiSlice } from '@/store/api/apiSlice';
 
 function Navbar() {
   const [sticky, setSticky] = useState(false)
@@ -58,30 +59,13 @@ function Navbar() {
   const wishlistItems = userAuth ? userWishlistItems : localWishlistItems
   const cartItems = userAuth ? userCartItems : localCartItems
 
-  // useEffect(() => {
-  //   if (!isUserCartItemsLoading && userAuth && userCartItems) {
-  //     const dispatchCartState = userCartItems?.items.map(item => {
-  //       return {
-  //         product: item.productId,
-  //         selectedSize: item.selectedSize,
-  //         selectedQty: item.selectedQty
-  //       }
-  //     })
-  //     dispatch(syncCart(dispatchCartState))
-  //     if (userCartItems?.appliedCoupon?.code) {
-  //       dispatch(applyCoupon({ coupon: userCartItems.appliedCoupon }))
-  //     }
-  //     refetchCart()
-  //   }
-  // }, [dispatch, userAuth, userCartItems, isUserCartItemsLoading, refetchCart])
-
-
   async function logoutUser() {
     try {
       await userSignOut().unwrap()
       toast('Logged out sucessfully')
       dispatch(resetCartAndWishlist())
       dispatch(userLogout())
+      dispatch(apiSlice.util.resetApiState())
     } catch (error) {
       toast(error?.data?.message)
     }

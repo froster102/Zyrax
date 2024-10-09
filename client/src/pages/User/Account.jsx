@@ -9,6 +9,7 @@ import Address from "../../components/Address"
 import OrderDetails from "../../components/OrderDetails"
 import Wallet from "../../components/Wallet"
 import { useLogoutUserMutation } from "../../store/api/authApiSlice"
+import { apiSlice } from "@/store/api/apiSlice"
 
 function Account() {
   const [logoutUser] = useLogoutUserMutation()
@@ -19,6 +20,7 @@ function Account() {
       await logoutUser()
       dispatch(userLogout())
       dispatch(resetCartAndWishlist())
+      dispatch(apiSlice.util.resetApiState())
       toast('User logged out sucessfully')
     } catch (error) {
       toast(error?.data?.message)
