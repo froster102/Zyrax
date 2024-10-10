@@ -63,7 +63,7 @@ function constructGraphData(dataType, data) {
                 '2': 'Monday',
                 '3': 'Tuesday',
                 '4': 'Wednesday',
-                '5': 'Thursday',
+                '5': 'Thrusday',
                 '6': 'Friday',
                 '7': 'Saturday'
             }

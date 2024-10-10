@@ -347,10 +347,10 @@ const downloadAnalyticsReport = async (req, res) => {
                     currentY += rowHeight
                 }
 
-                pdf.text(order.orderId, 10, currentY);
+                pdf.text(String(order.orderId), 10, currentY);
                 pdf.text(`${order.totalAmount}`, 10 + headerWidths[0], currentY);
-                pdf.text(order.payment.status, 10 + headerWidths[0] + headerWidths[1], currentY);
-                pdf.text(order.payment.method, 10 + headerWidths[0] + headerWidths[1] + headerWidths[2], currentY);
+                pdf.text(String(order.payment.status), 10 + headerWidths[0] + headerWidths[1], currentY);
+                pdf.text(String(order.payment.method), 10 + headerWidths[0] + headerWidths[1] + headerWidths[2], currentY);
                 pdf.text(formatISODate(order.createdAt), 10 + headerWidths[0] + headerWidths[1] + headerWidths[2] + headerWidths[3], currentY);
 
                 currentY += rowHeight
