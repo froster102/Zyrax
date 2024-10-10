@@ -32,7 +32,7 @@ function OrderDetails() {
         }
     })
     const { data: wallet, isLoading: isWalletLoading } = useGetWalletDetailsQuery()
-    const { data: orderDetails, isLoading: isOrderDetailsLoading } = useGetUserOrderDetailsQuery({ orderId, productId })
+    const { data: orderDetails, isError, isLoading: isOrderDetailsLoading } = useGetUserOrderDetailsQuery({ orderId, productId })
 
     async function cancelOrder({ orderId, productId }) {
         try {
@@ -55,6 +55,11 @@ function OrderDetails() {
         } catch (error) {
             toast(error?.data?.message)
         }
+    }
+
+    if(isError){
+        navigate('/account/orders')
+        return
     }
 
     return (
