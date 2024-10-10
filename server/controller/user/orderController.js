@@ -59,6 +59,13 @@ const checkout = async (req, res) => {
                     itemId: item.productId
                 })
             }
+            if (product.status !== 'active') {
+                await Cart.findOneAndUpdate({ user_id: req.userId }, { $pull: { items: { productId: item.productId } } })
+                return res.status(500).json({
+                    type: 'availablityError',
+                    message: `Requested product ${product.name} is currently unavailable`
+                })
+            }
             const itemPrice = product.price
             const selectedQty = item.selectedQty
 
@@ -172,6 +179,7 @@ const checkout = async (req, res) => {
                 type: 'debit',
                 status: 'success'
             })
+            console.log('after')
             await wallet.save()
             const order = await Order.create({
                 userId: req.userId,
@@ -428,7 +436,7 @@ const retryPayment = async (req, res) => {
             order.status = 'confirmed'
             order.payment.method = 'cash on delivery'
             order.shipping.addressId = shippingAddressId
-            
+
             for (const item of orderItems) {
                 item.status = 'confirmed'
                 const product = await Product.findOneAndUpdate(

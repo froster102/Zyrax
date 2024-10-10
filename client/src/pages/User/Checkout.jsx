@@ -46,8 +46,8 @@ function Checkout() {
             }
         } catch (error) {
             toast(error?.data?.message)
-            if (error?.data?.type === 'stockError') {
-                navigate(`/${activeGender}`)
+            if (error?.data?.type === 'stockError' || error?.data?.type === 'availablityError') {
+                navigate(`/cart`)
             }
         }
     }
