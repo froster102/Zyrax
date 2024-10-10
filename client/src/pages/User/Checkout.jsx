@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { useChekoutMutation, useVerifyPaymentMutation } from '../../store/api/userApiSlice'
+import { useChekoutMutation, useRetryPaymentMutation, useVerifyPaymentMutation } from '../../store/api/userApiSlice'
 import toast from 'react-hot-toast'
-import { useDispatch, useSelector } from 'react-redux'
-import { removeFromCart, resetCart, selectActiveGender, selectCartSummary, selectDefaultDeliveryAddress } from '../../store/slices/userSlice'
+import { useSelector } from 'react-redux'
+import { selectActiveGender, selectCartSummary, selectDefaultDeliveryAddress } from '../../store/slices/userSlice'
 import { SiRazorpay } from "react-icons/si";
 import { FaPaypal, FaWallet } from "react-icons/fa";
 import CartSummary from '../../components/CartSummary'
@@ -13,7 +13,6 @@ import { HiOutlineCash } from "react-icons/hi";
 
 function Checkout() {
     const navigate = useNavigate()
-    const dispatch = useDispatch()
     const activeGender = useSelector(selectActiveGender)
     const defaultDeliveryAddress = useSelector(selectDefaultDeliveryAddress)
     const location = useLocation()
@@ -21,10 +20,11 @@ function Checkout() {
     const cartSummary = useSelector(selectCartSummary)
     const [paymentMethod, setPaymentMethod] = useState('')
     const [checkout, { isLoading }] = useChekoutMutation()
+    const [retryPayment] = useRetryPaymentMutation()
     const [verifyPayment] = useVerifyPaymentMutation()
 
     useEffect(() => {
-        if (from !== 'cart') {
+        if (from !== 'cart' && from !== 'orders') {
             navigate('/cart')
             return
         }
@@ -38,7 +38,6 @@ function Checkout() {
         try {
             const res = await checkout({ paymentMethod, shippingAddressId: defaultDeliveryAddress._id }).unwrap()
             if (paymentMethod === 'cash on delivery' || paymentMethod === 'zyraxWallet') {
-                dispatch(resetCart())
                 toast(res.message)
                 navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails }, replace: true })
             }
@@ -48,7 +47,6 @@ function Checkout() {
         } catch (error) {
             toast(error?.data?.message)
             if (error?.data?.type === 'stockError') {
-                dispatch(removeFromCart({ productId: error?.data?.itemId }))
                 navigate(`/${activeGender}`)
             }
         }
@@ -103,10 +101,31 @@ function Checkout() {
     async function handlePaymentResponse(paymentDetails) {
         try {
             const res = await verifyPayment(paymentDetails).unwrap()
-            dispatch(resetCart())
             navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails } })
         } catch (error) {
             toast('Failed to confirm payment please try after some time')
+        }
+    }
+
+    async function handleRetryPayment(orderId) {
+        if (!paymentMethod) {
+            toast('Please select a payment to proceed')
+            return
+        }
+        try {
+            const res = await retryPayment({ paymentMethod, shippingAddressId: defaultDeliveryAddress._id, orderId }).unwrap()
+            if (paymentMethod === 'cash on delivery' || paymentMethod === 'zyraxWallet') {
+                toast(res.message)
+                navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails }, replace: true })
+            }
+            if (paymentMethod === 'razorpay') {
+                loadRazorpayCheckout(res)
+            }
+        } catch (error) {
+            toast(error?.data?.message)
+            if (error?.data?.type === 'stockError') {
+                navigate(`/${activeGender}`)
+            }
         }
     }
 
@@ -275,7 +294,11 @@ function Checkout() {
                     <div className='px-4'>
                         <button
                             onClick={() => {
-                                proceedToCheckOut()
+                                if (from === 'cart') {
+                                    proceedToCheckOut()
+                                } else if (from === 'orders' && location.state.mode === 'retry') {
+                                    handleRetryPayment(location.state.orderId)
+                                }
                             }}
                             disabled={isLoading}
                             className='bg-black w-full py-2 text-white mt-2 rounded-lg font-medium flex justify-center items-center' >

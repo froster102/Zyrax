@@ -52,13 +52,15 @@ const verifyPayment = async (req, res) => {
             if (bulkOps.length > 0) {
                 const response = await Product.bulkWrite(bulkOps)
                 await User.findOneAndUpdate({ _id: req.userId }, { $inc: { totalSpent: order.totalAmount } })
-                await Cart.findOneAndUpdate({
-                    user_id: req.userId,
-                }, {
-                    $set: { items: [] }
-                }, { new: true })
+                if (order.status !== 'failed') {
+                    await Cart.findOneAndUpdate({
+                        user_id: req.userId,
+                    }, {
+                        $set: { items: [] }
+                    }, { new: true })
+                }
                 if (bulkCategoryOps.length > 0) {
-                   await Category.bulkWrite(bulkCategoryOps)
+                    await Category.bulkWrite(bulkCategoryOps)
                 }
             }
             const payment = await razorpay.payments.fetch(razorpay_payment_id)

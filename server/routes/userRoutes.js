@@ -9,7 +9,6 @@ import { getProfile, updateProfile } from '../controller/user/profileController.
 import { userAuth } from '../middlewares/authMiddleware.js'
 import { validateEmail, validatePassword, validateResetPassword, validateSignin, validateObjectId } from '../middlewares/validationMiddleware.js'
 import { addAddress, deleteAddress, updateAddress } from '../controller/user/addressController.js'
-import { handleCheckOut } from '../controller/user/checkoutController.js'
 import { verifyPayment } from '../controller/user/verifyPaymentController.js'
 import { verifyWalletPayment } from '../controller/user/verifyWalletPaymentController.js'
 import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/walletController.js'
@@ -61,7 +60,6 @@ router.post('/addresses', addAddress)
 router.put('/addresses/:id', updateAddress)
 router.delete('/addresses/:id', deleteAddress)
 
-router.post('/checkout', handleCheckOut)
 router.post('/payments/verify', verifyPayment)
 router.post('/wallet/payments/verify')
 
@@ -69,11 +67,12 @@ router.get('/wallet', getWalletDetails)
 router.post('/wallet', createWallet)
 router.put('/wallet', topUpWallet)
 
-
 router.get('/orders', orderController.getUserOrders)
+router.post('/orders/checkout', orderController.checkout)
 router.get('/orders/details/', orderController.getOrderDetails)
 router.patch('/orders/:orderId/products/:productId/cancel', orderController.cancelOrder)
 router.post('/orders/:orderId/products/:productId/return', orderController.returnOrder)
+router.post('/orders/:orderId/retry', orderController.retryPayment)
 
 router.get('/auth/logout', logout)
 

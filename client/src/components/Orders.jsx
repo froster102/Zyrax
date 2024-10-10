@@ -5,10 +5,13 @@ import { useNavigate } from "react-router-dom"
 import { format, parseISO } from 'date-fns'
 import StatusChip from './StatusChip'
 import { useEffect } from "react"
+import { useSelector } from "react-redux"
+import { selectDefaultDeliveryAddress } from "@/store/slices/userSlice"
 
 function Orders() {
   const { data: orders, isLoading: isOrderLoading, refetch: refetchOrders } = useFetchUserOrdersQuery()
   const navigate = useNavigate()
+  const defaultDeliveryAddress = useSelector(selectDefaultDeliveryAddress)
 
   useEffect(() => {
     refetchOrders()
@@ -26,7 +29,15 @@ function Orders() {
               <div className="flex justify-center items-center gap-2">
                 <p className="text-sm">{format(parseISO(order.createdAt), 'dd MMM, yyy')}</p>
                 {
-                  order.status === 'failed' && <button className="px-4 py-2 rounded-lg text-sm bg-neutral-800 text-white">Retry Payment</button>
+                  order.status === 'failed' && <button
+                    onClick={() => {
+                      if (defaultDeliveryAddress) {
+                        navigate('/checkout', { state: { from: 'orders', mode: 'retry', orderId: order.orderId } })
+                      } else {
+                        navigate('/select-address', { state: { from: 'orders', mode: 'retry', orderId: order.orderId } })
+                      }
+                    }}
+                    className="px-4 py-2 rounded-lg text-sm bg-neutral-800 text-white">Retry Payment</button>
                 }
               </div>
             </div>

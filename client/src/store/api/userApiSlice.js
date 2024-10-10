@@ -88,7 +88,7 @@ const userApiSlice = apiSlice.injectEndpoints({
         chekout: builder.mutation({
             query: ({ paymentMethod, shippingAddressId, cardDetails }) => {
                 return {
-                    url: '/user/checkout',
+                    url: '/user/orders/checkout',
                     method: 'POST',
                     body: { paymentMethod, shippingAddressId, cardDetails }
                 }
@@ -100,7 +100,8 @@ const userApiSlice = apiSlice.injectEndpoints({
                 url: '/user/payments/verify',
                 method: 'POST',
                 body: paymentDetails
-            })
+            }),
+            invalidatesTags: [{ type: 'CartItems', id: 'LIST' }]
         }),
         fetchUserOrders: builder.query({
             query: () => '/user/orders',
@@ -133,6 +134,13 @@ const userApiSlice = apiSlice.injectEndpoints({
                 { type: 'UserOrders', id: 'LIST' },
                 { type: 'OrderDetails', id: 'Details' }
             ]
+        }),
+        retryPayment: builder.mutation({
+            query: ({ orderId, paymentMethod, shippingAddressId }) => ({
+                url: `/user/orders/${orderId}/retry`,
+                method: 'POST',
+                body: { paymentMethod, shippingAddressId }
+            })
         }),
         getWalletDetails: builder.query({
             query: () => '/user/wallet'
@@ -175,4 +183,5 @@ export const {
     useGetUserOrderDetailsQuery,
     useCancelOrderMutation,
     useReturnOrderMutation,
+    useRetryPaymentMutation
 } = userApiSlice
