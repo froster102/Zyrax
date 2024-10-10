@@ -403,6 +403,7 @@ const retryPayment = async (req, res) => {
     try {
         const order = await Order.findOne({ orderId: orderId }).populate('products.productId')
         if (!order) return res.status(404).json({ message: 'Order not found' })
+        if(order.status!=='failed') return res.status(400).json({message:'Retry payment for failed orders only'})
         const orderItems = order.products
         let totalAmount = order.totalAmount
 
