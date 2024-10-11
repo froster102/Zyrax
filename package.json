@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@react-pdf/renderer": "^4.0.0",
     "nodemon": "^3.1.4"
   },
   "name": "zyrax",
