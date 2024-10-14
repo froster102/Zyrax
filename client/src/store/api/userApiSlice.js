@@ -2,6 +2,9 @@ import { apiSlice } from "./apiSlice";
 
 const userApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
+        trackEvent: builder.query({
+            query: ({ eventType }) => `/user/analytics/event?eventType=${eventType}`
+        }),
         getProfile: builder.query({
             query: () => '/user/profile'
         }),
@@ -162,6 +165,7 @@ const userApiSlice = apiSlice.injectEndpoints({
 })
 
 export const {
+    useTrackEventQuery,
     useGetProfileQuery,
     useUpdateProfileMutation,
     useAddAddressMutation,

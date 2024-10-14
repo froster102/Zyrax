@@ -2,6 +2,7 @@ import { User } from "../../model/user.js"
 import bcrypt from 'bcryptjs'
 import { generateAccessToken, generateRefreshToken, sendResetEmail, sendVerifyEmail } from '../../utils/utils.js'
 import jwt from 'jsonwebtoken'
+import { AnalyticsEvent } from "../../model/analytics.js"
 
 // @desc Get token after sucessfull google verification
 // @route GET api/v1/user/auth/google/callback
@@ -19,6 +20,10 @@ export const googleSigninCallback = async (req, res) => {
                 };
             </script>`)
     }
+    await AnalyticsEvent.create({
+        userId: user._id,
+        eventType: 'login'
+    })
     const accessToken = generateAccessToken(user._id, 'user')
     const refreshToken = generateRefreshToken(user._id, 'user')
     res.cookie('jwt', refreshToken, {
@@ -56,6 +61,10 @@ export const signin = async (req, res) => {
             }
             if (match && user.verification_status) {
                 await User.findOneAndUpdate({ _id: user._id }, { lastLogin: Date.now() })
+                await AnalyticsEvent.create({
+                    userId: user._id,
+                    eventType: 'login'
+                })
                 const token = generateAccessToken(user._id, 'user')
                 const refreshToken = generateRefreshToken(user._id, 'user')
                 res.cookie('jwt', refreshToken, {

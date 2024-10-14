@@ -13,6 +13,7 @@ import { verifyPayment } from '../controller/user/verifyPaymentController.js'
 import { verifyWalletPayment } from '../controller/user/verifyWalletPaymentController.js'
 import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/walletController.js'
 import * as couponController from '../controller/user/couponController.js'
+import * as analyticsController from '../controller/user/analyticsController.js'
 
 const router = express.Router()
 
@@ -34,6 +35,8 @@ router.post('/auth/signup', validatePassword, signUp)
 router.post('/auth/forgot-password', validateEmail, forgotPassword)
 router.post('/auth/reset-password', validateResetPassword, resetPassword)
 router.get('/auth/verify-email', verifyEmail)
+
+router.get('/analytics/event', analyticsController.trackVisits)
 
 router.post('/verify-wallet-payment', verifyWalletPayment)
 
