@@ -39,7 +39,6 @@ function Sidebar() {
                     </h1>
                     <ul className='ml-4 pt-4'>
                         <Link to='/admin/dashboard/'><li className='text-lg flex items-center font-normal'><GrAnalytics className="mr-2 " />Overview</li></Link>
-                        <Link to='/admin/dashboard/analytics' ><li className='text-lg flex items-center font-normal pt-4'><IoMdAnalytics className="mr-2" />Analytics</li></Link>
                         <Link to='/admin/dashboard/products'><li className='text-lg flex items-center font-normal pt-4'><FaBox className="mr-2" />Products</li></Link>
                         <Link to='/admin/dashboard/users'><li className='text-lg flex items-center font-normal pt-4'><FaUsers className="mr-2" />Users</li></Link>
                         <Link to='/admin/dashboard/orders' ><li className='text-lg flex items-center font-normal pt-4'><RiShoppingBag3Line className="mr-2" />Orders</li></Link>

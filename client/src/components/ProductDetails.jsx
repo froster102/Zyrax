@@ -96,12 +96,13 @@ function ProductDetails() {
         }
         wishlistItemIds.includes(product?._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
         if (cartItems.length > 0 && !isProductLoading) {
-            const activeItem = cartItems.find(item => item?.productId?._id && selectedSize === item.selectedSize)
+            const activeItem = cartItems.find(item => item?.productId?._id === product?._id && selectedSize === item.selectedSize)
+            console.log(activeItem)
             activeItem ? setActiveCartItem(true) : setActiveCartItem(false)
         }
     }, [product, wishlistItems, isProductLoading, cartItems, isUserWishlistItemsLoading, userAuth, userWishlistItems, selectedSize])
 
-    
+
     async function handleWishlistItems(product) {
         if (!activeWishlistItem) {
             try {

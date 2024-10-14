@@ -5,7 +5,6 @@ import Overview from './Overview'
 import NotFound from '../User/NotFound'
 import AddProduct from './AddProduct'
 import Users from './Users'
-import Analytics from './Analytics'
 import Orders from './Orders'
 import Payments from './Payments'
 import Returns from './Returns'
@@ -20,7 +19,6 @@ function Dashboard() {
         <Sidebar></Sidebar>
         <Routes>
           <Route path='/' element={<Overview></Overview>} />
-          <Route path='analytics' element={<Analytics></Analytics>} />
           <Route path='products' element={<Products></Products>} />
           <Route path='products/add' element={<AddProduct></AddProduct>} />
           <Route path='products/:id/edit' element={<AddProduct mode={'edit'}></AddProduct>} />

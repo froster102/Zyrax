@@ -138,10 +138,11 @@ const getOverviewData = async (req, res) => {
 }
 
 const getAnalyticsChartData = async (req, res) => {
-    const { period = 'month' } = req.query
+    const { period = 'month', chartType = 'revenue' } = req.query
 
     try {
         let aggregationPipeline = []
+        // if()
         if (period) {
             switch (period) {
                 case 'month': {
