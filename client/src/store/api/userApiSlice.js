@@ -165,7 +165,7 @@ const userApiSlice = apiSlice.injectEndpoints({
 })
 
 export const {
-    useTrackEventQuery,
+    useLazyTrackEventQuery,
     useGetProfileQuery,
     useUpdateProfileMutation,
     useAddAddressMutation,

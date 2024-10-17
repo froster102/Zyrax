@@ -26,7 +26,8 @@ function Overview() {
   })
 
   const [chartFilter, setChartFilter] = useState({
-    period: 'month'
+    period: 'month',
+    chartType: 'revenue'
   })
 
   const { data: {
@@ -62,7 +63,7 @@ function Overview() {
         <h1 className='text-3xl font-semibold'>Overview</h1>
         <div className="flex w-full justify-end">
           <div className="flex items-center">
-            <div  onMouseLeave={() => setopenDownloadDropdown(false)}>
+            <div onMouseLeave={() => setopenDownloadDropdown(false)}>
               <button onMouseEnter={() => setopenDownloadDropdown(true)} className="flex items-center hover:bg-white relative mr-4 text-sm font-medium rounded-md bg-stone-300 px-4 py-2">
                 <FaFileDownload />
                 <p>Download report</p>

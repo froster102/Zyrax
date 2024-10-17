@@ -21,7 +21,7 @@ mongoose.connect(process.env.ATLAS_URI).then(() => {
 const app = express()
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'https://1p4tj84j-5173.inc1.devtunnels.ms'],
+    origin: ['http://localhost:5173', 'https://wnnxjp45-5173.inc1.devtunnels.ms','http://192.168.44.31:5173'],
     credentials: true
 }
 
