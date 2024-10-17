@@ -18,7 +18,6 @@ function Footer() {
     const [hideFooter, setHideFooter] = useState(false)
 
     useEffect(() => {
-        console.log()
         pathname.split('/')[1]==='products' ? setHideFooter(true) : setHideFooter(false)
     }, [pathname])
 
