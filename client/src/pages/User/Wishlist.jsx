@@ -5,7 +5,7 @@ import { moveToCart, removeFromWishlist, selectWishlistItems } from "../../store
 import { useAddItemsToUserCartMutation, useGetUserWishlistItemsQuery, useRemoveItemFromUserWishlistMutation } from "../../store/api/userApiSlice"
 import PickSizeModal from "../../components/PickSizeModal"
 import { selectUserToken } from "../../store/slices/authSlice"
-import EmptyCart from "../../components/EmptyCart"
+import EmptyCard from "../../components/EmptyCard"
 import toast from "react-hot-toast"
 
 function Wishlist() {
@@ -62,7 +62,7 @@ function Wishlist() {
     <>
       <div className="max-w-[1120px] m-auto mt-8 px-8">
         <h1 className="mt-10 font-semibold text-lg">My Wishlist <span className="font-light">({wishlistItems.length} Items)</span></h1>
-        {wishlistItems.length === 0 && <EmptyCart />}
+        {wishlistItems.length === 0 && <EmptyCard title="Wishlist" />}
         <div className="flex gap-4 mt-4 flex-wrap">
           {wishlistItems.map((item, i) => <WishlistProductCard key={i} product={item} removeItemFromWishlist={removeItemFromWishlist} moveItemToCart={moveItemToCart}></WishlistProductCard>)}
         </div>
