@@ -3,7 +3,7 @@ import CategoryTable from '../../components/CategoryTable'
 import { FaListUl } from 'react-icons/fa'
 import AddCategoryModal from '../../components/AddCategoryModal'
 import { useBlockCategoryMutation, useDeleteCategoryMutation, useGetCategoriesQuery } from '../../store/api/adminApiSlice'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 function Category() {
     const [filter, setFilter] = useState({
@@ -36,16 +36,6 @@ function Category() {
     return (
         <>
             <div className='border border-black w-full ml-4 rounded-lg bg-neutral-50 shadow-inner pt-[40px] px-[20px]'>
-                <Toaster
-                    position="top-center"
-                    toastOptions={{
-                        style: {
-                            backgroundColor: 'black',
-                            color: 'white',
-                        },
-                        duration: 2000
-                    }}
-                />
                 <div className='ml-10'>
                     <div className='flex items-center'>
                         <FaListUl size={30} />

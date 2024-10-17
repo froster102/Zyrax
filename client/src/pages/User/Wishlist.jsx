@@ -6,7 +6,7 @@ import { useAddItemsToUserCartMutation, useGetUserWishlistItemsQuery, useRemoveI
 import PickSizeModal from "../../components/PickSizeModal"
 import { selectUserToken } from "../../store/slices/authSlice"
 import EmptyCart from "../../components/EmptyCart"
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
 
 function Wishlist() {
   const localWishlistItems = useSelector(selectWishlistItems)
@@ -60,16 +60,6 @@ function Wishlist() {
 
   return (
     <>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            backgroundColor: 'black',
-            color: 'white',
-          },
-          duration: 2000
-        }}
-      />
       <div className="max-w-[1120px] m-auto mt-8 px-8">
         <h1 className="mt-10 font-semibold text-lg">My Wishlist <span className="font-light">({wishlistItems.length} Items)</span></h1>
         {wishlistItems.length === 0 && <EmptyCart />}

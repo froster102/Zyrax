@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, } from 'react-hook-form'
 import ImageSelector from '../../components/ImageSelector';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import PropTypes from 'prop-types'
 import addProductSchema from '../../../ValidationSchema/addProductSchema';
 import StockSelector from '../../components/StockSelector';
@@ -128,16 +128,6 @@ function AddProduct({ mode }) {
 
     return (
         <>
-            <Toaster
-                position="top-center"
-                toastOptions={{
-                    style: {
-                        backgroundColor: 'black',
-                        color: 'white',
-                    },
-                    duration: 3000
-                }}
-            />
             <img src="" alt="" />
             <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner py-[40px] px-[20px]'>
                 <h1 className='text-3xl font-semibold'>Products</h1>

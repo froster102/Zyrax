@@ -3,7 +3,7 @@ import { GrView } from "react-icons/gr";
 import { FaEdit } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useBlockProductMutation, useDeleteProductMutation } from "../store/api/adminApiSlice";
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { TbBarrierBlock, TbBarrierBlockOff } from "react-icons/tb";
 import { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
@@ -61,16 +61,6 @@ function ProductTable({ filter, setFilter, products, isProductsLoading, totalCou
 
     return (
         <>
-            <Toaster
-                position="top-center"
-                toastOptions={{
-                    style: {
-                        backgroundColor: 'black',
-                        color: 'white',
-                    },
-                    duration: 2000
-                }}
-            />
             <div className="relative overflow-x-auto bg-neutral-200 mt-4 shadow-lg rounded-lg">
                 <div className="flex justify-between px-4 pt-4 items-center">
                     <div className="w-fit h-full px-2 flex items-center justify-items-center bg-white  rounded-md border border-neutral-400">

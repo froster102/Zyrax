@@ -5,7 +5,7 @@ import EmptyCart from "../../components/EmptyCart";
 import { useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../store/api/userApiSlice";
 import { selectUserToken } from "../../store/slices/authSlice";
 import { useEffect } from "react";
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";
 import ApplyCoupon from "../../components/ApplyCoupon";
 import { calculateDiscount } from "../../utils/helper";
@@ -104,17 +104,6 @@ function Cart() {
 
   return (
     <>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            backgroundColor: 'black',
-            color: 'white',
-          },
-          duration: 1000
-        }}
-      />
-
       <div className="sm:max-w-[1040px] w-full m-auto">
         {cartItems.length === 0 ? <EmptyCart />
           : <div className="md:flex w-full mt-8 m-auto gap-10 px-4">

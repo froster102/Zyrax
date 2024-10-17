@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAdminSigninMutation } from '../../store/api/adminApiSlice'
 import { selectUserToken, setUserCredentials } from '../../store/slices/authSlice'
@@ -46,16 +46,6 @@ function Login() {
   }
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            backgroundColor: 'black',
-            color: 'white',
-          },
-          duration: 2000
-        }}
-      />
       <div className='bg-[#F1F1F1] flex justify-center items-center h-dvh'>
         <form action="" onSubmit={handleSubmit(onSubmit)}>
           <div className='w-fit py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16'>

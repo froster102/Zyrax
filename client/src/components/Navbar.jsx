@@ -11,7 +11,7 @@ import { useGetItemsFromUserCartQuery, useGetUserWishlistItemsQuery } from '../s
 import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
 import { IoMenu } from "react-icons/io5";
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import Zyrax_icon from '../assets/options-list.png'
 import SidebarAccordion from './SidebarAccordion';
@@ -73,16 +73,6 @@ function Navbar() {
 
   return (
     <>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            backgroundColor: 'black',
-            color: 'white',
-          },
-          duration: 2000
-        }}
-      />
       <div className='lg:max-w-[1600px] lg:block m-auto hidden transition-all ease-in duration-500'>
         <div className={`${hideNav ? 'hidden' : 'block'}`} >
           <div className={`px-[20px] ${sticky ? 'fixed w-full top-0 z-50 drop-shadow-xl' : 'mt-2'} transition ease-in`} onScroll={() => { setSticky(true) }}>
