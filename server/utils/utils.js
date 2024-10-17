@@ -39,7 +39,6 @@ const sendVerifyEmail = async (email, userId) => {
         const response = await transporter.sendMail(mailOptions)
         return response
     } catch (error) {
-        console.log(error)
     }
 }
 
@@ -77,7 +76,6 @@ const sendResetEmail = async (email, username, userId) => {
         const response = await transporter.sendMail(mailOptions)
         return response
     } catch (error) {
-        console.log(error)
     }
 }
 

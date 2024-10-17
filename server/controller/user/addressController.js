@@ -5,7 +5,6 @@ import { User } from '../../model/user.js'
 const addAddress = async (req, res) => {
     try {
         const { firstName = '', lastName = '', buildingName = '', street = '', city = '', state = '', pincode, phoneNumber } = req.body
-        console.log(req.body)
         const existingAddress = await Address.findOne({
             firstName: firstName.toLowerCase(),
             lastName: lastName.toLowerCase(),

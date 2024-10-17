@@ -37,7 +37,6 @@ passport.use(new GoogleStrategy.Strategy({
             }
             return cb(null, profile);
         } catch (err) {
-            console.log(err)
             return cb(err, null);
         }
     }

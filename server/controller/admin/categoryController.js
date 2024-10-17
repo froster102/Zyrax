@@ -8,7 +8,7 @@ const getCategories = async (req, res) => {
         const categories = await Category.find({}).populate('parent').populate('children').skip(skip).limit(limit)
         return res.status(200).json({ categories, totalCount })
     } catch (error) {
-        console.log(error)
+        return res.status({ message: 'Failed to get categories' })
     }
 }
 
@@ -36,7 +36,6 @@ const addCategory = async (req, res) => {
         })
         return res.status(201).json({ message: 'Category created sucessfully' })
     } catch (error) {
-        console.log(error)
         if (error?.errorResponse?.code === 11000) {
             return res.status(409).json({ message: 'Category already exists' })
         }

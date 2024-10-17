@@ -132,7 +132,6 @@ const getOverviewData = async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: 'Failed to get overview data' })
     }
 }
@@ -223,7 +222,7 @@ const getAnalyticsChartData = async (req, res) => {
         const chartData = constructGraphData(period, data)
         return res.status(200).json({ chartData })
     } catch (error) {
-        console.log(error)
+        return res.status(500).json({ message: 'Failed to get chart data' })
     }
 }
 
@@ -411,7 +410,7 @@ const downloadAnalyticsReport = async (req, res) => {
             orders
         })
     } catch (error) {
-        console.log(error)
+        return res.status(500).json({ message: 'Failed download sales report' })
     }
 }
 

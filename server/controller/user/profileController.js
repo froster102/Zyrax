@@ -6,7 +6,7 @@ const getProfile = async (req, res) => {
         const user = await User.findOne({ _id: userId }, { firstName: true, lastName: true, email: true, addresses: true, phoneNumber: true }).populate('addresses')
         if (user) return res.status(200).json(user)
     } catch (error) {
-        console.log(error)
+        return res.status(500).json({message:'Failed to get user profile'})
     }
 }
 

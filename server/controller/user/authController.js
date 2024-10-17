@@ -79,7 +79,6 @@ export const signin = async (req, res) => {
             return res.status(401).json({ message: 'Bad credentials' })
         }
     } catch (e) {
-        console.log(e)
         return res.status(500).json({ message: 'Failed to login user' })
     }
 }
@@ -115,7 +114,6 @@ export const signUp = async (req, res) => {
             if (response) return res.status(201).json({ message: 'Please verify you email by clicking the link sent to your email' })
         }
     } catch (e) {
-        console.log(e)
         if (e.name === 'ValidationError') {
             const errMsg = []
             for (let error in e.errors) {

@@ -179,7 +179,6 @@ const checkout = async (req, res) => {
                 type: 'debit',
                 status: 'success'
             })
-            console.log('after')
             await wallet.save()
             const order = await Order.create({
                 userId: req.userId,
@@ -219,7 +218,6 @@ const checkout = async (req, res) => {
             }
         }
     } catch (e) {
-        console.log(e)
         if (e.name === 'ValidationError') {
             const message = []
             for (let error in e.errors) {
@@ -333,7 +331,6 @@ const cancelOrder = async (req, res) => {
             return res.status(200).json({ message: 'Order cancelled sucessfully' })
         }
     } catch (e) {
-        // console.log(e)
         // if (e.name === 'CastError') {
         //     return res.status(400).json({ message: `Invalid ${e.path === 'productId' ? 'product ID' : 'order ID'}` })
         // }
@@ -379,7 +376,6 @@ const returnOrder = async (req, res) => {
         )
         return res.status(201).json({ message: 'Your return has been succcesfully requested' })
     } catch (e) {
-        console.log(e)
         if (e.name === 'ValidationError') {
             const message = []
             for (let error in e.errors) {

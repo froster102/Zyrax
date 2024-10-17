@@ -14,7 +14,7 @@ const refresh = (req, res) => {
                 return res.status(401).json({ message: 'Account has been blocked' })
             }
         } catch (error) {
-            console.log(error)
+            return res.status(500).json({ message: 'Something went wrong please try again later' })
         }
         if (err) {
             return res.status(403).json({ message: 'Forbidden token expired' })

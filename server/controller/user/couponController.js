@@ -27,7 +27,6 @@ export const getCoupons = async (req, res) => {
         const applicableCoupons = activeCoupons.filter((coupon) => coupon.minPurchaseAmount <= cartTotal)
         return res.status(200).json({ coupons: applicableCoupons })
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: 'Failed to get coupons' })
     }
 }
@@ -67,7 +66,6 @@ export const applyCoupon = async (req, res) => {
         const newCart = await cart.save()
         return res.status(200).json({ message: 'Coupon applied sucessfully' })
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: 'Failed to apply coupon' })
     }
 

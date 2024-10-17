@@ -28,7 +28,7 @@ const addProduct = async (req, res) => {
                 const downloadUrl = await getDownloadURL(snapshot.ref)
                 imageUrls.push(downloadUrl)
             } catch (err) {
-                console.log(err)
+                return res.status(500).json({ message: 'Failed to add product' })
             }
         }
         const response = await Product.create({
@@ -44,7 +44,6 @@ const addProduct = async (req, res) => {
         })
         return res.status(201).json({ message: 'Product created sucessfully' })
     } catch (err) {
-        console.log(err)
         if (err?.errorResponse?.code === 11000) {
             return res.status(409).json({ message: 'Product already exists' })
         }
@@ -70,7 +69,6 @@ const getProducts = async (req, res) => {
         }
         return res.status(200).json({ products, totalCount })
     } catch (err) {
-        console.log(err)
         return res.status(500).json({ message: 'Failed to get products' })
     }
 }
@@ -87,7 +85,6 @@ const viewProduct = async (req, res) => {
         }
         return res.status(200).json(product)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({ message: 'Failed to get product' })
     }
 }
@@ -118,7 +115,7 @@ const editProduct = async (req, res) => {
                 const downloadUrl = await getDownloadURL(snapshot.ref)
                 imageUrls.push(downloadUrl)
             } catch (err) {
-                console.log(err)
+                return res.status(500).json({ message: 'Failed to edit product' })
             }
         }
         const product = await Product.findById(id)
@@ -133,11 +130,10 @@ const editProduct = async (req, res) => {
         product.imageUrls = imageUrls
 
         await product.save()
-        
+
 
         return res.status(200).json({ message: 'Product edited sucessfully' })
     } catch (err) {
-        console.log(err)
         return res.status(500).json({ message: 'Failed to edit product an error occured' })
     }
 
@@ -155,7 +151,7 @@ const blockProduct = async (req, res) => {
             if (newProduct) return res.status(200).json({ message: 'Product unblocked sucessfully' })
         }
     } catch (error) {
-        console.log(error)
+        return res.status(500).json({ message: 'Failed to block product' })
     }
 }
 
@@ -168,7 +164,6 @@ const deleteProduct = async (req, res) => {
         }
         return res.status(200).json({ message: 'Product deleted sucessfully' })
     } catch (err) {
-        console.log(err)
         return res.status(500).json({ message: 'Failed to delete product' })
     }
 }

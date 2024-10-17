@@ -14,7 +14,6 @@ const userAuth = (req, res, next) => {
                 return res.status(401).json({ message: 'Account has been blocked' })
             }
         } catch (error) {
-            console.log(error)
         }
         if (err) {
             return res.status(403).json({ message: 'Forbidden token expired' })
@@ -37,7 +36,6 @@ const adminAuth = (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: 'Forbidden token expired' })
         } else if (decoded.role !== 'admin') {
-            console.log(decoded)
             return res.status(401).json({ message: 'Unauthorized' })
         }
         req.userId = decoded.userId

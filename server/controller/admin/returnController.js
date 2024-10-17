@@ -58,7 +58,6 @@ const approveReturn = async (req, res) => {
         wallet.save()
         return res.status(200).json({ message: 'Return approved sucessfully' })
     } catch (error) {
-        console.log(error)
         return res.status(500).json({ message: 'Failed to approve order' })
     }
 }

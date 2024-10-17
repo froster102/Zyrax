@@ -26,7 +26,6 @@ const signin = async (req, res) => {
         }
         return res.status(401).json({ message: 'Bad credentials' })
     } catch (err) {
-        console.log(err)
         return res.status(500).json({ message: 'Failed to login an error occured' })
     }
 }

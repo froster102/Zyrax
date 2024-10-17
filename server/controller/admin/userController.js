@@ -6,7 +6,6 @@ const getUsers = async (req, res) => {
         const users = await User.find({}, { password: false })
         return res.status(200).json(users)
     } catch (err) {
-        console.log(err)
         return res.status(500).json({ message: 'Failed to get users an error occured' })
     }
 }
@@ -21,7 +20,6 @@ const viewUser = async (req, res) => {
             return res.status(200).json({ user: user })
         }
     } catch (err) {
-        console.log(err)
         return res.status(500).json({ message: 'Failed to get user an error occured' })
     }
 }
@@ -32,7 +30,6 @@ const blockUser = async (req, res) => {
         const user = await User.findByIdAndUpdate(id, { status: 'blocked' })
         return res.status(200).json({ message: 'User blocked sucessfully' })
     } catch (err) {
-        // console.log(err)
         return res.status(500).json({ message: 'Action failed an error has occured' })
     }
 }
@@ -43,7 +40,6 @@ const unblockUser = async (req, res) => {
         const user = await User.findByIdAndUpdate(id, { status: 'active' })
         return res.status(200).json({ message: 'User unblocked sucessfully' })
     } catch (err) {
-        console.log(err)
         return res.status(500).json({ message: 'Action failed an error has occured' })
     }
 }
@@ -57,7 +53,6 @@ const deleteUser = async (req, res) => {
         }
         return res.status(200).json({ message: 'User deleted sucessfully' })
     } catch (err) {
-        console.log(err)
         return res.status(500).json({ message: 'Action failed an error occured' })
     }
 }
