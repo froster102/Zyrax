@@ -14,7 +14,7 @@ function App() {
     if (pathname.split('/')[1] !== 'admin') {
       triggerEvent({ eventType: 'visit' })
     }
-  }, [pathname, triggerEvent])
+  }, [])
 
   return (
     <>
