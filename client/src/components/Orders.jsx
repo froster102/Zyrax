@@ -33,7 +33,7 @@ function Orders() {
 
   return (
     <>
-      {isOrderLoading ? <div className='flex w-full justify-center items-center'>
+      {isOrderLoading ? <div className='flex w-full h-screen justify-center items-center'>
         <RotatingLines strokeColor='black' width='100' strokeWidth='2' />
       </div>
         : orders.map((order, i) => (

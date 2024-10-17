@@ -9,6 +9,7 @@ import { format, parseISO } from 'date-fns'
 import queryString from 'query-string'
 import { FaCheckCircle } from "react-icons/fa";
 import ConfirmationModal from './ConfirmationModal'
+import FetchingModal from "./FetchingModal"
 
 function OrderDetails() {
     const location = useLocation()
@@ -32,7 +33,7 @@ function OrderDetails() {
         }
     })
     const { data: wallet, isLoading: isWalletLoading } = useGetWalletDetailsQuery()
-    const { data: orderDetails, isError, isLoading: isOrderDetailsLoading } = useGetUserOrderDetailsQuery({ orderId, productId })
+    const { data: orderDetails, isError, isFetching: isOrderDetailsFetching, isLoading: isOrderDetailsLoading } = useGetUserOrderDetailsQuery({ orderId, productId })
 
     async function cancelOrder({ orderId, productId }) {
         try {
@@ -57,7 +58,7 @@ function OrderDetails() {
         }
     }
 
-    if(isError){
+    if (isError) {
         navigate('/account/orders')
         return
     }
@@ -65,7 +66,10 @@ function OrderDetails() {
     return (
         <>
             {
-                isOrderDetailsLoading ? <div>
+                isOrderDetailsFetching && <FetchingModal />
+            }
+            {
+                isOrderDetailsLoading ? <div className="flex w-full h-full justify-center items-center">
                     <RotatingLines strokeColor="black" strokeWidth="3" />
                 </div>
                     : <div>

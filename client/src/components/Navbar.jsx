@@ -12,7 +12,7 @@ import { FaRegUser, FaShoppingCart } from "react-icons/fa";
 import { BiHeart } from "react-icons/bi";
 import { IoMenu } from "react-icons/io5";
 import toast, { Toaster } from 'react-hot-toast';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Zyrax_icon from '../assets/options-list.png'
 import SidebarAccordion from './SidebarAccordion';
 import _ from 'lodash';
@@ -127,8 +127,8 @@ function Navbar() {
                 </div></Link>
                 <Link to={'/wishlist'}><div className='w-[35px] h-[35px] flex items-center justify-items-center relative'>
                   {
-                    cartItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>
-                      {cartItems.length}
+                    wishlistItems.length > 0 && <div className='absolute top-0 right-0 h-[14px] rounded-full w-[14px] bg-black text-white flex items-center justify-center p-2 text-xs'>
+                      {wishlistItems.length}
                     </div>
                   }
                   <BiHeart size={20} />
@@ -138,49 +138,70 @@ function Navbar() {
           </div>
         </div>
       </div>
-      {openSideBar &&
-        <>
-          <div onClick={() => { setSidebarOpen(!openSideBar) }} className="fixed inset-0 bg-neutral-900 bg-opacity-75 transition-all backdrop-blur-sm z-50"></div>
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className='fixed top-0 left-0 z-50 bg-neutral-300 w-[80%] h-screen p-4'>
-            <div className='flex items-center'>
-              <img className='w-10 h-10' src={Zyrax_icon} alt="" />
-              <h1 className='text-2xl font-bold'>Zyrax.Store</h1>
-              <div>
-                {
-                  !userAuth ? <button className='ml-2 py-1 px-2 text-sm border border-neutral-900 rounded-lg'>Login/Register</button> : <p></p>
-                }
+      <AnimatePresence>
+        {openSideBar &&
+          <>
+            <div onClick={() => { setSidebarOpen(!openSideBar) }} className="fixed inset-0 bg-neutral-900 bg-opacity-75 w-full h-screen transition-all backdrop-blur-sm z-50"></div>
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className='fixed top-0 left-0 z-50 bg-neutral-300 w-[80%] h-screen p-4'>
+              <div className='flex items-center'>
+                <img className='w-10 h-10' src={Zyrax_icon} alt="" />
+                <h1 className='text-2xl font-bold'>Zyrax.Store</h1>
+                <div>
+                  {
+                    !userAuth ? <button onClick={() => {
+                      navigate('/login')
+                      setSidebarOpen(false)
+                    }} className='ml-2 py-1 px-2 text-xs border border-neutral-900 rounded-lg'>Login/Register</button> : <p></p>
+                  }
+                </div>
               </div>
-            </div>
-            <div className='flex gap-2 w-full justify-center items-center mt-2'>
-              <button onClick={() => {
-                navigate('/men')
-                setSidebarOpen(false)
-              }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'men' ? 'bg-black text-white' : 'bg-neutral-200 shadow-md'}`}>Men</button>
-              <button onClick={() => {
-                navigate('/women')
-                setSidebarOpen(false)
-              }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'women' ? 'bg-black text-white' : 'bg-neutral-200 shadow-md'}`}>Women</button>
-            </div>
-            <div className='mt-4 w-full'>
-              {categories.map((category, i) => {
-                if (category.parent === null) {
-                  return <SidebarAccordion
-                    key={i}
-                    title={category.name}
-                    index={i} isOpen={openListIndex === i}
-                    subCategories={category.children}
-                    toggle={(index) => { setOpenListIndex(openListIndex === index ? null : index) }}
-                    closeSideBar={() => { setSidebarOpen(false) }}
-                  />
-                }
-              })}
-            </div>
-          </motion.div>
-        </>}
+              <div className='flex gap-2 w-full justify-center items-center mt-2'>
+                <button onClick={() => {
+                  navigate('/men')
+                  setSidebarOpen(false)
+                }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'men' ? 'bg-black text-white' : 'bg-neutral-200 shadow-md'}`}>Men</button>
+                <button onClick={() => {
+                  navigate('/women')
+                  setSidebarOpen(false)
+                }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'women' ? 'bg-black text-white' : 'bg-neutral-200 shadow-md'}`}>Women</button>
+              </div>
+              <div className='mt-4 w-full'>
+                {categories.map((category, i) => {
+                  if (category.parent === null) {
+                    return <SidebarAccordion
+                      key={i}
+                      title={category.name}
+                      index={i} isOpen={openListIndex === i}
+                      subCategories={category.children}
+                      toggle={(index) => { setOpenListIndex(openListIndex === index ? null : index) }}
+                      closeSideBar={() => { setSidebarOpen(false) }}
+                    />
+                  }
+                })}
+              </div>
+              {
+                userAuth &&
+                <div className='pt-14'>
+                  <p onClick={() => {
+                    navigate('/account')
+                    setSidebarOpen(false)
+                  }} >My Account</p>
+                  <p
+                    onClick={() => {
+                      navigate('/account/orders')
+                      setSidebarOpen(false)
+                    }}
+                    className='pt-4'>My Orders</p>
+                </div>
+              }
+            </motion.div>
+          </>}
+      </AnimatePresence>
     </>
   )
 }

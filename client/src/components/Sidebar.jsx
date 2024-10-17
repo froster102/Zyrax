@@ -1,5 +1,4 @@
 import { GrAnalytics } from "react-icons/gr";
-import { IoMdAnalytics } from "react-icons/io";
 import { FaBox, FaToggleOff, FaUsers } from "react-icons/fa";
 import { RiCoupon3Fill, RiShoppingBag3Line } from "react-icons/ri";
 import { GiVerticalBanner } from "react-icons/gi";

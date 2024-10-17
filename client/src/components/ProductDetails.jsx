@@ -97,7 +97,6 @@ function ProductDetails() {
         wishlistItemIds.includes(product?._id) ? setActiveWishlistItem(true) : setActiveWishlistItem(false)
         if (cartItems.length > 0 && !isProductLoading) {
             const activeItem = cartItems.find(item => item?.productId?._id === product?._id && selectedSize === item.selectedSize)
-            console.log(activeItem)
             activeItem ? setActiveCartItem(true) : setActiveCartItem(false)
         }
     }, [product, wishlistItems, isProductLoading, cartItems, isUserWishlistItemsLoading, userAuth, userWishlistItems, selectedSize])
@@ -159,7 +158,7 @@ function ProductDetails() {
             <div className='mt-2 text-[#383333] antialiased px-4'>
                 <div className='md:flex gap-4 block'>
                     <div className='w-full'>
-                        <div className='sm:h-[640px] max-w-full border border-[#CFCBCB] rounded-lg '>
+                        <div className='sm:h-[440px] max-w-full border border-[#CFCBCB] rounded-lg '>
                             <img
                                 onClick={() => {
                                     setImageModal(true)

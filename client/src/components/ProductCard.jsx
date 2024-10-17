@@ -24,7 +24,7 @@ function ProductCard({ product }) {
     return (
         <>
             <Link to={`/product/${product.name}`} >
-                <div className="lg:w-[280px] md:w-[200px] sm:w-[150px] w-[155px] border border-neutral-200 rounded-lg relative inline-block lg:ml-4p md:ml-4 ml-2">
+                <div className="lg:w-[280px] md:w-[200px] sm:w-[150px] w-[144px] border border-neutral-200 rounded-lg relative inline-block lg:ml-4p md:ml-4 ml-2">
                     {
                         imageLoading ? <Skeleton className='lg:w-[280px] lg:h-[370px] md:w-[200px] md:h-[264px] sm:w-[150px] sm:h-[197px] w-[155px] h-[204px] rounded-lg' />
                             : <img
