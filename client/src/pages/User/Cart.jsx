@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import CartProductCard from "../../components/CartProductCard"
 import { moveToWishlist, removeFromCart, selectCartItems, selectDefaultDeliveryAddress, updateCartItems, updateCartSummary } from "../../store/slices/userSlice";
-import EmptyCart from "../../components/EmptyCart";
 import { useAddItemsToUserWishlistMutation, useGetItemsFromUserCartQuery, useRemoveItemFromUserCartMutation, useUpdateUserCartItemsMutation } from "../../store/api/userApiSlice";
 import { selectUserToken } from "../../store/slices/authSlice";
 import { useEffect } from "react";
@@ -11,6 +10,7 @@ import ApplyCoupon from "../../components/ApplyCoupon";
 import { calculateDiscount } from "../../utils/helper";
 import CartSummary from "../../components/CartSummary";
 import _ from "lodash";
+import EmptyCard from "../../components/EmptyCard";
 
 
 function Cart() {
@@ -65,10 +65,14 @@ function Cart() {
     try {
       if (userAuth) {
         await removeUserCartItem({ itemId: productId, selectedSize }).unwrap()
-        !moveToCart && toast('Product removed from cart sucessfully')
+        !moveToCart && toast('Product removed from cart sucessfully', {
+          position: 'top-right'
+        })
       } else {
         dispatch(removeFromCart({ productId, selectedSize }))
-        !moveToCart && toast('Product removed from cart sucessfully')
+        !moveToCart && toast('Product removed from cart sucessfully', {
+          position: 'top-right'
+        })
       }
     } catch (error) {
       toast(error?.data?.message)
@@ -79,11 +83,15 @@ function Cart() {
     try {
       if (userAuth) {
         userAuth && await removeUserCartItem({ itemId: item?.productId?._id, selectedSize: item.selectedSize })
-        userAuth && await addToUserWishlist({ productId: item?.productId._id }).unwrap()
-        toast('Product added to your wishlist')
+        userAuth && await addToUserWishlist({ items: [item?.productId._id] }).unwrap()
+        toast('Product added to your wishlist', {
+          position: 'top-right'
+        })
       } else {
         dispatch(moveToWishlist({ itemToMove: item.productId }))
-        toast('Product added to your wishlist')
+        toast('Product added to your wishlist', {
+          position: 'top-right'
+        })
       }
     } catch (error) {
       toast(error?.data?.message)
@@ -105,7 +113,7 @@ function Cart() {
   return (
     <>
       <div className="sm:max-w-[1040px] w-full m-auto">
-        {cartItems.length === 0 ? <EmptyCart />
+        {cartItems.length === 0 ? <EmptyCard title="Cart" />
           : <div className="md:flex w-full mt-8 m-auto gap-10 px-4">
             <div className="w-full">
               {
