@@ -284,7 +284,7 @@ Filter.propTypes = {
     filter: PropTypes.object,
     setFilter: PropTypes.func,
     resetFilter: PropTypes.func,
-    sort: PropTypes.object,
+    sort: PropTypes.string,
     setSort: PropTypes.func
 }
 
