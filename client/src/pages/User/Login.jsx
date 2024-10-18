@@ -58,7 +58,7 @@ function Login() {
 
     useEffect(() => {
         function handleAuthMsg(e) {
-            if (e.origin !== 'http://localhost:3000') return
+            if (e.origin !== import.meta.env.VITE_PRODUCTION_DOMAIN) return
             handleAuth(e.data)
         }
         window.addEventListener('message', handleAuthMsg)
