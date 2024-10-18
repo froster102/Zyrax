@@ -7,17 +7,24 @@ import { RiRefund2Line } from "react-icons/ri";
 import { MdAssignmentReturn } from "react-icons/md";
 import { IoNotifications } from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { userLogout } from "../store/slices/authSlice";
 import { useAdminLogoutMutation } from "../store/api/adminApiSlice";
 import { BeatLoader } from "react-spinners";
 import toast from "react-hot-toast";
 import { BiSolidCategory, BiSolidOffer } from "react-icons/bi";
+import { useEffect } from "react";
 
 function Sidebar() {
     const dispatch = useDispatch()
     const [logout, { isLoading }] = useAdminLogoutMutation()
+    const { pathname } = useLocation()
+
+    useEffect(() => {
+        const tabs = pathname.split('')
+        console.log(tabs)
+    }, [pathname])
 
     async function adminLogout() {
         try {
@@ -43,8 +50,8 @@ function Sidebar() {
                         <Link to='/admin/dashboard/orders' ><li className='text-lg flex items-center font-normal pt-4'><RiShoppingBag3Line className="mr-2" />Orders</li></Link>
                         <Link to='/admin/dashboard/category' ><li className='text-lg flex items-center font-normal pt-4'><BiSolidCategory className="mr-2" />Category</li></Link>
                         <Link to='/admin/dashboard/offers'><li className='text-lg flex items-center font-normal pt-4'><BiSolidOffer className="mr-2" />Offer</li></Link>
-                        <Link to='/admin/dashboard/coupons' ><li className='text-lg flex items-center font-normal pt-4'><RiCoupon3Fill  className="mr-2" />Coupons</li></Link>
-                        <Link to='/admin/dashboard/banners' ><li className='text-lg flex items-center font-normal pt-4'><GiVerticalBanner  className="mr-2" />Banner</li></Link>
+                        <Link to='/admin/dashboard/coupons' ><li className='text-lg flex items-center font-normal pt-4'><RiCoupon3Fill className="mr-2" />Coupons</li></Link>
+                        <Link to='/admin/dashboard/banners' ><li className='text-lg flex items-center font-normal pt-4'><GiVerticalBanner className="mr-2" />Banner</li></Link>
                     </ul>
                 </div>
                 <div className="mt-4">
@@ -66,7 +73,7 @@ function Sidebar() {
                         <Link to='/admin/dashboard/settings' ><li className='text-lg flex items-center font-normal mt-4'><IoMdSettings className="mr-2" />Settings</li></Link>
                         <li onClick={() => {
 
-                        }} className='text-lg flex items-center font-normal mt-4'><FaToggleOff  className="mr-2" />Dark mode</li>
+                        }} className='text-lg flex items-center font-normal mt-4'><FaToggleOff className="mr-2" />Dark mode</li>
                     </ul>
                 </div>
                 <div className="w-full flex justify-center">
