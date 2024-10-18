@@ -9,19 +9,14 @@ import mongoose from 'mongoose'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { refresh } from './controller/refreshController.js'
+import connectToDatabase from './config/db.js'
 
 config()
-
-mongoose.connect(process.env.ATLAS_URI).then(() => {
-    console.log('connected to database')
-}).catch((err) => {
-    console.log(err)
-})
 
 const app = express()
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'https://wnnxjp45-5173.inc1.devtunnels.ms','http://192.168.44.31:5173'],
+    origin: ['http://localhost:5173','http://192.168.44.189:5173'],
     credentials: true
 }
 
@@ -48,6 +43,7 @@ app.get('/', (req, res) => {
 app.use(notFound)
 app.use(errorHandler)
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, async () => {
     console.log(`Server running on ${process.env.PORT}`)
+    await connectToDatabase()
 })
