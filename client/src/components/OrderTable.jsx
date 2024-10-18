@@ -1,19 +1,28 @@
 import _ from 'lodash'
 import PropTypes from 'prop-types'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SlEye } from "react-icons/sl";
 import OrderViewModal from './OrderViewModal';
 import StatusChip from './StatusChip';
 import { formatISODate } from '../utils/helper';
+import Pagination from './Pagination';
 
-function OrderTable({ orders, changeOrderStatus }) {
+function OrderTable({ filter, totalCount, setFilter, orders, changeOrderStatus }) {
     const [openViewModal, setOpenViewModal] = useState(false)
     const [orderDetail, setOrderDetail] = useState({})
 
-    // useEffect(() => {
-    //     const order = orders.find((order => order.orderId === orderDetail?.orderId))
-    //     setOrderDetail(order)
-    // }, [orders, orderDetail])
+    useEffect(()=>{
+        if(orderDetail?.orderId){
+            setOrderDetail(orders.find(order=>order?.orderId===orderDetail?.orderId))
+        }
+    },[orderDetail,orders])
+
+    function setPage(page) {
+        setFilter(prev => ({
+            ...prev,
+            page: page
+        }))
+    }
 
     return (
         <>
@@ -44,36 +53,41 @@ function OrderTable({ orders, changeOrderStatus }) {
                 <tbody>
                     {orders.map((order, i) => {
                         return (
-                            <React.Fragment key={i}>
-                                <tr onClick={() => {
-                                    setOrderDetail(order)
-                                    setOpenViewModal(true)
-                                }} className="border-b border-b-[#e7e0e0] text-black">
-                                    <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
-                                        {order.orderId}
-                                    </td>
-                                    <td className=" py-4">
-                                        {formatISODate(order.createdAt)}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {order.totalAmount}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <StatusChip status={order.payment.status} />
-                                    </td>
-                                    <td className="pl-6 py-4">
-                                        {_.startCase(order.payment.method)}
-                                    </td>
-                                    <td className="">
-                                        <button className='flex px-4 py-2 border border-neutral-800 items-center justify-center rounded-md gap-2'><SlEye />Preview</button>
-                                    </td>
-                                </tr>
-
-                            </React.Fragment>
+                            <tr key={i} onClick={() => {
+                                setOrderDetail(order)
+                                setOpenViewModal(true)
+                            }} className="border-b border-b-neutral-300  text-black">
+                                <td className="px-6 py-4 font-medium text-black whitespace-nowrap ">
+                                    {order.orderId}
+                                </td>
+                                <td className=" py-4">
+                                    {formatISODate(order.createdAt)}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {order.totalAmount}
+                                </td>
+                                <td className="px-6 py-4">
+                                    <StatusChip status={order.payment.status} />
+                                </td>
+                                <td className="pl-6 py-4">
+                                    {_.startCase(order.payment.method)}
+                                </td>
+                                <td className="">
+                                    <button className='flex p-1 text-sm font-medium border border-neutral-800 items-center justify-center rounded-md gap-2'><SlEye />Preview</button>
+                                </td>
+                            </tr>
                         )
                     })}
                 </tbody>
             </table>
+            <div className="flex w-full h-fit items-center justify-between px-4 py-2">
+                <p className="justify-self-start font-medium">Total {totalCount} orders</p>
+                <Pagination
+                    totalPages={Math.ceil(totalCount / filter.limit)}
+                    currentPage={filter.page}
+                    onPageChange={setPage}
+                />
+            </div>
             {openViewModal && <OrderViewModal
                 orderDetail={orderDetail}
                 onClose={() => setOpenViewModal(false)}
@@ -84,6 +98,9 @@ function OrderTable({ orders, changeOrderStatus }) {
 }
 
 OrderTable.propTypes = {
+    filter: PropTypes.object,
+    setFilter: PropTypes.func,
+    totalCount: PropTypes.number,
     changeOrderStatus: PropTypes.func,
     orders: PropTypes.arrayOf(Object)
 }

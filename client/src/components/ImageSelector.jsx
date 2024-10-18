@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react"
 import { Controller } from "react-hook-form"
 import { IoMdAddCircleOutline } from "react-icons/io"
@@ -67,7 +68,6 @@ function ImageSelector({ control, setPreview, setModalOpen, mode }) {
                     })}
                     <div onClick={() => {
                         if (value.length === 4) {
-                            console.log(value.length)
                             toast('Maximum number of images of four')
                         } else {
                             setModalOpen(true)
@@ -78,6 +78,13 @@ function ImageSelector({ control, setPreview, setModalOpen, mode }) {
             )}
         />
     )
+}
+
+ImageSelector.propTypes = {
+    control: PropTypes.any,
+    setPreview: PropTypes.any,
+    setModalOpen: PropTypes.func,
+    mode: PropTypes.string
 }
 
 export default ImageSelector

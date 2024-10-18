@@ -9,6 +9,7 @@ import { format, parseISO } from 'date-fns'
 import queryString from 'query-string'
 import { FaCheckCircle } from "react-icons/fa";
 import ConfirmationModal from './ConfirmationModal'
+import FetchingModal from "./FetchingModal"
 
 function OrderDetails() {
     const location = useLocation()
@@ -32,15 +33,14 @@ function OrderDetails() {
         }
     })
     const { data: wallet, isLoading: isWalletLoading } = useGetWalletDetailsQuery()
-    const { data: orderDetails, isLoading: isOrderDetailsLoading } = useGetUserOrderDetailsQuery({ orderId, productId })
+    const { data: orderDetails, isError, isFetching: isOrderDetailsFetching, isLoading: isOrderDetailsLoading } = useGetUserOrderDetailsQuery({ orderId, productId })
 
     async function cancelOrder({ orderId, productId }) {
         try {
             const res = await cancelUserOrder({ orderId, productId }).unwrap()
-            navigate('/account/orders')
             toast(res?.message)
         } catch (error) {
-            toast('Failed to canel order please try after some time')
+            toast(error?.data?.message)
         }
     }
 
@@ -58,10 +58,18 @@ function OrderDetails() {
         }
     }
 
+    if (isError) {
+        navigate('/account/orders')
+        return
+    }
+
     return (
         <>
             {
-                isOrderDetailsLoading ? <div>
+                isOrderDetailsFetching && <FetchingModal />
+            }
+            {
+                isOrderDetailsLoading ? <div className="flex w-full h-full justify-center items-center">
                     <RotatingLines strokeColor="black" strokeWidth="3" />
                 </div>
                     : <div>
@@ -111,7 +119,6 @@ function OrderDetails() {
                                                                             message: `Are you sure that you want to cancel ${orderDetails.orderItem.productId.name}`,
                                                                             onConfirm: () => cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
                                                                         }))
-                                                                        // cancelOrder({ orderId: orderDetails.order.orderId, productId: orderDetails.orderItem.productId._id })
                                                                     }}
                                                                     className="mt-4 px-2 py-1 border border-neutral-500 rounded-md text-sm hover:bg-neutral-900 hover:text-white transition ease-in" >Cancel
                                                                 </button>

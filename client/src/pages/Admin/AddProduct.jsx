@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, } from 'react-hook-form'
 import ImageSelector from '../../components/ImageSelector';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import PropTypes from 'prop-types'
 import addProductSchema from '../../../ValidationSchema/addProductSchema';
 import StockSelector from '../../components/StockSelector';
@@ -17,11 +17,11 @@ function AddProduct({ mode }) {
     const [modalOpen, setModalOpen] = useState(false)
     const [preview, setPreview] = useState(null)
     const navigate = useNavigate()
-    const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery()
+    const { data: { categories = [] } = {}, isLoading: isCategoriesLoading } = useGetCategoriesQuery({ filter: '' })
     const [addProduct, { isLoading: isUploading }] = useAddProductMutation()
     const [editProduct, { isLoading: isUpdating }] = useEditProductMutation()
     const { id } = useParams()
-    const { data: product, isLoading: isProductLoading, refetch } = useFetchProductQuery({ id }, { skip: !id })
+    const { data: product, isLoading: isProductLoading } = useFetchProductQuery({ id }, { skip: !id })
     const { data: offers, isLoading: isOffersLoading } = useGetOffersQuery({ offerType: 'product' })
     const { control, register, handleSubmit, getValues, setValue, formState: { errors, isDirty }, reset } = useForm(
         {
@@ -99,14 +99,10 @@ function AddProduct({ mode }) {
                 const res = await editProduct({ id: product._id, productData }).unwrap()
                 navigate('/admin/dashboard/products')
                 toast(res?.message)
-                // setTimeout(()=>navigate('/admin/dashboard/products'))
-                refetch()
             } else {
                 const res = await addProduct(productData).unwrap()
                 navigate('/admin/dashboard/products')
                 toast(res?.message)
-                // setTimeout(()=>navigate('/admin/dashboard/products'))
-                refetch()
                 reset()
                 setPreview(null)
                 setPreview(null)
@@ -132,16 +128,6 @@ function AddProduct({ mode }) {
 
     return (
         <>
-            <Toaster
-                position="top-center"
-                toastOptions={{
-                    style: {
-                        backgroundColor: 'black',
-                        color: 'white',
-                    },
-                    duration: 3000
-                }}
-            />
             <img src="" alt="" />
             <div className='border-[1px] border-black w-full ml-4 rounded-lg bg-[#F1F1F1] shadow-inner py-[40px] px-[20px]'>
                 <h1 className='text-3xl font-semibold'>Products</h1>

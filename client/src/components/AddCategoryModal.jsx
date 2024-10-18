@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
 import { useAddCategoryMutation, useGetCategoriesQuery } from '../store/api/adminApiSlice'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import _ from 'lodash'
@@ -9,7 +9,7 @@ import PropTypes from 'prop-types'
 import AddCategoryschema from '../../ValidationSchema/addCategorySchema'
 import { RotatingLines } from 'react-loader-spinner'
 
-function AddCategoryModal({ closeModal, refetch }) {
+function AddCategoryModal({ closeModal }) {
     const [categoryType, setCategoryType] = useState('')
     const { data: categories, isLoading: isCategoriesLoading } = useGetCategoriesQuery()
     const [addCategory, { isLoading }] = useAddCategoryMutation()
@@ -21,7 +21,6 @@ function AddCategoryModal({ closeModal, refetch }) {
         try {
             const res = await addCategory(data).unwrap()
             toast(res?.message)
-            refetch()
             reset()
             closeModal()
         } catch (error) {
@@ -31,16 +30,6 @@ function AddCategoryModal({ closeModal, refetch }) {
 
     return (
         <>
-            <Toaster
-                position="top-center"
-                toastOptions={{
-                    style: {
-                        backgroundColor: 'black',
-                        color: 'white',
-                    },
-                    duration: 2000
-                }}
-            />
             <div className="relative z-10" >
                 <div className="fixed inset-0 bg-[#f1f1f1] bg-opacity-75 transition-all backdrop-blur-sm"></div>
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -94,7 +83,6 @@ function AddCategoryModal({ closeModal, refetch }) {
 
 AddCategoryModal.propTypes = {
     closeModal: PropTypes.func.isRequired,
-    refetch: PropTypes.func.isRequired
 }
 
 export default AddCategoryModal

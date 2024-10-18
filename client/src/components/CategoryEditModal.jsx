@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import _ from "lodash"
 import { toast } from "react-toastify"
+import PropTypes from "prop-types"
 
 const schema = z.object({
     name: z.string().trim().min(1, 'Required').transform(val => val.toLocaleLowerCase()),
@@ -20,7 +21,7 @@ const schema = z.object({
     path: ['parentCategory']
 })
 
-function CategoryEditModal({ category, closeModal, refetch, categories }) {
+function CategoryEditModal({ category, closeModal, categories }) {
     const [categoryType, setCategoryType] = useState(category.parent !== null ? 'child' : '')
     const [editCategory, { isLoading }] = useEditCategoryMutation()
     const { reset, register, handleSubmit, formState: { errors, isDirty } } = useForm({
@@ -36,7 +37,6 @@ function CategoryEditModal({ category, closeModal, refetch, categories }) {
     async function onSubmit(data) {
         try {
             const res = await editCategory({ id: category._id, data })
-            refetch()
             closeModal(false)
             toast(res?.message)
         } catch (error) {
@@ -93,6 +93,12 @@ function CategoryEditModal({ category, closeModal, refetch, categories }) {
             </div>
         </>
     )
+}
+
+CategoryEditModal.propTypes = {
+    category: PropTypes.object,
+    closeModal: PropTypes.func,
+    categories: PropTypes.array
 }
 
 export default CategoryEditModal

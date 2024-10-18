@@ -10,7 +10,7 @@ import { useEffect, useState } from "react"
 import { useGetProductsQuery } from "../store/api/productApiSlice"
 import queryString from "query-string"
 import Pagination from "./Pagination"
-import { FadeLoader } from "react-spinners"
+import FetchingModal from "./FetchingModal"
 
 function ProductLists() {
     const location = useLocation()
@@ -66,12 +66,7 @@ function ProductLists() {
     return (
         <>
             {
-                isProductsFetching && <div className="absolute inset-0 z-10 w-full h-full overflow-hidden">
-                    <div className="fixed inset-0 bg-neutral-300 bg-opacity-35 transition-all backdrop-blur-sm"></div>
-                    <div className="flex justify-center items-center h-full">
-                        <FadeLoader />
-                    </div>
-                </div>
+                isProductsFetching && <FetchingModal />
             }
             <div className="flex justify-between md:justify-center items-center w-full px-2">
                 <div className="md:block hidden w-full">
@@ -80,29 +75,36 @@ function ProductLists() {
             </div>
             <div className="flex items-center justify-between px-6">
                 <p className="font-medium pt-2">{`${_.startCase(gender)} ${_.startCase(query?.category)} - ${products?.length} items`}</p>
-                <select
-                    value={sort} onChange={(e) => {
-                        if (e.target.value !== 'default') setSort(e.target.value)
-                    }}
-                    className="bg-neutral-200 rounded-md focus:outline-none p-2">
-                    <option value="default">Select Sorting options</option>
-                    <option value="L2H">Low to high</option>
-                    <option value="H2L">High to low</option>
-                    <option value="A2Z">A to Z</option>
-                    <option value="Z2A">Z to A</option>
-                    <option value="newest">Newest</option>
-                    <option value="rating">Ratings</option>
-                </select>
+                {
+                    products.length > 0 ? <select
+                        value={sort} onChange={(e) => {
+                            if (e.target.value !== 'default') setSort(e.target.value)
+                        }}
+                        className="bg-neutral-200 md:block hidden rounded-md focus:outline-none p-2">
+                        <option value="default">Select Sorting options</option>
+                        <option value="L2H">Low to high</option>
+                        <option value="H2L">High to low</option>
+                        <option value="A2Z">A to Z</option>
+                        <option value="Z2A">Z to A</option>
+                        <option value="newest">Newest</option>
+                        <option value="rating">Ratings</option>
+                    </select>
+                        : <div></div>
+                }
             </div>
             <div className="flex pt-4 px-6">
-                <Filter
-                    initialFilter={initialFilter}
-                    filter={filter}
-                    setFilter={setFilter}
-                    resetFilter={resetFilter}
-                />
                 {
-                    isError ? <div className="w-full text-center text-2xl font-medium h-full">No items found</div>
+                    <Filter
+                        initialFilter={initialFilter}
+                        filter={filter}
+                        setFilter={setFilter}
+                        resetFilter={resetFilter}
+                        sort={sort}
+                        setSort={setSort}
+                    />
+                }
+                {
+                    isError || products.length === 0 ? <div className="w-full text-center text-2xl font-medium h-full">No items found</div>
                         : <div className={`${isProductsLoading ? 'flex justify-center w-full' : ''}`}>
                             {
                                 isProductsLoading ? <div className=""><RotatingLines strokeColor="black" strokeWidth="3" /></div>

@@ -8,11 +8,12 @@ import { useState } from "react";
 import DateFilter from "@/components/DateFilter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import OrderTable from "@/components/OrderTable";
-import { useFetchProductsQuery, useGetAnalyticsGraphDataQuery, useGetOverviewDataQuery, useLazyGetSalesReportQuery } from "@/store/api/adminApiSlice";
+import { useGetAnalyticsGraphDataQuery, useGetOverviewDataQuery, useLazyGetSalesReportQuery } from "@/store/api/adminApiSlice";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ProductCard from "@/components/ProductCard";
 import { FaFilePdf } from "react-icons/fa";
 import toast from "react-hot-toast";
+import _ from "lodash";
 
 function Overview() {
   const [triggerDownloadSalesReport] = useLazyGetSalesReportQuery()
@@ -20,11 +21,13 @@ function Overview() {
   const [openDownloadDropdown, setopenDownloadDropdown] = useState(false)
   const [filter, setFilter] = useState({
     limit: 10,
+    page: 1,
     period: '',
   })
 
   const [chartFilter, setChartFilter] = useState({
-    period: 'month'
+    period: 'month',
+    chartType: 'revenue'
   })
 
   const { data: {
@@ -32,9 +35,10 @@ function Overview() {
     totalCustomers = 0,
     totalRevenue = 0,
     totalProductsSold = 0,
-    orders = []
+    orders = [],
+    products = [],
+    categories = []
   } = {} } = useGetOverviewDataQuery({ filter, sort: '' })
-  const { data: { products = [] } = {} } = useFetchProductsQuery({ filter, sort: '' })
   const { data: { chartData = [] } = {} } = useGetAnalyticsGraphDataQuery({ filter: chartFilter, sort: '' })
 
   async function handleDownloadSalesReport(format) {
@@ -44,7 +48,7 @@ function Overview() {
       const url = window.URL.createObjectURL(new Blob([salesReport]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'Sales Report.pdf');
+      link.setAttribute('download', `${downloadFormat === 'pdf' ? 'Sales Report.pdf' : 'Sales Report.xlsx'}`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -59,32 +63,29 @@ function Overview() {
         <h1 className='text-3xl font-semibold'>Overview</h1>
         <div className="flex w-full justify-end">
           <div className="flex items-center">
-            <div onMouseEnter={() => setopenDownloadDropdown(!openDownloadDropdown)} onMouseLeave={() => setopenDownloadDropdown(!openDownloadDropdown)}>
-              <button className="flex items-center hover:bg-white relative mr-4 text-sm font-medium rounded-md bg-stone-300 px-4 py-2">
+            <div onMouseLeave={() => setopenDownloadDropdown(false)}>
+              <button onMouseEnter={() => setopenDownloadDropdown(true)} className="flex items-center hover:bg-white relative mr-4 text-sm font-medium rounded-md bg-stone-300 px-4 py-2">
                 <FaFileDownload />
                 <p>Download report</p>
               </button>
-              <div className="">
-                {
-                  openDownloadDropdown &&
-                  <div className="absolute w-36">
-                    <div className="pt-2">
-                      <div className="bg-white border border-neutral-200 rounded-md">
-                        <span className="px-2 font-semibold text-sm">Select file type</span>
-                        <ul className="p-2 bg-white rounded-md">
-                          <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
-                            <FaFilePdf />
-                            <p>Pdf</p>
-                          </li>
-                          <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
-                            <FaFileExcel />
-                            <p>Excel</p>
-                          </li>
-                        </ul>
-                      </div>
+              <div className={`transition ease-in ${openDownloadDropdown ? 'opacity-1' : 'opacity-0'} `}>
+                <div className="absolute w-36 z-50  ">
+                  <div className="pt-2">
+                    <div className="bg-white border border-neutral-200 rounded-md">
+                      <span className="px-2 font-semibold text-sm">Select file type</span>
+                      <ul className="p-2 bg-white rounded-md">
+                        <li onClick={() => handleDownloadSalesReport('pdf')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
+                          <FaFilePdf />
+                          <p>Pdf</p>
+                        </li>
+                        <li onClick={() => handleDownloadSalesReport('excel')} className="pt-2 px-2 flex items-center gap-2 cursor-pointer">
+                          <FaFileExcel />
+                          <p>Excel</p>
+                        </li>
+                      </ul>
                     </div>
                   </div>
-                }
+                </div>
               </div>
             </div>
             <DateFilter
@@ -118,10 +119,19 @@ function Overview() {
           </div>
           <Card className="border bg-stone-100 border-stone-200 shadow-lg rounded-lg max-w-[424px] w-full">
             <CardHeader>
-              <CardTitle>Notifications</CardTitle>
-              <CardContent>
-              </CardContent>
+              <CardTitle>Top 10 Categories</CardTitle>
             </CardHeader>
+            <CardContent>
+              <ScrollArea className='h-[324px]'>
+                {
+                  categories.map(((category, i) => (
+                    <div key={i} className="w-full rounded-md bg-neutral-300 mt-2 p-4" >
+                      <p className="text-lg font-medium">{_.startCase(category.name)}</p>
+                    </div>
+                  )))
+                }
+              </ScrollArea>
+            </CardContent>
           </Card>
         </div>
         <div className="pt-4 flex gap-4">
@@ -134,6 +144,7 @@ function Overview() {
                 <div className="relative overflow-x-auto overflow-y-auto shadow-xl mt-4 bg-neutral-200 rounded-lg">
                   <OrderTable
                     orders={orders}
+                    filter={filter}
                   />
                 </div>
                 <ScrollBar orientation="vertical"
@@ -143,7 +154,7 @@ function Overview() {
           </Card>
           <Card className="max-w-[424px] w-full">
             <CardHeader>
-              <CardTitle>Top Products</CardTitle>
+              <CardTitle>Top 10 Products</CardTitle>
             </CardHeader>
             <CardContent>
               <ScrollArea className='max-w-full whitespace-nowrap'>

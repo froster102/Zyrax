@@ -1,51 +1,34 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import CardToatalCard from '../../components/CartToatalCard'
 import { useEffect, useState } from 'react'
-import { useChekoutMutation, useVerifyPaymentMutation } from '../../store/api/userApiSlice'
+import { useChekoutMutation, useRetryPaymentMutation, useVerifyPaymentMutation } from '../../store/api/userApiSlice'
 import toast from 'react-hot-toast'
-import { useDispatch, useSelector } from 'react-redux'
-import { removeFromCart, resetCart, selectActiveGender } from '../../store/slices/userSlice'
+import { useSelector } from 'react-redux'
+import { selectActiveGender, selectCartSummary, selectDefaultDeliveryAddress } from '../../store/slices/userSlice'
+import { SiRazorpay } from "react-icons/si";
+import { FaPaypal, FaWallet } from "react-icons/fa";
+import CartSummary from '../../components/CartSummary'
 import { RotatingLines } from 'react-loader-spinner'
-import { FaGooglePay, FaPaypal, FaWallet } from "react-icons/fa";
-import { SiPhonepe } from "react-icons/si";
-import { MdOutlinePayment } from "react-icons/md";
-import { motion, AnimatePresence } from 'framer-motion'
+import { HiOutlineCash } from "react-icons/hi";
 
-const paymentIcons = [
-    <SiPhonepe key={'phonepe'} />,
-    < MdOutlinePayment key={'card'} />,
-    <FaGooglePay key={'gpay'} />
-]
 
 function Checkout() {
-    const location = useLocation()
     const navigate = useNavigate()
-    const dispatch = useDispatch()
     const activeGender = useSelector(selectActiveGender)
-    const [pageLoading, setPageLoading] = useState(true)
-    const { mrpTotal, offerAmount, couponDiscountAmount, cartItems, totalCartAmount, selectedAddress } = location.state || ''
+    const defaultDeliveryAddress = useSelector(selectDefaultDeliveryAddress)
+    const location = useLocation()
+    const { from } = location.state || ''
+    const cartSummary = useSelector(selectCartSummary)
     const [paymentMethod, setPaymentMethod] = useState('')
     const [checkout, { isLoading }] = useChekoutMutation()
+    const [retryPayment] = useRetryPaymentMutation()
     const [verifyPayment] = useVerifyPaymentMutation()
-    const [activeIconIndex, setActiveIndex] = useState(0)
-    // useEffect(() => {
-    //     const iconSlideInterval = setInterval(() => {
-    //         setActiveIndex(activeIconIndex)
-    //         setActiveIndex(activeIconIndex + 1)
-    //         if (activeIconIndex >= paymentIcons.length - 1) setActiveIndex(0)
-    //         console.log(activeIconIndex)
-    //     }, 2000)
-
-    //     return () => clearInterval(iconSlideInterval)
-    // }, [activeIconIndex])
 
     useEffect(() => {
-        if (!location?.state) {
+        if (from !== 'cart' && from !== 'orders') {
             navigate('/cart')
-        } else {
-            setPageLoading(false)
+            return
         }
-    }, [navigate, cartItems, location])
+    }, [navigate, from])
 
     async function proceedToCheckOut() {
         if (!paymentMethod) {
@@ -53,20 +36,18 @@ function Checkout() {
             return
         }
         try {
-            const res = await checkout({ cartItems, paymentMethod, shippingAddressId: selectedAddress._id }).unwrap()
+            const res = await checkout({ paymentMethod, shippingAddressId: defaultDeliveryAddress._id }).unwrap()
             if (paymentMethod === 'cash on delivery' || paymentMethod === 'zyraxWallet') {
-                dispatch(resetCart())
                 toast(res.message)
-                navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails } })
+                navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails }, replace: true })
             }
             if (paymentMethod === 'razorpay') {
                 loadRazorpayCheckout(res)
             }
         } catch (error) {
             toast(error?.data?.message)
-            if (error?.data?.type === 'stockError') {
-                dispatch(removeFromCart({ productId: error?.data?.itemId }))
-                navigate(`/${activeGender}`)
+            if (error?.data?.type === 'stockError' || error?.data?.type === 'availablityError') {
+                navigate(`/cart`)
             }
         }
     }
@@ -120,17 +101,32 @@ function Checkout() {
     async function handlePaymentResponse(paymentDetails) {
         try {
             const res = await verifyPayment(paymentDetails).unwrap()
-            dispatch(resetCart())
             navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails } })
         } catch (error) {
             toast('Failed to confirm payment please try after some time')
         }
     }
 
-    if (pageLoading) {
-        return <div className='h-screen flex justify-center items-center'>
-            <RotatingLines />
-        </div>
+    async function handleRetryPayment(orderId) {
+        if (!paymentMethod) {
+            toast('Please select a payment to proceed')
+            return
+        }
+        try {
+            const res = await retryPayment({ paymentMethod, shippingAddressId: defaultDeliveryAddress._id, orderId }).unwrap()
+            if (paymentMethod === 'cash on delivery' || paymentMethod === 'zyraxWallet') {
+                toast(res.message)
+                navigate(`/order-sucess`, { state: { orderDetails: res.orderDetails }, replace: true })
+            }
+            if (paymentMethod === 'razorpay') {
+                loadRazorpayCheckout(res)
+            }
+        } catch (error) {
+            toast(error?.data?.message)
+            if (error?.data?.type === 'stockError') {
+                navigate(`/${activeGender}`)
+            }
+        }
     }
 
     return (
@@ -138,29 +134,27 @@ function Checkout() {
             <div className="md:flex w-full mt-8 m-auto gap-10 px-4 pb-20">
                 <div className="w-full">
                     <p>Select payment method</p>
-                    <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
+                    <div className='w-full relative border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div className='flex w-full justify-between gap-1'>
-                            <p>
+                            <p className='flex items-center justify-center gap-1'>
+                                <HiOutlineCash />
                                 Cash on delivery
                             </p>
-                            <input name='payment' onClick={() => setPaymentMethod('cash on delivery')} type="radio" />
+                            <input name='payment' onClick={(e) => {
+                                if (cartSummary.totalCartAmount < 1000) {
+                                    e.preventDefault()
+                                    toast('Cash on delivery only for order above 1000')
+                                } else {
+                                    setPaymentMethod('cash on delivery')
+                                }
+                            }} type="radio" />
                         </div>
                     </div>
                     <div className='w-full border border-neutral-300 bg-neutral-200 rounded-lg p-5 mt-2'>
                         <div className='flex w-full justify-between'>
                             <p className='flex items-center justify-center gap-1'>
-                                <AnimatePresence>
-                                    <motion.span
-                                        key={activeIconIndex}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.5 }}
-                                    >
-                                        {paymentIcons[activeIconIndex]}
-                                    </motion.span>
-                                </AnimatePresence>
-                                UPI/Card/Net Banking
+                                <SiRazorpay />
+                                Razorpay
                             </p>
                             <input name='payment' onClick={() => setPaymentMethod('razorpay')} type="radio" />
                         </div>
@@ -295,14 +289,23 @@ function Checkout() {
                         </div>
                     </div>
                 </div>
-                <CardToatalCard
-                    cartTotal={totalCartAmount}
-                    priceTotal={mrpTotal}
-                    offerDiscount={offerAmount}
-                    couponDiscount={couponDiscountAmount}
-                    proceedToCheckout={proceedToCheckOut}
-                    checkoutLoading={isLoading}
-                />
+                <div>
+                    <CartSummary />
+                    <div className='px-4'>
+                        <button
+                            onClick={() => {
+                                if (from === 'cart') {
+                                    proceedToCheckOut()
+                                } else if (from === 'orders' && location.state.mode === 'retry') {
+                                    handleRetryPayment(location.state.orderId)
+                                }
+                            }}
+                            disabled={isLoading}
+                            className='bg-black w-full py-2 text-white mt-2 rounded-lg font-medium flex justify-center items-center' >
+                            {isLoading ? <RotatingLines strokeColor='white' width='20' /> : 'Proceed to order'}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     )

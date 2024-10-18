@@ -1,0 +1,34 @@
+name: zyrax_store_api
+
+services:
+  mongo:
+    image: mongo:7.0.12
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+      - ./dump/Zyrax:/dump/Zyrax
+    networks:
+      - zyrax_store_api_network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+    networks:
+      - zyrax_store_api_network
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
+networks:
+  zyrax_store_api_network:
+    driver: bridge

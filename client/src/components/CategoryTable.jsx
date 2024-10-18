@@ -11,8 +11,9 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import StatusChip from './StatusChip'
 import ConfirmationModal from './ConfirmationModal'
+import Pagination from './Pagination'
 
-function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCategory, handleDelete, setAddCategoryModal }) {
+function CategoryTable({ categories, filter, setFilter, totalCount, isCategoriesLoading, handleBlockCategory, handleDelete, setAddCategoryModal }) {
     const [editCategory, setEditCategory] = useState('')
     const [viewCategory, setViewCategory] = useState('')
     const [editModal, setEditModal] = useState(false)
@@ -29,6 +30,13 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
 
     })
     const [search, setSearch] = useState('')
+
+    function setPage(page) {
+        setFilter(prev => ({
+            ...prev,
+            page: page
+        }))
+    }
 
     return (
         <>
@@ -47,6 +55,9 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                         </th>
                         <th className="px-6 py-3">
                             Status
+                        </th>
+                        <th className="px-6 py-3">
+                            Products Sold
                         </th>
                         <th className="px-6 py-3">
                             Action
@@ -70,12 +81,15 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                                 : category.name.toLowerCase().includes(search.toLowerCase())
                         }).map((category, i) => {
                             return (
-                                <tr key={i} className="border-b ">
-                                    <td className="px-6 py-4 ">
+                                <tr key={i} className="border-b border-b-neutral-300">
+                                    <td className="px-6 py-4">
                                         <p className='text-neutral-900 font-medium text-base'>{_.startCase(category.name)}</p>
                                     </td>
                                     <td className="px-6 py-4">
                                         <StatusChip status={category.status} />
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className='font-semibold text-base text-black'>{category.soldCount}</p>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex gap-2">
@@ -123,6 +137,14 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                         })}
                 </tbody>
             </table>
+            <div className="flex w-full h-fit items-center justify-between px-4">
+                <p className="justify-self-start font-medium">Total {totalCount} products</p>
+                <Pagination
+                    totalPages={Math.ceil(totalCount / filter.limit)}
+                    currentPage={filter.page}
+                    onPageChange={setPage}
+                />
+            </div>
             <ConfirmationModal
                 show={confirmModalState.show}
                 action={confirmModalState.action}
@@ -130,15 +152,17 @@ function CategoryTable({ categories, refetch, isCategoriesLoading, handleBlockCa
                 onConfirm={confirmModalState.onConfirm}
                 message={confirmModalState.message}
             />
-            {editModal && <CategoryEditModal category={editCategory} categories={categories} closeModal={() => { setEditModal(false) }} refetch={refetch}></CategoryEditModal>}
+            {editModal && <CategoryEditModal category={editCategory} categories={categories} closeModal={() => { setEditModal(false) }}></CategoryEditModal>}
             {viewModal && <ViewModal category={viewCategory} closeModal={() => { setViewModal(false) }}></ViewModal>}
         </>
     )
 }
 
 CategoryTable.propTypes = {
+    filter: PropTypes.object,
+    setFilter: PropTypes.func,
+    totalCount: PropTypes.totalCount,
     categories: PropTypes.array,
-    refetch: PropTypes.func,
     isCategoriesLoading: PropTypes.bool,
     handleBlockCategory: PropTypes.func,
     handleDelete: PropTypes.func,

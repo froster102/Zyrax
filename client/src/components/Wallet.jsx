@@ -1,4 +1,3 @@
-import { FaWallet } from "react-icons/fa";
 import { RotatingLines } from "react-loader-spinner"
 import { useCreateWalletMutation, useGetWalletDetailsQuery, useTopUpWalletMutation } from "../store/api/userApiSlice"
 import toast from "react-hot-toast"
@@ -91,11 +90,11 @@ function Wallet() {
   return (
     <>
       <div>Wallet</div>
-      <div className="border border-[#CFCBCB] rounded-md bg-neutral-50 py-4 sm:px-8 px-4 flex gap-4 w-full h-full">
+      <div className="border border-[#CFCBCB] rounded-md bg-neutral-50 py-4 sm:px-8 px-4 md:flex gap-4 w-full h-full">
         {
           isWalletLoading ?
             <div className="flex justify-center items-center">
-              <RotatingLines />
+              <RotatingLines strokeColor="black" strokeWidth="2" />
             </div> : !wallet ? <div className="flex w-full justify-center items-center">
               <div className="border border-neutral-300 rounded-md px-10 py-6 bg-neutral-300">
                 <p className="text-lg">You have not created your wallet</p>
@@ -109,7 +108,7 @@ function Wallet() {
               </div>
             </div>
               : <>
-                <div className="h-[439px] min-w-[329px] bg-neutral-950 rounded-lg py-5 shadow-lg flex flex-col justify-between items-center">
+                <div className="h-[439px] min-w-[229px] max-w-[324px] w-full bg-neutral-950 rounded-lg py-5 shadow-lg flex flex-col justify-between items-center">
                   <p className="text-white font-bold text-center text-4xl">Zyrax Wallet</p>
                   <div>
                     <p className="text-white font-bold text-center text-4xl pt-10">Balance</p>
@@ -119,7 +118,7 @@ function Wallet() {
                     <button onClick={() => setOpenAddMoneyModal(true)} className="w-full border border-neutral-200 text-center text-white rounded-lg py-2">Add money</button>
                   </div>
                 </div>
-                <div className="border border-neutral-300 rounded-lg overflow-hidden w-full">
+                <div className="border border-neutral-300 rounded-lg overflow-hidden w-full md:mt-0 mt-4">
                   <table className="text-sm text-left rtl:text-right text-gray-500 rounded-lg w-full" >
                     <thead className="text-xs text-gray-700 uppercase bg-neutral-300">
                       <tr>

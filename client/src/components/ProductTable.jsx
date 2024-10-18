@@ -3,7 +3,7 @@ import { GrView } from "react-icons/gr";
 import { FaEdit } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useBlockProductMutation, useDeleteProductMutation } from "../store/api/adminApiSlice";
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { TbBarrierBlock, TbBarrierBlockOff } from "react-icons/tb";
 import { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
@@ -16,7 +16,7 @@ import { RotatingLines } from "react-loader-spinner";
 import Pagination from "./Pagination";
 
 
-function ProductTable({ filter, setFilter, products, isProductsLoading, refetch, totalCount }) {
+function ProductTable({ filter, setFilter, products, isProductsLoading, totalCount }) {
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
     const [blockProduct] = useBlockProductMutation()
@@ -38,7 +38,6 @@ function ProductTable({ filter, setFilter, products, isProductsLoading, refetch,
         try {
             const res = await blockProduct(id).unwrap()
             toast(res?.message)
-            refetch()
         } catch (error) {
             toast(error?.data?.message)
         }
@@ -47,7 +46,6 @@ function ProductTable({ filter, setFilter, products, isProductsLoading, refetch,
     async function handleDelete({ id }) {
         try {
             const res = await deleteProduct({ id }).unwrap()
-            refetch()
             toast(res?.message)
         } catch (error) {
             toast(error?.data?.message)
@@ -63,16 +61,6 @@ function ProductTable({ filter, setFilter, products, isProductsLoading, refetch,
 
     return (
         <>
-            <Toaster
-                position="top-center"
-                toastOptions={{
-                    style: {
-                        backgroundColor: 'black',
-                        color: 'white',
-                    },
-                    duration: 2000
-                }}
-            />
             <div className="relative overflow-x-auto bg-neutral-200 mt-4 shadow-lg rounded-lg">
                 <div className="flex justify-between px-4 pt-4 items-center">
                     <div className="w-fit h-full px-2 flex items-center justify-items-center bg-white  rounded-md border border-neutral-400">
@@ -208,7 +196,6 @@ ProductTable.propTypes = {
     setFilter: PropTypes.func,
     products: PropTypes.arrayOf(object),
     isProductsLoading: PropTypes.bool.isRequired,
-    refetch: PropTypes.func.isRequired,
     totalCount: PropTypes.number
 }
 

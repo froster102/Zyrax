@@ -1,4 +1,4 @@
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
 import { useAddCouponMutation, useDeleteCouponMutation, useGetAllCouponsQuery } from "../../store/api/adminApiSlice"
 import CouponTable from "../../components/CouponTable"
 
@@ -31,16 +31,6 @@ function Coupons() {
 
     return (
         <div className='border border-black w-full ml-4 rounded-lg bg-neutral-50 shadow-inner pt-[40px] px-[20px]'>
-            <Toaster
-                position="top-center"
-                toastOptions={{
-                    style: {
-                        backgroundColor: 'black',
-                        color: 'white',
-                    },
-                    duration: 2000
-                }}
-            />
             <div className='bg-neutral-200 rounded-lg shadow-xl mt-4 w-full'>
                 <CouponTable
                     coupons={coupons}

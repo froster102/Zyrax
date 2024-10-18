@@ -1,9 +1,20 @@
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useLocation } from "react-router-dom"
 import AdminRoutes from "./routes/AdminRoutes"
 import UserRoutes from "./routes/UserRoutes"
 import { Toaster } from "react-hot-toast"
+import { useLazyTrackEventQuery } from "./store/api/userApiSlice"
+import { useEffect } from "react"
 
 function App() {
+  const [triggerEvent] = useLazyTrackEventQuery()
+  const location = useLocation()
+  const pathname = location.pathname
+
+  useEffect(() => {
+    if (pathname.split('/')[1] !== 'admin') {
+      triggerEvent({ eventType: 'visit' })
+    }
+  }, [])
 
   return (
     <>

@@ -12,16 +12,23 @@ const initialState = localStorage.getItem('user') ? JSON.parse(localStorage.getI
             maxDiscountAmount: 0
         }
     },
-    addresses: [],
-    selected_gender: 'men'
+    selected_gender: 'men',
+    cartSummary: {
+        mrpTotal: 0,
+        totalCartAmount: 0,
+        totalCouponDiscount: 0,
+        offerAmount: 0
+    },
+    defaultDeliveryAddress: ''
 }
 
 function saveToLocalStorage(state) {
     localStorage.setItem('user', JSON.stringify({
         wishlist: state.wishlist,
         cart: state.cart,
-        addresses: state.addresses,
-        selected_gender: state.selected_gender
+        selected_gender: state.selected_gender,
+        cartSummary: state.cartSummary,
+        defaultDeliveryAddress : state.defaultDeliveryAddress
     }))
 }
 
@@ -30,22 +37,17 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         addToWishlist: (state, action) => {
-            const { product, sync = false, items = [] } = action.payload
-            if (sync) {
-                const itemMap = new Map(state.wishlist.items.map(item => [item._id, item]))
-                for (const item of items) {
-                    if (!itemMap.has(item._id)) {
-                        state.wishlist.items.push(item)
-                    }
+            const { items = [] } = action.payload
+            const itemMap = new Map(state.wishlist.items.map(item => [item._id, item]))
+            for (const item of items) {
+                if (!itemMap.has(item._id)) {
+                    state.wishlist.items.push(item)
                 }
-                saveToLocalStorage(state)
-            } else {
-                state.wishlist.items.push(product)
-                saveToLocalStorage(state)
             }
+            saveToLocalStorage(state)
         },
         removeFromWishlist: (state, action) => {
-            state.wishlist.items = state.wishlist.items.filter((item) => item._id !== action.payload.productId)
+            state.wishlist.items = state.wishlist.items.filter((item) => item._id !== action.payload.itemId)
             saveToLocalStorage(state)
         },
         moveToCart: (state, action) => {
@@ -77,7 +79,7 @@ const userSlice = createSlice({
         },
         updateCartItems: (state, action) => {
             const { itemId, selectedQty, selectedSize, index } = action.payload
-            const existingItemIndex = state.cart.items.findIndex(item => item.product._id === itemId && item.selectedSize === selectedSize)
+            const existingItemIndex = state.cart.items.findIndex(item => item.productId._id === itemId && item.selectedSize === selectedSize)
             if (existingItemIndex !== -1) {
                 state.cart.items[existingItemIndex].selectedQty = selectedQty
                 if (existingItemIndex !== index) {
@@ -91,7 +93,7 @@ const userSlice = createSlice({
         },
         removeFromCart: (state, action) => {
             const { productId, selectedSize } = action.payload
-            state.cart.items = state.cart.items.filter((item) => !(item?.product._id === productId && item?.selectedSize === selectedSize))
+            state.cart.items = state.cart.items.filter((item) => !(item?.productId._id === productId && item?.selectedSize === selectedSize))
             if (state.cart.items.length === 0) state.cart.appliedCoupon = {
                 code: '',
                 discount: 0,
@@ -101,24 +103,6 @@ const userSlice = createSlice({
         },
         resetCart: (state) => {
             state.cart.items = []
-            state.cart.appliedCoupon = {
-                code: '',
-                discount: 0,
-                maxDiscountAmount: 0
-            }
-            saveToLocalStorage(state)
-        },
-        applyCoupon: (state, action) => {
-            const { coupon } = action.payload
-            state.cart.appliedCoupon = coupon
-            saveToLocalStorage(state)
-        },
-        removeAppliedCoupon: (state) => {
-            state.cart.appliedCoupon = {
-                code: '',
-                discount: 0,
-                maxDiscountAmount: 0
-            }
             saveToLocalStorage(state)
         },
         moveToWishlist: (state, action) => {
@@ -137,8 +121,14 @@ const userSlice = createSlice({
             state.addresses = []
             saveToLocalStorage(state)
         },
-        addAddress: (state, action) => {
-            state.addresses = action.payload.addresses
+        updateCartSummary: (state, action) => {
+            state.cartSummary = {
+                ...state.cartSummary,
+                ...action.payload
+            }
+        },
+        setDefaultDeliveryAddress: (state, action) => {
+            state.defaultDeliveryAddress = action.payload
             saveToLocalStorage(state)
         }
     }
@@ -159,7 +149,8 @@ export const {
     resetCart,
     selectGender,
     resetCartAndWishlist,
-    addAddress
+    updateCartSummary,
+    setDefaultDeliveryAddress
 } = userSlice.actions
 export default userSlice.reducer
 
@@ -167,3 +158,5 @@ export const selectActiveGender = state => state.user.selected_gender
 export const selectWishlistItems = state => state.user.wishlist.items
 export const selectCartItems = state => state.user.cart.items
 export const selectAppliedCoupon = state => state.user.cart.appliedCoupon
+export const selectCartSummary = state => state.user.cartSummary
+export const selectDefaultDeliveryAddress = state => state.user.defaultDeliveryAddress

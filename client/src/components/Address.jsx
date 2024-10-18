@@ -1,33 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import AddAddressModal from "./AddAddressModal";
 import { useAddAddressMutation, useDeleteAddressMutation, useGetProfileQuery, useUpdateAddressMutation } from "../store/api/userApiSlice";
 import { CiEdit } from "react-icons/ci";
 import { LuDelete } from "react-icons/lu";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { addAddress } from "../store/slices/userSlice";
-import PropsTypes from 'prop-types'
+import { useDispatch, useSelector } from "react-redux";
+import { selectDefaultDeliveryAddress, setDefaultDeliveryAddress } from "../store/slices/userSlice";
 import _ from "lodash";
 
-function Address({ deliveryAddress, setDeliveryAddress, orderMode }) {
+function Address() {
     const dispatch = useDispatch()
     const [openAddAddressModal, setOpenAddAddressModal] = useState(false)
-    const { data: profileData, isLoading, refetch } = useGetProfileQuery()
+    const { data: { addresses = [] } = {}, refetch } = useGetProfileQuery()
     const [addUserAddress, { isLoading: isAddressAdding }] = useAddAddressMutation()
     const [updateUserAddress, { isLoading: isAddressUpdating }] = useUpdateAddressMutation()
     const [deleteUserAddress] = useDeleteAddressMutation()
     const [editData, setEditData] = useState({})
     const [mode, setMode] = useState('')
-
-    useEffect(() => {
-        if (!isLoading) {
-            dispatch(addAddress({ addresses: profileData.addresses }))
-            if (orderMode) {
-                setDeliveryAddress(profileData.addresses[0])
-            }
-        }
-    }, [profileData?.addresses, isLoading, dispatch, setDeliveryAddress, orderMode])
+    const defaultDeliveryAddress = useSelector(selectDefaultDeliveryAddress)
 
     async function deleteAddress(id) {
         try {
@@ -46,9 +37,8 @@ function Address({ deliveryAddress, setDeliveryAddress, orderMode }) {
                 toast(res?.message)
                 setOpenAddAddressModal(false)
                 refetch()
-                dispatch(profileData?.addresses)
             } catch (error) {
-                // toast(error?.data?.message)
+                toast(error?.data?.message)
             }
         } else {
             try {
@@ -56,9 +46,8 @@ function Address({ deliveryAddress, setDeliveryAddress, orderMode }) {
                 toast(res?.message)
                 setOpenAddAddressModal(false)
                 refetch()
-                dispatch(profileData?.addresses)
             } catch (error) {
-                // toast(error?.data?.message)
+                toast(error?.data?.message)
                 setOpenAddAddressModal(false)
             }
         }
@@ -69,12 +58,10 @@ function Address({ deliveryAddress, setDeliveryAddress, orderMode }) {
         <>
             <div className="border border-neutral-300 rounded-lg p-4 h-full flex gap-2 max-w-[1200px] w-fit flex-wrap pb-16">
                 {
-                    !isLoading && profileData.addresses.map((address, i) => {
+                    addresses.map((address, i) => {
                         return <div key={i} className="border border-neutral-300 md:w-64 w-full rounded-lg p-4 font-medium relative">
-                            <input name="address" checked={deliveryAddress === address} onChange={() => {
-                                if (orderMode) {
-                                    setDeliveryAddress(address)
-                                }
+                            <input name="address" checked={defaultDeliveryAddress?._id === address._id} onChange={() => {
+                                dispatch(setDefaultDeliveryAddress(address))
                             }} className="absolute right-4" type="radio" />
                             <p className="font-semibold">{_.startCase(address.firstName)} {_.startCase(address.lastName)}</p>
                             <p className="font-normal text-neutral-700">
@@ -119,12 +106,6 @@ function Address({ deliveryAddress, setDeliveryAddress, orderMode }) {
                 editData={editData} />}
         </>
     )
-}
-
-Address.propTypes = {
-    deliveryAddress: PropsTypes.object,
-    setDeliveryAddress: PropsTypes.func,
-    orderMode: PropsTypes.bool
 }
 
 export default Address

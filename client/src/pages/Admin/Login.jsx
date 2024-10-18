@@ -1,5 +1,5 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import toast, { Toaster } from 'react-hot-toast'
+import { useLocation, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAdminSigninMutation } from '../../store/api/adminApiSlice'
 import { selectUserToken, setUserCredentials } from '../../store/slices/authSlice'
@@ -21,7 +21,7 @@ function Login() {
   const [signin, { isLoading, error, reset: resetApiError }] = useAdminSigninMutation()
   const location = useLocation()
   const redirect = location?.state?.from?.pathname || '/admin/dashboard'
-  const { register, handleSubmit, formState: { errors }} = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(schema)
   })
 
@@ -46,16 +46,6 @@ function Login() {
   }
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            backgroundColor: 'black',
-            color: 'white',
-          },
-          duration: 2000
-        }}
-      />
       <div className='bg-[#F1F1F1] flex justify-center items-center h-dvh'>
         <form action="" onSubmit={handleSubmit(onSubmit)}>
           <div className='w-fit py-4 px-6 border-[1px] border-[#CFCBCB] rounded-xl bg-white flex flex-col ml-auto mr-auto mt-16'>
@@ -68,7 +58,6 @@ function Login() {
             <input {...register('password')} className='block mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' type="password" />
             {errors.password && <span className='text-red-700 text-sm'>{errors.password?.message}</span>}
             {error && <span className='text-red-700 text-sm'>{error?.data?.message}</span>}
-            <Link to='/reset-password'><p className='text-right font-semibold text-sm hover:underline mt-1'>Forgot Password</p></Link>
             <button className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >{isLoading ? <RotatingLines strokeColor='white' width='20' /> : 'Login'}</button>
           </div>
         </form>

@@ -1,4 +1,5 @@
 import _ from "lodash"
+import PropTypes from "prop-types"
 
 function TrendingCard({ product }) {
     return (
@@ -10,7 +11,7 @@ function TrendingCard({ product }) {
                         <div className="flex justify-between items-center truncate ...">
                             <div>
                                 <p className="text-lg font-semibold">{_.startCase(product?.name)}</p>
-                                <p className="text-xs font-normal">{_.startCase(product?.category.name)}</p>
+                                <p className="text-xs font-normal">{_.startCase(product?.category?.name)}</p>
                                 <p className="text-sm font-medium">₹ {_.startCase(product?.price)}</p>
                             </div>
                         </div>
@@ -19,6 +20,10 @@ function TrendingCard({ product }) {
             </div>
         </>
     )
+}
+
+TrendingCard.propTypes = {
+    product: PropTypes.object
 }
 
 export default TrendingCard
