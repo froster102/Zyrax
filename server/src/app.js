@@ -16,7 +16,7 @@ config()
 const app = express()
 
 const corsOptions = {
-    origin: ['http://localhost:5173','http://192.168.44.189:5173'],
+    origin: ['http://localhost:5173', 'http://192.168.44.189:5173'],
     credentials: true
 }
 
@@ -37,7 +37,7 @@ app.use('/api/v1/products/', productRoutes)
 app.get('/api/v1/auth/refresh', refresh)
 
 app.get('/', (req, res) => {
-    res.send('Server successfully running')
+    return res.status(200).json({ status: 'Server happily running' })
 })
 
 app.use(notFound)
