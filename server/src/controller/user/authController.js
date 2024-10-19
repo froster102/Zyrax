@@ -72,6 +72,7 @@ export const signin = async (req, res) => {
                 res.cookie('jwt', refreshToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'development' ? false : true,
+                    sameSite: 'None',
                     maxAge: 7 * 24 * 60 * 60 * 1000
                 })
                 return res.status(200).json({ accessToken: token, role: 'user' })

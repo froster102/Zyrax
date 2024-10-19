@@ -55,7 +55,7 @@ const sendResetEmail = async (email, username, userId) => {
             email,
             userId
         }, process.env.SECRET, { expiresIn: '15m' })
-        const resetLink = `http://localhost:5173/reset-password/${token}`
+        const resetLink = `${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_DOMAIN : process.env.PRODUCTION_DOMAIN}/reset-password/${token}`
         const mailOptions = {
             from: process.env.VERIFICATION_EMAIL,
             to: email,
