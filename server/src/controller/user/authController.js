@@ -13,11 +13,11 @@ export const googleSigninCallback = async (req, res) => {
         return res.send(`
             <script>
                 window.onload = () => {
-                if (window.opener) {
-                     window.opener.postMessage({ error:'Failed to login user account has been blocked'},
-                      ${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN});
+                    if (window.opener) {
+                        window.opener.postMessage({ error: 'Failed to login; user account has been blocked' },
+                        '${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN}');
                     }
-                window.close();
+                    window.close();
                 };
             </script>`)
     }
@@ -39,7 +39,7 @@ export const googleSigninCallback = async (req, res) => {
             const token = '${accessToken}';
             if (window.opener) {
                  window.opener.postMessage({ accessToken: token , role : 'user'  },
-                  ${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN});
+                  '${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN}');
                 }
             window.close();
             };
