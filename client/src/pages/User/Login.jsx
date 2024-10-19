@@ -58,6 +58,8 @@ function Login() {
 
     useEffect(() => {
         function handleAuthMsg(e) {
+            console.log(import.meta.env.VITE_PRODUCTION_DOMAIN)
+            console.log(e.data)
             if (e.origin !== import.meta.env.VITE_PRODUCTION_DOMAIN) return
             handleAuth(e.data)
         }
