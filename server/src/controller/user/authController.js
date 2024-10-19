@@ -30,7 +30,7 @@ export const googleSigninCallback = async (req, res) => {
         httpOnly: true,
         secure: false,
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        domain: 'zyraxstore'
+        domain: 'zyrax.vercel.app'
     })
     res.send(`
         <script>
