@@ -14,7 +14,7 @@ export const googleSigninCallback = async (req, res) => {
             <script>
                 window.onload = () => {
                 if (window.opener) {
-                     window.opener.postMessage({ error:'Failed to login user account has been blocked'}, 'http://localhost:5173');
+                     window.opener.postMessage({ error:'Failed to login user account has been blocked'}, ${process.env.PRODUCTION_URL});
                     }
                 window.close();
                 };
@@ -30,14 +30,14 @@ export const googleSigninCallback = async (req, res) => {
         httpOnly: true,
         secure: false,
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        domain: 'localhost'
+        domain: 'zyraxstore'
     })
     res.send(`
         <script>
             window.onload = () => {
             const token = '${accessToken}';
             if (window.opener) {
-                 window.opener.postMessage({ accessToken: token , role : 'user'  }, 'http://localhost:5173');
+                 window.opener.postMessage({ accessToken: token , role : 'user'  }, ${process.env.PRODUCTION_URL});
                 }
             window.close();
             };
