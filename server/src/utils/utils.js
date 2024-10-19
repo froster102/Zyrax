@@ -55,7 +55,8 @@ const sendResetEmail = async (email, username, userId) => {
             email,
             userId
         }, process.env.SECRET, { expiresIn: '15m' })
-        const resetLink = `${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN}/reset-password/${token}`
+        //sending to client side with token
+        const resetLink = `${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN}/reset-password/${token}`
         const mailOptions = {
             from: process.env.VERIFICATION_EMAIL,
             to: email,
