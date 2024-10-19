@@ -14,7 +14,8 @@ export const googleSigninCallback = async (req, res) => {
             <script>
                 window.onload = () => {
                 if (window.opener) {
-                     window.opener.postMessage({ error:'Failed to login user account has been blocked'}, ${process.env.PRODUCTION_URL});
+                     window.opener.postMessage({ error:'Failed to login user account has been blocked'},
+                      ${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN});
                     }
                 window.close();
                 };
@@ -28,16 +29,17 @@ export const googleSigninCallback = async (req, res) => {
     const refreshToken = generateRefreshToken(user._id, 'user')
     res.cookie('jwt', refreshToken, {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'development' ? false : true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
         domain: 'zyrax.vercel.app'
     })
-    res.send(`
+    return res.send(`
         <script>
             window.onload = () => {
             const token = '${accessToken}';
             if (window.opener) {
-                 window.opener.postMessage({ accessToken: token , role : 'user'  }, ${process.env.PRODUCTION_URL});
+                 window.opener.postMessage({ accessToken: token , role : 'user'  },
+                  ${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN});
                 }
             window.close();
             };
@@ -69,7 +71,7 @@ export const signin = async (req, res) => {
                 const refreshToken = generateRefreshToken(user._id, 'user')
                 res.cookie('jwt', refreshToken, {
                     httpOnly: true,
-                    secure: false,
+                    secure: process.env.NODE_ENV === 'development' ? false : true,
                     maxAge: 7 * 24 * 60 * 60 * 1000
                 })
                 return res.status(200).json({ accessToken: token, role: 'user' })

@@ -112,7 +112,7 @@ const getProductDeatils = async (req, res) => {
                 path: 'parent'
             }
         }).populate('offer')
-        if (!product || product.category.status === 'blocked' || product.category.parent.status === 'blocked') return res.status(404).json({ message: 'Product either removed or not found' })
+        if (!product || product.category?.status === 'blocked' || product.category?.parent?.status === 'blocked') return res.status(404).json({ message: 'Product either removed or not found' })
         return res.status(200).json(product)
     } catch (error) {
         return res.status(500).json({ message: 'Failed to get product details' })

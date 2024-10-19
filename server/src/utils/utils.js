@@ -28,7 +28,7 @@ const sendVerifyEmail = async (email, userId) => {
             email: email,
             userId: userId
         }, process.env.SECRET, { expiresIn: '2m' })
-        const url = `http://localhost:3000/api/v1/user/auth/verify-email?token=${token}`
+        const url = `${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_DOMAIN : process.env.PRODUCTION_DOMAIN}/api/v1/user/auth/verify-email?token=${token}`
         const mailOptions = {
             from: process.env.VERIFICATION_EMAIL,
             to: email,

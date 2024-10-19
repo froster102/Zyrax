@@ -16,7 +16,7 @@ config()
 const app = express()
 
 const corsOptions = {
-    origin: ['http://localhost:5173', process.env.PRODUCTION_URL],
+    origin: ['http://localhost:5173', process.env.PRODUCTION_CLIENT_URL],
     credentials: true
 }
 
