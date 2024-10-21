@@ -55,14 +55,24 @@ export const addCartItems = async (req, res) => {
 // @access Private
 export const getCartItems = async (req, res) => {
     try {
-        const { items, appliedCoupon } = await Cart.findOne({ user_id: req.userId }, { items: true, _id: false, appliedCoupon: true }).populate({
-            path: 'items.productId',
-            populate: {
-                path: 'category',
-                path: 'offer'
-            }
-        })
-        return res.status(200).json({ userCartItems: items, appliedCoupon })
+        const cart = await Cart.findOne({ user_id: req.userId })
+        if (cart) {
+            const { items, appliedCoupon } = await Cart.findOne({ user_id: req.userId }, { items: true, _id: false, appliedCoupon: true }).populate({
+                path: 'items.productId',
+                populate: {
+                    path: 'category',
+                    path: 'offer'
+                }
+            })
+            return res.status(200).json({ userCartItems: items, appliedCoupon })
+        } else {
+            const newCart = new Cart({
+                user_id: req.userId
+            })
+            await newCart.save()
+            return res.status(201).json({ message: 'Cart created sucessfully' })
+        }
+
     } catch (error) {
         return res.status(500).json({ message: 'Failed get cart items' })
     }
