@@ -71,7 +71,7 @@ function Login() {
     }
 
     function signInWithGoogle() {
-        const googleAuthPopup = window.open(`${import.meta.env.VITE_ENV === 'development' ? import.meta.env.VITE_DEVELOPMENT_API_URL : import.meta.env.VITE_PRODUCTION_API_URL}/user/auth/google`, '_blank', 'width=600,height=600')
+        const googleAuthPopup = window.open(`${import.meta.env.VITE_ENV === 'development' ? import.meta.env.VITE_DEVELOPMENT_API_URL : import.meta.env.VITE_PRODUCTION_API_URL}user/auth/google`, '_blank', 'width=600,height=600')
         const checkPopupClosed = setInterval(async () => {
             if (googleAuthPopup.closed) {
                 clearInterval(checkPopupClosed)
