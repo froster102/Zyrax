@@ -1,3 +1,4 @@
+import { constructQueryParams } from "@/utils/helper";
 import { apiSlice } from "./apiSlice";
 
 const userApiSlice = apiSlice.injectEndpoints({
@@ -124,7 +125,8 @@ const userApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: [
                 { type: 'UserOrders', id: 'LIST' },
-                { type: 'OrderDetails', id: 'Details' }
+                { type: 'OrderDetails', id: 'Details' },
+                { type: 'WalletDetails', id: 'wallet' }
             ],
         }),
         returnOrder: builder.mutation({
@@ -135,7 +137,8 @@ const userApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: [
                 { type: 'UserOrders', id: 'LIST' },
-                { type: 'OrderDetails', id: 'Details' }
+                { type: 'OrderDetails', id: 'Details' },
+                { type: 'WalletDetails', id: 'wallet' }
             ]
         }),
         retryPayment: builder.mutation({
@@ -146,13 +149,19 @@ const userApiSlice = apiSlice.injectEndpoints({
             })
         }),
         getWalletDetails: builder.query({
-            query: () => '/user/wallet'
+            query: ({ filter }) => {
+                const params = { ...filter }
+                const query = constructQueryParams(params)
+                return `/user/wallet?${query}`
+            },
+            providesTags: [{ type: 'WalletDetails', id: 'wallet' }]
         }),
         createWallet: builder.mutation({
             query: () => ({
                 url: '/user/wallet',
                 method: 'POST'
-            })
+            }),
+            invalidatesTags: [{ type: 'WalletDetails', id: 'wallet' }]
         }),
         topUpWallet: builder.mutation({
             query: ({ amount }) => ({
@@ -160,6 +169,14 @@ const userApiSlice = apiSlice.injectEndpoints({
                 method: 'PUT',
                 body: { amount }
             })
+        }),
+        verifyWalletPayment: builder.mutation({
+            query: (paymentDetails) => ({
+                url: '/user/wallet/payments/verify',
+                method: 'POST',
+                body: paymentDetails
+            }),
+            invalidatesTags: [{ type: 'WalletDetails', id: 'wallet' }]
         })
     })
 })
@@ -183,6 +200,7 @@ export const {
     useCreateWalletMutation,
     useGetWalletDetailsQuery,
     useTopUpWalletMutation,
+    useVerifyWalletPaymentMutation,
     useFetchUserOrdersQuery,
     useGetUserOrderDetailsQuery,
     useCancelOrderMutation,

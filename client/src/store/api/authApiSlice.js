@@ -23,6 +23,12 @@ const authApiSlice = apiSlice.injectEndpoints({
                 body: { email }
             })
         }),
+        verifyGoogleAuth: (builder).mutation({
+            query: () => ({
+                url: '/user/auth/google/verify-auth',
+                method: 'POST'
+            })
+        }),
         resetPassword: (builder).mutation({
             query: ({ token, password }) => ({
                 url: '/user/auth/reset-password',
@@ -43,6 +49,7 @@ export const {
     useLogoutUserMutation,
     useSignupMutation,
     useSigninMutation,
+    useVerifyGoogleAuthMutation,
     useForgotPasswordMutation,
     useResetPasswordMutation,
 } = authApiSlice

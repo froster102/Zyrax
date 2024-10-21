@@ -5,7 +5,6 @@ import userRoutes from './routes/userRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import session from 'express-session'
-import mongoose from 'mongoose'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { refresh } from './controller/refreshController.js'
@@ -16,7 +15,7 @@ config()
 const app = express()
 
 const corsOptions = {
-    origin: ['http://localhost:5173', process.env.PRODUCTION_CLIENT_URL],
+    origin: ['http://localhost:5173','', process.env.PRODUCTION_CLIENT_DOMAIN],
     credentials: true
 }
 

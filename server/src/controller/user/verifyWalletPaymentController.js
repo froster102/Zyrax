@@ -2,7 +2,16 @@ import crypto from 'crypto'
 import { Wallet } from '../../model/wallet.js'
 
 const verifyWalletPayment = async (req, res) => {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, error } = req.body
+    if (error) {
+        const wallet = await Wallet.findOne({ 'transactions.payment_id': error.metadata.order_id })
+        const transaction = wallet.transactions.find(txn => txn.payment_id === error.metadata.order_id)
+        if (transaction) {
+            transaction.status = 'failed'
+            await wallet.save()
+            return res.status(400).json({ message: 'Payment failed ,please try again' })
+        }
+    }
     const generateSignature = crypto.createHmac('sha256', process.env.RAZORPAY_SECRET).update(razorpay_order_id + '|' + razorpay_payment_id).digest('hex')
     if (razorpay_signature === generateSignature) {
         try {
@@ -16,9 +25,9 @@ const verifyWalletPayment = async (req, res) => {
             } else {
                 return res.status(400).json({ message: 'Bad Request' })
             }
-            return res.redirect('http://localhost:5173/account/wallet')
+            return res.status(200).json({ message: 'Wallet transaction sucessfull' })
         } catch (error) {
-
+            return res.status(400).json({ message: 'Failed to verify paymen' })
         }
     }
 }

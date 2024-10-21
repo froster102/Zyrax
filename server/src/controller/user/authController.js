@@ -4,46 +4,44 @@ import { generateAccessToken, generateRefreshToken, sendResetEmail, sendVerifyEm
 import jwt from 'jsonwebtoken'
 import { AnalyticsEvent } from "../../model/analytics.js"
 
-// @desc Get token after sucessfull google verification
+// @desc Close popup after sucessfull google verification
 // @route GET api/v1/user/auth/google/callback
-// @access Private
+// @access Public
 export const googleSigninCallback = async (req, res) => {
-    const user = await User.findOne({ googleId: req.user.id })
-    if (user.status === 'blocked') {
-        return res.send(`
-            <script>
-                window.onload = () => {
-                    if (window.opener) {
-                        window.opener.postMessage({ error: 'Failed to login; user account has been blocked' },
-                        '${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN}');
-                    }
-                    window.close();
-                };
-            </script>`)
-    }
-    await AnalyticsEvent.create({
-        userId: user._id,
-        eventType: 'login'
-    })
-    const accessToken = generateAccessToken(user._id, 'user')
-    const refreshToken = generateRefreshToken(user._id, 'user')
-    res.cookie('jwt', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'development' ? false : true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        domain: 'zyrax.vercel.app'
-    })
     return res.send(`
         <script>
-            window.onload = () => {
-            const token = '${accessToken}';
-            if (window.opener) {
-                 window.opener.postMessage({ accessToken: token , role : 'user'  },
-                  '${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN}');
-                }
             window.close();
-            };
         </script>`)
+}
+
+// @desc Get token after verify google auth verification
+// @route GET api/v1/user/auth/google/verify-auth
+// @access Public
+export const verifyGoogleAuth = async (req, res) => {
+    const userId = req.session?.passport?.user?.id
+    if (!userId) return res.status(400).json({ message: 'Invalid request' })
+    try {
+        const user = await User.findOne({ googleId: userId })
+        if (user.status==='blocked') {
+            return res.status(401).json({ message: 'User account has been blocked' })
+        }
+        await AnalyticsEvent.create({
+            userId: user._id,
+            eventType: 'login'
+        })
+        const accessToken = generateAccessToken(user._id, 'user')
+        const refreshToken = generateRefreshToken(user._id, 'user')
+        res.cookie('jwt', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'development' ? false : true,
+            sameSite: process.env.NODE_ENV !== 'development' ? 'None' : '',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+        return res.status(200).json({ accessToken, role: 'user' })
+    } catch (error) {
+        return res.status(500).json({ message: 'Something went wrong' })
+    }
+
 }
 
 // @desc Signin user
@@ -53,6 +51,10 @@ export const signin = async (req, res) => {
     try {
         const { email, password } = req.body
         const user = await User.findOne({ email: email })
+        if (user?.authProvider) return res.status(400).json({
+            errorType: 'googleLogin',
+            message: 'Email has used with google login, Please use google sign in'
+        })
         if (user) {
             if (user.status === 'blocked') {
                 return res.status(401).json({ message: 'User account blocked' })
@@ -72,7 +74,7 @@ export const signin = async (req, res) => {
                 res.cookie('jwt', refreshToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'development' ? false : true,
-                    sameSite: 'None',
+                    sameSite: process.env.NODE_ENV !== 'development' ? 'None' : '',
                     maxAge: 7 * 24 * 60 * 60 * 1000
                 })
                 return res.status(200).json({ accessToken: token, role: 'user' })

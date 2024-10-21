@@ -2,7 +2,7 @@ import { IoMdClose } from "react-icons/io"
 import PropTypes from 'prop-types'
 import { useState } from "react"
 
-function AddMoneyModal({ closeModal, onSumbit }) {
+function AddMoneyModal({ closeModal, onSumbit, isLoading }) {
     const [amount, setAmount] = useState('')
 
     return (
@@ -35,7 +35,9 @@ function AddMoneyModal({ closeModal, onSumbit }) {
                             <button onClick={closeModal} className='px-2 py-1 border bg-neutral-700 text-white rounded-md'>Cancel</button>
                             <button onClick={() => {
                                 onSumbit({ amount })
-                            }} className='px-2 py-1 text-white bg-red-500 rounded-md ml-2'>Confirm</button>
+                            }} 
+                            disabled={isLoading}
+                            className='px-2 py-1 text-white bg-red-500 rounded-md ml-2'>Confirm</button>
                         </div>
                     </div>
                 </div>
@@ -46,7 +48,8 @@ function AddMoneyModal({ closeModal, onSumbit }) {
 
 AddMoneyModal.propTypes = {
     closeModal: PropTypes.func.isRequired,
-    onSumbit: PropTypes.func.isRequired
+    onSumbit: PropTypes.func.isRequired,
+    isLoading: PropTypes.bool
 }
 
 export default AddMoneyModal

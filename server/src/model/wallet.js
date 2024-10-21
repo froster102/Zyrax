@@ -24,7 +24,7 @@ const TransactionSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: {
-            values: ['success', 'pending', 'failed'],
+            values: ['success', 'pending', 'failed', 'initiated'],
             message: 'Transaction status not valid'
         }
     }

@@ -37,7 +37,7 @@ const topUpWallet = async (req, res) => {
             payment_id: paymentOrder.id,
             amount,
             type: 'credit',
-            status: 'pending'
+            status: 'initiated'
         })
         await wallet.save()
         return res.status(200).json(paymentOrder)
@@ -47,11 +47,25 @@ const topUpWallet = async (req, res) => {
 }
 
 const getWalletDetails = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query
     try {
         const wallet = await Wallet.findOne({ user_id: req.userId }).sort({ 'transactions.createdAt': -1 })
         if (!wallet) return res.status(404).json({ message: 'Wallet not found for the requested user' })
         if (wallet) wallet.transactions.sort((a, b) => b.createdAt - a.createdAt)
-        return res.status(200).json(wallet)
+        const filteredTransactions = wallet.transactions.filter(txn => txn.status !== 'initiated')
+        const isWalletCreated = wallet ? true : false
+        const totalTransactions = wallet.transactions.length
+        const totalPages = Math.ceil(totalTransactions / limit)
+        const startIndex = (page - 1) * limit
+        const endIndex = startIndex + limit
+        const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex)
+        return res.status(200).json({
+            isWalletCreated,
+            balance: wallet.balance,
+            totalTransactions,
+            totalPages,
+            transactions: paginatedTransactions
+        })
     } catch (error) {
         return res.status(500).json({ message: 'Failed to get wallet details' })
     }

@@ -14,6 +14,7 @@ import { verifyWalletPayment } from '../controller/user/verifyWalletPaymentContr
 import { createWallet, getWalletDetails, topUpWallet } from '../controller/user/walletController.js'
 import * as couponController from '../controller/user/couponController.js'
 import * as analyticsController from '../controller/user/analyticsController.js'
+import * as authController from '../controller/user/authController.js'
 
 const router = express.Router()
 
@@ -29,16 +30,15 @@ passport.deserializeUser((user, done) => {
 })
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login' }), googleSigninCallback)
-router.post('/auth/signin', validateSignin, signin)
-router.post('/auth/signup', validatePassword, signUp)
-router.post('/auth/forgot-password', validateEmail, forgotPassword)
-router.post('/auth/reset-password', validateResetPassword, resetPassword)
-router.get('/auth/verify-email', verifyEmail)
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login' }), authController.googleSigninCallback)
+router.post('/auth/google/verify-auth', authController.verifyGoogleAuth)
+router.post('/auth/signin', validateSignin, authController.signin)
+router.post('/auth/signup', validatePassword, authController.signUp)
+router.post('/auth/forgot-password', validateEmail, authController.forgotPassword)
+router.post('/auth/reset-password', validateResetPassword, authController.resetPassword)
+router.get('/auth/verify-email', authController.verifyEmail)
 
 router.get('/analytics/event', analyticsController.trackVisits)
-
-router.post('/verify-wallet-payment', verifyWalletPayment)
 
 router.use(userAuth)
 
@@ -64,7 +64,7 @@ router.put('/addresses/:id', updateAddress)
 router.delete('/addresses/:id', deleteAddress)
 
 router.post('/payments/verify', verifyPayment)
-router.post('/wallet/payments/verify')
+router.post('/wallet/payments/verify', verifyWalletPayment)
 
 router.get('/wallet', getWalletDetails)
 router.post('/wallet', createWallet)

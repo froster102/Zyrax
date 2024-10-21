@@ -7,7 +7,9 @@ config()
 passport.use(new GoogleStrategy.Strategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_AUTH_CALLBACK_URL
+    callbackURL: process.env.NODE_ENV === 'development' ?
+        process.env.GOOGLE_AUTH_DEVELOPMENT_CALLBACK_URL
+        : process.env.GOOGLE_AUTH_PRODUCTION_CALLBACK_URL
 },
     async (accessToken, refreshToken, profile, cb) => {
         try {
@@ -19,7 +21,7 @@ passport.use(new GoogleStrategy.Strategy({
                     googleId: profile.id,
                     authProvider: 'google',
                     profilePic: profile.photos[0].value,
-                    verification_status: true
+                    verification_status: true,
                 })
             }
             if (!user) {
@@ -32,6 +34,7 @@ passport.use(new GoogleStrategy.Strategy({
                     profilePic: profile.photos[0].value,
                     status: 'active',
                     verification_status: true,
+                    verification_started: null,
                     createdAt: null
                 })
             }
