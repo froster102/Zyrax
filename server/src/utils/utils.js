@@ -28,7 +28,7 @@ const sendVerifyEmail = async (email, userId) => {
             email: email,
             userId: userId
         }, process.env.SECRET, { expiresIn: '2m' })
-        const url = `${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_DOMAIN : process.env.PRODUCTION_DOMAIN}/api/v1/user/auth/verify-email?token=${token}`
+        const url = `${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_BACKEND_DOMAIN : process.env.PRODUCTION_BACKEND_DOMAIN}/api/v1/user/auth/verify-email?token=${token}`
         const mailOptions = {
             from: process.env.VERIFICATION_EMAIL,
             to: email,
@@ -56,7 +56,7 @@ const sendResetEmail = async (email, username, userId) => {
             userId
         }, process.env.SECRET, { expiresIn: '15m' })
         //sending to client side with token
-        const resetLink = `${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_CLIENT_DOMAIN : process.env.PRODUCTION_CLIENT_DOMAIN}/reset-password/${token}`
+        const resetLink = `${process.env.NODE_ENV === 'development' ? process.env.DEVELOPMENT_FRONTEND_DOMAIN : process.env.PRODUCTION_FRONTEND_DOMAIN}/reset-password/${token}`
         const mailOptions = {
             from: process.env.VERIFICATION_EMAIL,
             to: email,
