@@ -15,17 +15,12 @@ config()
 const app = express()
 
 const corsOptions = {
-    origin: ['http://localhost:5173','', process.env.PRODUCTION_CLIENT_DOMAIN],
+    origin: ['http://localhost:5173','', process.env.PRODUCTION_FRONTEND_DOMAIN],
     credentials: true
 }
 
 app.use(cors(corsOptions))
 app.use(cookieParser())
-app.use(session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false
-}))
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

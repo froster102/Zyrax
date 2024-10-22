@@ -3,34 +3,50 @@ import bcrypt from 'bcryptjs'
 import { generateAccessToken, generateRefreshToken, sendResetEmail, sendVerifyEmail } from '../../utils/utils.js'
 import jwt from 'jsonwebtoken'
 import { AnalyticsEvent } from "../../model/analytics.js"
+import { oauth2client } from "../../config/googleAuthConfig.js"
 
-// @desc Close popup after sucessfull google verification
-// @route GET api/v1/user/auth/google/callback
+// @desc Verify authorization code and sigin the user 
+// @route POST api/v1/user/auth/google
 // @access Public
-export const googleSigninCallback = async (req, res) => {
-    return res.send(`
-        <script>
-            window.close();
-        </script>`)
-}
-
-// @desc Get token after verify google auth verification
-// @route GET api/v1/user/auth/google/verify-auth
-// @access Public
-export const verifyGoogleAuth = async (req, res) => {
-    const userId = req.session?.passport?.user?.id
-    if (!userId) return res.status(400).json({ message: 'Invalid request' })
+export const googleSignin = async (req, res) => {
+    const { authCode } = req.query
     try {
-        const user = await User.findOne({ googleId: userId })
-        if (user.status==='blocked') {
-            return res.status(401).json({ message: 'User account has been blocked' })
+        const googleResponse = await oauth2client.getToken(authCode)
+        oauth2client.setCredentials(googleResponse.tokens)
+        const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleResponse.tokens.access_token}`)
+        if (!response.ok) {
+            throw new Error('Google auth failed')
         }
-        await AnalyticsEvent.create({
-            userId: user._id,
-            eventType: 'login'
-        })
-        const accessToken = generateAccessToken(user._id, 'user')
-        const refreshToken = generateRefreshToken(user._id, 'user')
+        const data = await response.json()
+        const { email, name, given_name, id, picture } = data
+        let user = await User.findOne({ email })
+        if (user) {
+            if (user.status === 'blocked') return res.status(400).json({ message: 'User account has been blocked' })
+            await User.findOneAndUpdate({
+                email
+            }, {
+                googleId: id,
+                authProvider: 'google',
+                profilePic: picture,
+                verification_status: true,
+            })
+        }
+        if (!user) {
+            await User.create({
+                firstName: name,
+                lastName: name || given_name,
+                email: email,
+                googleId: id,
+                authProvider: 'google',
+                profilePic: picture,
+                status: 'active',
+                verification_status: true,
+                verification_started: null,
+                createdAt: null
+            })
+        }
+        const accessToken = generateAccessToken(user.id, 'user')
+        const refreshToken = generateRefreshToken(user.id, 'user')
         res.cookie('jwt', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'development' ? false : true,
@@ -41,7 +57,6 @@ export const verifyGoogleAuth = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'Something went wrong' })
     }
-
 }
 
 // @desc Signin user
