@@ -11,12 +11,13 @@ import { selectActiveGender, selectCartItems, selectWishlistItems } from '../../
 import { loginSchema } from '../../../ValidationSchema/loginSchema';
 import toast from 'react-hot-toast'
 import { RotatingLines } from 'react-loader-spinner'
-import { useSigninMutation, useVerifyGoogleAuthMutation } from '../../store/api/authApiSlice';
+import { useGoogleSigninMutation, useSigninMutation } from '../../store/api/authApiSlice';
+import { useGoogleLogin } from '@react-oauth/google'
 
 function Login() {
     const dispatch = useDispatch()
     const [signin, { isLoading, error, reset }] = useSigninMutation()
-    const [verifyGoogleAuth, { isLoading: isGoogleAuthLoading }] = useVerifyGoogleAuthMutation()
+    const [googleSignin, { isLoading: isGoogleAuthLoading }] = useGoogleSigninMutation()
     const gender = useSelector(selectActiveGender)
     const navigate = useNavigate()
     const location = useLocation()
@@ -57,6 +58,12 @@ function Login() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user])
 
+    const signInWithGoogle = useGoogleLogin({
+        onSuccess: (authResponse) => handleGoogleSignin(authResponse),
+        flow: 'auth-code',
+        scope: 'email profile'
+    })
+
     async function onSubmit(data) {
         const { email, password } = data
         try {
@@ -70,20 +77,17 @@ function Login() {
         }
     }
 
-    function signInWithGoogle() {
-        const googleAuthPopup = window.open(`${import.meta.env.VITE_ENV === 'development' ? import.meta.env.VITE_DEVELOPMENT_API_URL : import.meta.env.VITE_PRODUCTION_API_URL}user/auth/google`, '_blank', 'width=600,height=600')
-        const checkPopupClosed = setInterval(async () => {
-            if (googleAuthPopup.closed) {
-                clearInterval(checkPopupClosed)
-                try {
-                    const { accessToken, role } = await verifyGoogleAuth().unwrap()
-                    dispatch(setUserCredentials({ accessToken, role }))
-                    navigate(redirect, { replace: true })
-                } catch (error) {
-                    toast("Google sign in failed")
-                }
+    async function handleGoogleSignin(authResponse) {
+        try {
+            if (authResponse?.code) {
+                const res = await googleSignin({ authCode: authResponse.code }).unwrap()
+                dispatch(setUserCredentials({ ...res }))
+            } else {
+                throw new Error('Google authorization failed')
             }
-        }, 1000)
+        } catch (error) {
+            toast(error?.data?.message)
+        }
     }
 
     return (
