@@ -20,6 +20,7 @@ import Checkout from '../pages/User/Checkout'
 import SelectDeliveryAddress from '../components/SelectDeliveryAddress'
 import OrderSucess from '../components/OrderSucess'
 import SelectGender from '../pages/User/SelectGender'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 function UserRoutes() {
     return (
@@ -35,7 +36,13 @@ function UserRoutes() {
             <Navbar></Navbar>
             <Routes>
                 <Route path='/' element={<LayoutWithWidth><SelectGender /></LayoutWithWidth>} ></Route>
-                <Route path='/login' element={<LayoutWithWidth><Login /></LayoutWithWidth>} ></Route>
+                <Route path='/login' element={
+                    <LayoutWithWidth>
+                        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENTID} >
+                            <Login />
+                        </GoogleOAuthProvider>
+                    </LayoutWithWidth>} >
+                </Route>
                 <Route path='/register' element={<LayoutWithWidth> <Register /></LayoutWithWidth>} ></Route>
                 <Route path='/men' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>
                 <Route path='/women' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>
