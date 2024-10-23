@@ -134,6 +134,9 @@ const editProduct = async (req, res) => {
 
         return res.status(200).json({ message: 'Product edited sucessfully' })
     } catch (err) {
+        if (err.message === 'Product validation failed: offer: Offer not found') {
+            return res.status(400).json({ message: 'Offer not available or have been expired' })
+        }
         return res.status(500).json({ message: 'Failed to edit product an error occured' })
     }
 
