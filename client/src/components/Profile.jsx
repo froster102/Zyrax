@@ -60,7 +60,7 @@ function Profile() {
                     message: 'First name must be at contain 3 characters'
                   },
                   pattern: {
-                    value: /^[A-Za-z]+$/,
+                    value: /^[A-Za-z]+( [A-Za-z]+)*$/,
                     message: 'Must contain only alphabets'
                   }
                 })} className='w-full block p-2 border border-[#CFCBCB] focus:outline-none rounded-md' type="text" />
@@ -75,7 +75,7 @@ function Profile() {
                     message: 'Last name must be at contain 3 characters'
                   },
                   pattern: {
-                    value: /^[A-Za-z]+$/,
+                    value: /^[A-Za-z]+( [A-Za-z]+)*$/,
                     message: 'Must contain only alphabets'
                   }
                 })} className='w-full block p-2 border border-[#CFCBCB] focus:outline-none rounded-md' type="text" />
