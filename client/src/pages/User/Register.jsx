@@ -9,7 +9,8 @@ import registerSchema from '../../../ValidationSchema/registerSchema'
 import toast from 'react-hot-toast'
 import { selectActiveGender } from '../../store/slices/userSlice'
 import { RotatingLines } from 'react-loader-spinner'
-import { useSignupMutation } from '../../store/api/authApiSlice';
+import { useGoogleSigninMutation, useSignupMutation } from '../../store/api/authApiSlice';
+import { useGoogleLogin } from '@react-oauth/google';
 
 function Register() {
   const dispatch = useDispatch()
@@ -17,6 +18,7 @@ function Register() {
   const navigate = useNavigate()
   const userAuth = useSelector(selectUserToken)
   const activeGender = useSelector(selectActiveGender)
+  const [googleSignin, { isLoading: isGoogleAuthLoading }] = useGoogleSigninMutation()
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: zodResolver(registerSchema)
@@ -28,22 +30,11 @@ function Register() {
     }
   }, [navigate, userAuth, activeGender])
 
-  useEffect(() => {
-    function handleAuthMsg(e) {
-      if (e.origin !== 'http://localhost:3000') return
-      handleAuth(e.data)
-    }
-    window.addEventListener('message', handleAuthMsg)
-
-    return () => {
-      window.removeEventListener('message', handleAuthMsg)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  function signInWithGoogle() {
-    window.open('http://localhost:3000/api/v1/users/auth/google', '_blank', 'width=600,height=600')
-  }
+  const signInWithGoogle = useGoogleLogin({
+    onSuccess: (authResponse) => handleGoogleSignin(authResponse),
+    flow: 'auth-code',
+    scope: 'email profile'
+  })
 
   async function onSubmit(data) {
     const { firstName, lastName, email, password } = data
@@ -64,9 +55,17 @@ function Register() {
     }
   }
 
-  function handleAuth({ accessToken, role }) {
-    dispatch(setUserCredentials({ accessToken, role }))
-    navigate('/', { replace: true })
+  async function handleGoogleSignin(authResponse) {
+    try {
+      if (authResponse?.code) {
+        const res = await googleSignin({ authCode: authResponse.code }).unwrap()
+        dispatch(setUserCredentials({ ...res }))
+      } else {
+        throw new Error('Google authorization failed')
+      }
+    } catch (error) {
+      toast(error?.data?.message)
+    }
   }
 
   return (
@@ -102,7 +101,7 @@ function Register() {
             <input {...register('confirmPassword')} className='mt-2 p-2 h-[43px] border-[1px] border-black rounded-md w-full' type="password" />
             {errors.confirmPassword && <span className='text-red-700 text-sm'>{errors.confirmPassword?.message}</span>}
           </div>
-          <button disabled={isLoading} className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >{isLoading ? <RotatingLines strokeColor='white' width='20' /> : 'Signup'}</button>
+          <button disabled={isLoading} className='bg-black text-white font-medium px-4 py-2 rounded-md w-fit self-center mt-2' >{isLoading || isGoogleAuthLoading ? <RotatingLines strokeColor='white' width='20' /> : 'Signup'}</button>
           <p className='text-sm font-semibold text-right mt-2'>Already have a account ? <span className='hover:underline'><Link to='/login' >Login</Link></span></p>
         </div>
       </form>

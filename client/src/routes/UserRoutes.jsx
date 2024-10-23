@@ -43,7 +43,13 @@ function UserRoutes() {
                         </GoogleOAuthProvider>
                     </LayoutWithWidth>} >
                 </Route>
-                <Route path='/register' element={<LayoutWithWidth> <Register /></LayoutWithWidth>} ></Route>
+                <Route path='/register' element={
+                    <LayoutWithWidth>
+                        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENTID} >
+                            <Register />
+                        </GoogleOAuthProvider>
+                    </LayoutWithWidth>} >
+                </Route>
                 <Route path='/men' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>
                 <Route path='/women' element={<LayoutWithWidth><Home /></LayoutWithWidth>}></Route>
                 <Route path='/wishlist' element={<LayoutWithWidth><Wishlist /></LayoutWithWidth>} ></Route>
