@@ -19,20 +19,11 @@ export const googleSignin = async (req, res) => {
         }
         const data = await response.json()
         const { email, name, given_name, id, picture } = data
-        let user = await User.findOne({ email })
-        if (user) {
-            if (user.status === 'blocked') return res.status(400).json({ message: 'User account has been blocked' })
-            await User.findOneAndUpdate({
-                email
-            }, {
-                googleId: id,
-                authProvider: 'google',
-                profilePic: picture,
-                verification_status: true,
-            })
-        }
+        const user = await User.findOne({ email })
+        let userId = user ? user._id : null
+        if (user && user.status === 'blocked') return res.status(400).json({ message: 'User account has been blocked' })
         if (!user) {
-            await User.create({
+            const newUser = await User.create({
                 firstName: name,
                 lastName: name || given_name,
                 email: email,
@@ -44,9 +35,10 @@ export const googleSignin = async (req, res) => {
                 verification_started: null,
                 createdAt: null
             })
+            userId = newUser._id
         }
-        const accessToken = generateAccessToken(user.id, 'user')
-        const refreshToken = generateRefreshToken(user.id, 'user')
+        const accessToken = generateAccessToken(userId, 'user')
+        const refreshToken = generateRefreshToken(userId, 'user')
         res.cookie('jwt', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'development' ? false : true,
