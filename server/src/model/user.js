@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
         required: [true, 'First name is required'],
         minlength: [3, 'First name must contain at least 3 characters'],
         validate: {
-            validator: v => /^[A-Za-z]+( [A-Za-z]+)*$/.test(v),
+            validator: v => /^[A-Za-z0-9]+( [A-Za-z0-9]+)*$/.test(v),
             message: 'First name must only contain alphabets'
         }
     },
@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema({
         required: [true, 'Last name is required'],
         minlength: [3, 'Last name must contain at least 3 characters'],
         validate: {
-            validator: v => /^[A-Za-z]+( [A-Za-z]+)*$/.test(v),
+            validator: v => /^[A-Za-z0-9]+( [A-Za-z0-9]+)*$/.test(v),
             message: 'Last name must only contain alphabets'
         }
     },

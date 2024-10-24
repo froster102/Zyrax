@@ -154,11 +154,11 @@ function Navbar() {
                 <button onClick={() => {
                   navigate('/men')
                   setSidebarOpen(false)
-                }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'men' ? 'bg-black text-white' : 'bg-neutral-200 shadow-md'}`}>Men</button>
+                }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'men' ? 'bg-neutral-900 text-white' : 'bg-neutral-200 shadow-md'}`}>Men</button>
                 <button onClick={() => {
                   navigate('/women')
                   setSidebarOpen(false)
-                }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'women' ? 'bg-black text-white' : 'bg-neutral-200 shadow-md'}`}>Women</button>
+                }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'women' ? 'bg-neutral-900 text-white' : 'bg-neutral-200 shadow-md'}`}>Women</button>
               </div>
               <div className='mt-4 w-full'>
                 {categories.map((category, i) => {
@@ -187,6 +187,9 @@ function Navbar() {
                       setSidebarOpen(false)
                     }}
                     className='pt-4'>My Orders</p>
+                  <div className='pt-4'>
+                    <button onClick={logoutUser} className='px-4 py-1 rounded-lg text-white bg-neutral-900' >Logout</button>
+                  </div>
                 </div>
               }
             </motion.div>
