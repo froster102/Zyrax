@@ -161,7 +161,7 @@ function Navbar() {
                 }} className={`px-6 py-2 text-sm rounded-lg ${activeGender === 'women' ? 'bg-neutral-900 text-white' : 'bg-neutral-200 shadow-md'}`}>Women</button>
               </div>
               <div className='mt-4 w-full'>
-                {categories.map((category, i) => {
+                {!isCategoriesLoading && categories.map((category, i) => {
                   if (category.parent === null) {
                     return <SidebarAccordion
                       key={i}
